@@ -11,5 +11,5 @@ const FIREBASE_CONFIG = {
 };
 
 const ADMIN_EMAIL = "hsmvfoundation@gmail.com";
-const ADMIN_PASSWORD = "HSMV@2026";
+const ADMIN_PASSWORD = "HSMV2026";
 const WA_NUMBER = "916392760740";
