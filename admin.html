@@ -109,13 +109,13 @@ tr:hover td{background:#fffdf7;}
   </div>
 </div>
 <script>
-var PID = "hsmv-foundation";
-var AKEY = "AIzaSyARBZQeIaTq_wOrSafT0X04EVtfebtcvwk";
-var EMAIL = "hsmvfoundation@gmail.com";
-var PASS = "HSMV2026";
-var TOKEN = null;
+// Replace with your Apps Script URL
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbyHAECod9XqlGLe8inXIt5hvxqu7Jzd4vWy0O-yBjkMo7y0Z3oDD0hsomxikM1zeOza/exec";
+var ADMIN_EMAIL = "hsmvfoundation@gmail.com";
+var ADMIN_PASS = "HSMV@2026";
 var allMembers = [];
 var curFilter = "all";
+var isLoggedIn = false;
 
 function sb(msg, ok) {
   var b = document.getElementById("sbar");
