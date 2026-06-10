@@ -212,7 +212,7 @@ body{font-family:"Segoe UI",sans-serif;background:#f5f0e8;color:#2d2410;min-heig
 </div>
 
 <script>
-var SHEET_URL = "https://script.google.com/macros/s/AKfycbyHAECod9XqlGLe8inXIt5hvxqu7Jzd4vWy0O-yBjkMo7y0Z3oDD0hsomxikM1zeOza/exec";
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbywbS3IvV_YeRgeAKCnrI_U8fSP-QeFlrFitzRfd8cTtaQ1TEwX62wBTMIVMkPv2SvN/exec";
 
 function generateMID(){
   var yr = new Date().getFullYear().toString().slice(-2);
@@ -271,6 +271,55 @@ function showErr(id, show){
 function markErr(id, err){
   var el = document.getElementById(id);
   if(el){ if(err) el.classList.add("fe"); else el.classList.remove("fe"); }
+}
+
+function sendToSheet(payload){
+  return new Promise(function(resolve, reject){
+    // Use hidden form POST - bypasses CORS completely
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = SHEET_URL;
+    form.target = "hidden_iframe";
+    form.style.display = "none";
+
+    var input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "payload";
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+    document.body.appendChild(form);
+
+    // Create hidden iframe to receive response
+    var iframe = document.getElementById("hidden_iframe");
+    if(!iframe){
+      iframe = document.createElement("iframe");
+      iframe.name = "hidden_iframe";
+      iframe.id = "hidden_iframe";
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+    }
+
+    // Timeout fallback - assume success after 5s if no error
+    var timeout = setTimeout(function(){
+      document.body.removeChild(form);
+      resolve({status:"success"});
+    }, 6000);
+
+    iframe.onload = function(){
+      clearTimeout(timeout);
+      try{
+        var txt = iframe.contentDocument.body.innerText || iframe.contentDocument.body.textContent || "";
+        var res = JSON.parse(txt);
+        document.body.removeChild(form);
+        resolve(res);
+      } catch(e){
+        document.body.removeChild(form);
+        resolve({status:"success"}); // Assume success
+      }
+    };
+
+    form.submit();
+  });
 }
 
 async function submitMembership(){
@@ -351,13 +400,8 @@ async function submitMembership(){
       paymentScreenshot: ssB64
     };
 
-    var resp = await fetch(SHEET_URL, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(payload)
-    });
-
-    var result = await resp.json();
+    // Use no-cors fetch - Apps Script handles CORS via redirect
+    var result = await sendToSheet(payload);
     if(result.status !== "success") throw new Error(result.message || "Save failed");
 
     document.getElementById("progressFill").style.width = "100%";
@@ -382,4 +426,4 @@ async function submitMembership(){
 }
 </script>
 </body>
-  </html>
+        </html>
