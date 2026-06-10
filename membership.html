@@ -164,7 +164,7 @@ body{font-family:"Segoe UI",sans-serif;background:#f5f0e8;color:#2d2410;min-heig
     </div>
 
     <div class="card">
-      <h2>&#128247; Passport Photo <span style="font-size:0.68rem;color:#8a7455;font-family:sans-serif;font-weight:400;">(required)</span></h2>
+      <h2>&#128247; Passport Photo <span style="font-size:0.68rem;color:#8a7455;font-family:sans-serif;font-weight:400;">(optional)</span></h2>
       <div class="upload-box" onclick="document.getElementById('f_photo').click()">
         <div class="ico">&#128100;</div>
         <p>Passport size photo upload karein</p>
@@ -184,7 +184,7 @@ body{font-family:"Segoe UI",sans-serif;background:#f5f0e8;color:#2d2410;min-heig
     </div>
 
     <div class="card" style="border-top-color:#3a7d44;">
-      <h2>&#128190; Payment Screenshot <span style="font-size:0.68rem;color:#dc3545;font-family:sans-serif;font-weight:400;">(required)</span></h2>
+      <h2>&#128190; Payment Screenshot <span style="font-size:0.68rem;color:#8a7455;font-family:sans-serif;font-weight:400;">(optional)</span></h2>
       <p style="font-size:0.74rem;color:#8a7455;margin-bottom:11px;">&#8377;19 payment ka screenshot upload karein</p>
       <div class="upload-box" onclick="document.getElementById('f_ss').click()">
         <div class="ico">&#128247;</div>
@@ -233,78 +233,153 @@ function previewFile(input, fnId, prevId){
   }
 }
 
-function toB64(file){
-  return new Promise(function(res,rej){
-    var r = new FileReader(); r.onload=function(){res(r.result);}; r.onerror=rej;
-    r.readAsDataURL(file);
+function compressImage(file, maxW, qual){
+  return new Promise(function(resolve){
+    if(!file){ resolve(""); return; }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var canvas = document.createElement("canvas");
+        var w = img.width, h = img.height;
+        if(w > maxW){ h = Math.round(h * maxW / w); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", qual));
+      };
+      img.onerror = function(){ resolve(""); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ resolve(""); };
+    reader.readAsDataURL(file);
   });
 }
 
-document.getElementById("f_aadhar").addEventListener("input",function(){
-  var v=this.value.replace(/\D/g,"").substring(0,12);
-  this.value=v.replace(/(\d{4})(\d{4})(\d{4})/,"$1 $2 $3");
+// Aadhar formatting
+document.getElementById("f_aadhar").addEventListener("input", function(){
+  var v = this.value.replace(/[^0-9]/g, "").substring(0, 12);
+  this.value = v.replace(/([0-9]{4})([0-9]{4})([0-9]{4})/, "$1 $2 $3");
 });
+
+// Set today date
 document.getElementById("f_date").valueAsDate = new Date();
 
-function showErr(id,show){var el=document.getElementById(id);if(el)el.style.display=show?"block":"none";}
-function markErr(id,err){var el=document.getElementById(id);if(el){if(err)el.classList.add("fe");else el.classList.remove("fe");}}
+function showErr(id, show){
+  var el = document.getElementById(id);
+  if(el) el.style.display = show ? "block" : "none";
+}
+function markErr(id, err){
+  var el = document.getElementById(id);
+  if(el){ if(err) el.classList.add("fe"); else el.classList.remove("fe"); }
+}
 
 async function submitMembership(){
-  var name=document.getElementById("f_name").value.trim();
-  var phone=document.getElementById("f_phone").value.trim();
-  var email=document.getElementById("f_email").value.trim();
-  var dob=document.getElementById("f_dob").value;
-  var address=document.getElementById("f_address").value.trim();
-  var aadhar=document.getElementById("f_aadhar").value.trim();
-  var pan=document.getElementById("f_pan").value.trim();
-  var post=document.getElementById("f_post").value.trim();
-  var date=document.getElementById("f_date").value;
-  var pass=document.getElementById("f_pass").value;
-  var photoFile=document.getElementById("f_photo").files[0];
-  var ssFile=document.getElementById("f_ss").files[0];
-  var valid=true;
-  if(!name){showErr("e_name",true);markErr("fg_name",true);valid=false;}else{showErr("e_name",false);markErr("fg_name",false);}
-  if(!phone||phone.replace(/\D/g,"").length<10){showErr("e_phone",true);markErr("fg_phone",true);valid=false;}else{showErr("e_phone",false);markErr("fg_phone",false);}
-  if(!email||!email.includes("@")){showErr("e_email",true);markErr("fg_email",true);valid=false;}else{showErr("e_email",false);markErr("fg_email",false);}
-  if(!dob){showErr("e_dob",true);markErr("fg_dob",true);valid=false;}else{showErr("e_dob",false);markErr("fg_dob",false);}
-  var blood=document.getElementById("f_blood").value;
-  var father=document.getElementById("f_father").value.trim();
-  if(!father){showErr("e_father",true);markErr("fg_father",true);valid=false;}else{showErr("e_father",false);markErr("fg_father",false);}
-  if(!address){showErr("e_address",true);markErr("fg_address",true);valid=false;}else{showErr("e_address",false);markErr("fg_address",false);}
-  if(!aadhar||aadhar.replace(/\D/g,"").length<12){showErr("e_aadhar",true);markErr("fg_aadhar",true);valid=false;}else{showErr("e_aadhar",false);markErr("fg_aadhar",false);}
-  if(!post){showErr("e_post",true);markErr("fg_post",true);valid=false;}else{showErr("e_post",false);markErr("fg_post",false);}
-  if(!date){showErr("e_date",true);markErr("fg_date",true);valid=false;}else{showErr("e_date",false);markErr("fg_date",false);}
-  if(!pass||pass.length<6){showErr("e_pass",true);markErr("fg_pass",true);valid=false;}else{showErr("e_pass",false);markErr("fg_pass",false);}
-  if(!photoFile){document.getElementById("e_photo").style.display="block";valid=false;}else{document.getElementById("e_photo").style.display="none";}
-  if(!ssFile){document.getElementById("e_ss").style.display="block";valid=false;}else{document.getElementById("e_ss").style.display="none";}
-  if(!valid){window.scrollTo({top:0,behavior:"smooth"});return;}
-  if(!SHEET_URL||SHEET_URL==="https://script.google.com/macros/s/AKfycbyHAECod9XqlGLe8inXIt5hvxqu7Jzd4vWy0O-yBjkMo7y0Z3oDD0hsomxikM1zeOza/exec"){alert("Apps Script URL set nahi hai!");return;}
-  var btn=document.getElementById("submitBtn");
-  btn.disabled=true; btn.textContent="Submitting... Please wait";
-  document.getElementById("progressFill").style.width="66%";
-  try{
-    var photoB64=await toB64(photoFile);
-    var ssB64=await toB64(ssFile);
-    var mid=generateMID();
-    var resp=await fetch(SHEET_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"register",memberId:mid,name:name,phone:phone.replace(/\D/g,""),email:email,dob:dob,address:address,aadhar:aadhar,pan:pan,post:post,joiningDate:date,password:btoa(pass),photo:photoB64,paymentScreenshot:ssB64})});
-    var result=await resp.json();
-    if(result.status!=="success") throw new Error(result.message||"Save failed");
-    document.getElementById("progressFill").style.width="100%";
-    document.getElementById("sc1").className="sc done";document.getElementById("ln1").className="sline done";
-    document.getElementById("sc2").className="sc done";document.getElementById("ln2").className="sline done";
-    document.getElementById("sc3").className="sc active";document.getElementById("sl3").className="sl active";
-    document.getElementById("formSection").style.display="none";
-    document.getElementById("successBox").style.display="block";
-    document.getElementById("displayMID").textContent=mid;
-    localStorage.setItem("hsmv_mid",mid);
-    window.scrollTo({top:0,behavior:"smooth"});
-  }catch(err){
-    btn.disabled=false; btn.textContent="Submit Membership Application";
-    alert("Error: "+err.message+"
+  var name    = document.getElementById("f_name").value.trim();
+  var phone   = document.getElementById("f_phone").value.trim();
+  var email   = document.getElementById("f_email").value.trim();
+  var dob     = document.getElementById("f_dob").value;
+  var blood   = document.getElementById("f_blood").value;
+  var father  = document.getElementById("f_father").value.trim();
+  var address = document.getElementById("f_address").value.trim();
+  var aadhar  = document.getElementById("f_aadhar").value.trim();
+  var pan     = document.getElementById("f_pan").value.trim();
+  var post    = document.getElementById("f_post").value.trim();
+  var date    = document.getElementById("f_date").value;
+  var pass    = document.getElementById("f_pass").value;
+  var photoFile = document.getElementById("f_photo").files[0];
+  var ssFile    = document.getElementById("f_ss").files[0];
 
-Check karo: Apps Script deploy hua hai? SHEET_URL sahi hai?");
+  var valid = true;
+  if(!name){showErr("e_name",true);markErr("fg_name",true);valid=false;}
+  else{showErr("e_name",false);markErr("fg_name",false);}
+
+  if(!phone || phone.replace(/[^0-9]/g,"").length < 10){showErr("e_phone",true);markErr("fg_phone",true);valid=false;}
+  else{showErr("e_phone",false);markErr("fg_phone",false);}
+
+  if(!email || !email.includes("@")){showErr("e_email",true);markErr("fg_email",true);valid=false;}
+  else{showErr("e_email",false);markErr("fg_email",false);}
+
+  if(!dob){showErr("e_dob",true);markErr("fg_dob",true);valid=false;}
+  else{showErr("e_dob",false);markErr("fg_dob",false);}
+
+  if(!father){showErr("e_father",true);markErr("fg_father",true);valid=false;}
+  else{showErr("e_father",false);markErr("fg_father",false);}
+
+  if(!address){showErr("e_address",true);markErr("fg_address",true);valid=false;}
+  else{showErr("e_address",false);markErr("fg_address",false);}
+
+  if(!aadhar || aadhar.replace(/[^0-9]/g,"").length < 12){showErr("e_aadhar",true);markErr("fg_aadhar",true);valid=false;}
+  else{showErr("e_aadhar",false);markErr("fg_aadhar",false);}
+
+  if(!post){showErr("e_post",true);markErr("fg_post",true);valid=false;}
+  else{showErr("e_post",false);markErr("fg_post",false);}
+
+  if(!date){showErr("e_date",true);markErr("fg_date",true);valid=false;}
+  else{showErr("e_date",false);markErr("fg_date",false);}
+
+  if(!pass || pass.length < 6){showErr("e_pass",true);markErr("fg_pass",true);valid=false;}
+  else{showErr("e_pass",false);markErr("fg_pass",false);}
+
+  if(!valid){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+
+  var btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Submitting... Please wait";
+  document.getElementById("progressFill").style.width = "66%";
+
+  try {
+    var photoB64 = await compressImage(photoFile, 400, 0.7);
+    var ssB64    = await compressImage(ssFile, 800, 0.6);
+    var mid      = generateMID();
+
+    var payload = {
+      action: "register",
+      memberId: mid,
+      name: name,
+      phone: phone.replace(/[^0-9]/g, ""),
+      email: email,
+      dob: dob,
+      bloodGroup: blood,
+      fatherName: father,
+      address: address,
+      aadhar: aadhar,
+      pan: pan,
+      post: post,
+      joiningDate: date,
+      password: btoa(pass),
+      photo: photoB64,
+      paymentScreenshot: ssB64
+    };
+
+    var resp = await fetch(SHEET_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    var result = await resp.json();
+    if(result.status !== "success") throw new Error(result.message || "Save failed");
+
+    document.getElementById("progressFill").style.width = "100%";
+    document.getElementById("sc1").className = "sc done";
+    document.getElementById("ln1").className = "sline done";
+    document.getElementById("sc2").className = "sc done";
+    document.getElementById("ln2").className = "sline done";
+    document.getElementById("sc3").className = "sc active";
+    document.getElementById("sl3").className = "sl active";
+
+    document.getElementById("formSection").style.display = "none";
+    document.getElementById("successBox").style.display = "block";
+    document.getElementById("displayMID").textContent = mid;
+    localStorage.setItem("hsmv_mid", mid);
+    window.scrollTo({top:0, behavior:"smooth"});
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = "Submit Membership Application";
+    alert("Error: " + err.message);
   }
 }
 </script>
 </body>
-</html>
+  </html>
