@@ -126,11 +126,8 @@ function sb(msg, ok) {
 
 function loadData() {
   sb("Loading members...", null);
-  fetch(SHEET_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({action: "get_members"})
-  })
+  // Use GET to avoid CORS
+  fetch(SHEET_URL + "?action=get_members")
   .then(function(r) { return r.json(); })
   .then(function(d) {
     if(d.status !== "success") throw new Error(d.message || "Failed");
@@ -267,11 +264,8 @@ function closeModal() {
 }
 
 function patchStatus(id, status, reason) {
-  fetch(SHEET_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({action: "update_status", memberId: id, status: status, reason: reason||""})
-  })
+  var url = SHEET_URL + "?action=update_status&memberId=" + encodeURIComponent(id) + "&status=" + encodeURIComponent(status) + "&reason=" + encodeURIComponent(reason||"");
+  fetch(url)
   .then(function(r) { return r.json(); })
   .then(function(d) {
     if(d.status === "success") {
@@ -311,4 +305,4 @@ loadData();
 setInterval(loadData, 60000);
 </script>
 </body>
-      </html>
+</html>
