@@ -146,33 +146,38 @@ function doLogin(){
   var pass = document.getElementById("l_pass").value;
   var btn = document.getElementById("loginBtn");
   var err = document.getElementById("loginErr");
-  err.style.display="none";
-  if(!mid||!pass){err.textContent="Member ID aur password required";err.style.display="block";return;}
-  if(!SHEET_URL||SHEET_URL==="https://script.google.com/macros/s/AKfycbzeuxIZmhTKTsh3uKaXGo9fgqWCtQYMANOmFHugYPQn1wnMod8GFRGWeQgLoDIgrC7Y/exec"){err.textContent="System not configured.";err.style.display="block";return;}
-  btn.disabled=true; btn.textContent="Logging in...";
+  err.style.display = "none";
+  if(!mid || !pass){
+    err.textContent = "Member ID aur password required";
+    err.style.display = "block";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Logging in...";
+
+  // Use GET - no CORS issue
   var url = SHEET_URL + "?action=login&memberId=" + encodeURIComponent(mid) + "&password=" + encodeURIComponent(btoa(pass));
+  
   fetch(url)
-  .then(function(r){return r.json();})
+  .then(function(r){ return r.json(); })
   .then(function(d){
-    btn.disabled=false; btn.textContent="Login";
-    if(d.status!=="success"){err.textContent=d.message||"Login failed";err.style.display="block";return;}
-    memberData=d.member;
-    memberData.id=mid;
-    localStorage.setItem("hsmv_mid",mid);
+    btn.disabled = false;
+    btn.textContent = "Login";
+    if(d.status !== "success"){
+      err.textContent = d.message || "Login failed";
+      err.style.display = "block";
+      return;
+    }
+    memberData = d.member;
+    memberData.id = mid;
+    localStorage.setItem("hsmv_mid", mid);
     showDashboard();
   })
   .catch(function(e){
-    // Try POST as fallback
-    fetch(SHEET_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"login",memberId:mid,password:btoa(pass)})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      btn.disabled=false; btn.textContent="Login";
-      if(d.status!=="success"){err.textContent=d.message||"Login failed";err.style.display="block";return;}
-      memberData=d.member; memberData.id=mid;
-      localStorage.setItem("hsmv_mid",mid);
-      showDashboard();
-    })
-    .catch(function(e2){btn.disabled=false;btn.textContent="Login";err.textContent="Connection error. Try again.";err.style.display="block";});
+    btn.disabled = false;
+    btn.textContent = "Login";
+    err.textContent = "Connection error: " + e.message;
+    err.style.display = "block";
   });
 }
 
