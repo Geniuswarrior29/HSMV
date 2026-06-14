@@ -235,253 +235,284 @@ async function downloadIDCard(){
   var jspdf = window.jspdf;
   var m = memberData;
 
-  // Card size portrait: 54mm wide x 86mm tall (standard ID card portrait)
+  // QR code URL - website link
+  var websiteUrl = "https://geniuswarrior29.github.io/HSMV";
+
+  // Generate QR using Google Charts API
+  var qrUrl = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + encodeURIComponent(websiteUrl) + "&choe=UTF-8";
+
+  // Load QR image
+  var qrBase64 = await loadImageAsBase64(qrUrl);
+
+  // Card: portrait 54mm x 86mm
   var doc = new jspdf.jsPDF({orientation:"portrait", unit:"mm", format:[54,86]});
-  var W=54, H=86;
+  var W = 54, H = 86;
 
-  // ═══════════════════════════════
-  // PAGE 1 — FRONT
-  // ═══════════════════════════════
-  doc.setFillColor(255,255,255);
-  doc.rect(0,0,W,H,"F");
+  // ══════════════ FRONT PAGE ══════════════
+  drawFront(doc, m, W, H, qrBase64);
 
-  // Gold header
-  doc.setFillColor(232,160,32);
-  doc.rect(0,0,W,17,"F");
+  // ══════════════ BACK PAGE ══════════════
+  doc.addPage([54, 86]);
+  drawBack(doc, m, W, H, qrBase64);
 
-  // Logo
-  try{ doc.addImage(LOGO_DATA,"JPEG",1.5,1.5,13,13); }catch(e){}
+  doc.save("HSMV-ID-Card-" + (m.memberId||m.id) + ".pdf");
+}
 
-  // NGO Name
-  doc.setTextColor(26,18,9);
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(6.2);
-  doc.text("HELPING SOCIETY MISSION &",17,6);
-  doc.text("VISION FOUNDATION",17,10.5);
-  doc.setFontSize(4.2);
-  doc.setFont("helvetica","normal");
-  doc.text("HSMVF VISION FOUNDATION",17,14);
+function loadImageAsBase64(url){
+  return new Promise(function(resolve){
+    var img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = function(){
+      var canvas = document.createElement("canvas");
+      canvas.width = img.width; canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      try{ resolve(canvas.toDataURL("image/png")); }
+      catch(e){ resolve(""); }
+    };
+    img.onerror = function(){ resolve(""); };
+    img.src = url;
+  });
+}
 
-  // Green + yellow reg strip
-  doc.setFillColor(45,138,45);
-  doc.rect(0,17,30,5,"F");
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(4);
-  doc.setFont("helvetica","bold");
-  doc.text("Har Sarkar Dwara Manyata Prapt",1.5,20.5);
-  doc.setFillColor(232,160,32);
-  doc.rect(30,17,W-30,5,"F");
-  doc.setTextColor(26,18,9);
+function drawHeader(doc, W){
+  // Gold header background
+  doc.setFillColor(232, 160, 32);
+  doc.rect(0, 0, W, 18, "F");
+
+  // Logo circle
+  try{
+    doc.addImage(LOGO_DATA, "JPEG", 1, 1, 15, 15);
+  }catch(e){}
+
+  // NGO Name text
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.text("HELPING SOCIETY MISSION &", 18, 7);
+  doc.text("VISION FOUNDATION", 18, 12);
+
+  // Green strip
+  doc.setFillColor(34, 120, 34);
+  doc.rect(0, 18, 30, 5.5, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(3.8);
+  doc.text("Pratyek Sarkar Dwara", 1.5, 20.5);
+  doc.text("Manyata Prapt", 1.5, 23);
+
+  // Yellow REG strip
+  doc.setFillColor(232, 160, 32);
+  doc.rect(30, 18, W-30, 5.5, "F");
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(4.5);
-  doc.text("REG- 231407",31.5,20.5);
+  doc.text("REG- 231407", 32, 21.5);
+}
+
+function drawFront(doc, m, W, H, qrBase64){
+  // White background
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, W, H, "F");
+
+  // Header
+  drawHeader(doc, W);
 
   // Photo box with red border
-  doc.setDrawColor(200,0,0);
-  doc.setLineWidth(0.7);
-  doc.rect(10,24,17,21,"S");
+  doc.setDrawColor(200, 0, 0);
+  doc.setLineWidth(0.8);
+  doc.rect(9, 26, 18, 22, "S");
   if(m.photo && m.photo.startsWith("data:image")){
-    try{ doc.addImage(m.photo,"JPEG",10,24,17,21); }catch(e){}
+    try{ doc.addImage(m.photo, "JPEG", 9, 26, 18, 22); }catch(e){}
   } else {
-    doc.setFontSize(4); doc.setTextColor(180,180,180);
-    doc.text("Photo",18.5,35,{align:"center"});
+    doc.setFontSize(3.5);
+    doc.setTextColor(180,180,180);
+    doc.text("Photo", 18, 38, {align:"center"});
   }
 
-  // Member Name - Red bold
-  doc.setTextColor(200,0,0);
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(8);
-  var nm = (m.name||"MEMBER NAME").toUpperCase();
-  // Shrink if too long
-  if(nm.length > 16) doc.setFontSize(6.5);
-  if(nm.length > 20) doc.setFontSize(5.5);
-  doc.text(nm, W/2, 50, {align:"center"});
+  // Member Name - Bold Red
+  doc.setTextColor(200, 0, 0);
+  doc.setFont("helvetica", "bold");
+  var nm = (m.name || "MEMBER NAME").toUpperCase();
+  var fs = nm.length > 18 ? 6 : nm.length > 14 ? 7 : 8.5;
+  doc.setFontSize(fs);
+  doc.text(nm, W/2, 52, {align:"center"});
 
-  // Post
-  doc.setTextColor(26,18,9);
-  doc.setFont("helvetica","bold");
+  // Post - Black bold below name
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(5.5);
-  doc.text(m.post||"Member", W/2, 55, {align:"center"});
+  doc.text(m.post || "Member", W/2, 57, {align:"center"});
 
-  // Details
-  var rows = [
-    ["ID No.",     m.memberId||m.id||""],
-    ["Blood Group",m.bloodGroup||"N/A"],
-    ["Mobile",     "6392760740"],
-    ["Valid From", formatDate(m.joiningDate)],
-    ["Valid To",   getValidTo(m.joiningDate)]
+  // Details rows
+  var details = [
+    ["ID No.",      m.memberId || m.id || ""],
+    ["Blood Group", m.bloodGroup || "N/A"],
+    ["Mobile",      "6392760740"],
+    ["Valid From",  fmtDate(m.joiningDate)],
+    ["Valid To",    validTo(m.joiningDate)]
   ];
-  doc.setFontSize(4.5);
-  var y = 60;
-  rows.forEach(function(r){
-    doc.setTextColor(200,0,0); doc.setFont("helvetica","bold");
-    doc.text(r[0], 3, y);
-    doc.setTextColor(26,18,9); doc.setFont("helvetica","normal");
-    doc.text(":", 21, y);
-    doc.text(r[1], 23, y);
+  var y = 63;
+  details.forEach(function(row){
+    doc.setTextColor(200, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(4.5);
+    doc.text(row[0], 2, y);
+    doc.setTextColor(26, 18, 9);
+    doc.setFont("helvetica", "normal");
+    doc.text(":", 19, y);
+    doc.text(String(row[1]), 21, y);
     y += 4;
   });
 
-  // Social icons (colored squares)
-  var icons = [
-    [3,   [24,119,242], "f"],
-    [7.5, [0,0,0],      "t"],
-    [12,  [255,0,0],    "Y"],
-    [16.5,[193,53,132], "I"]
+  // Social icons
+  var socials = [
+    {x:2,  color:[24,119,242], label:"f"},
+    {x:8,  color:[0,0,0],      label:"t"},
+    {x:14, color:[255,0,0],    label:"Y"},
+    {x:20, color:[193,53,132], label:"I"}
   ];
-  icons.forEach(function(ic){
-    doc.setFillColor(ic[1][0],ic[1][1],ic[1][2]);
-    doc.roundedRect(ic[0],80,4,4,0.8,0.8,"F");
+  socials.forEach(function(s){
+    doc.setFillColor(s.color[0], s.color[1], s.color[2]);
+    doc.roundedRect(s.x, 80, 5, 5, 1, 1, "F");
     doc.setTextColor(255,255,255);
-    doc.setFontSize(3.5);
     doc.setFont("helvetica","bold");
-    doc.text(ic[2], ic[0]+2, 83.2, {align:"center"});
+    doc.setFontSize(4);
+    doc.text(s.label, s.x+2.5, 83.5, {align:"center"});
   });
 
-  // Phone badge
-  doc.setFillColor(26,18,9);
-  doc.rect(28,79,W-30,6,"F");
-  // Gold diagonal accent
-  doc.setFillColor(232,160,32);
-  doc.triangle(28,79,33,79,28,85,"F");
-  doc.setTextColor(232,160,32);
+  // Phone badge - dark with gold diagonal
+  doc.setFillColor(26, 18, 9);
+  doc.rect(28, 79, W-28, 7, "F");
+  doc.setFillColor(232, 160, 32);
+  // Diagonal accent
+  doc.triangle(28, 79, 34, 79, 28, 86, "F");
+  doc.setTextColor(232, 160, 32);
   doc.setFont("helvetica","bold");
-  doc.setFontSize(5.5);
-  doc.text("6392760740", W-2, 83, {align:"right"});
+  doc.setFontSize(6);
+  doc.text("6392760740", W-1.5, 84, {align:"right"});
 
-  // Bottom gradient line
-  doc.setFillColor(26,18,9);
-  doc.rect(0,H-2,W/2,2,"F");
-  doc.setFillColor(0,100,180);
-  doc.rect(W/2,H-2,W/2,2,"F");
+  // Bottom colored line
+  doc.setFillColor(26, 18, 9);
+  doc.rect(0, H-1.5, W*0.4, 1.5, "F");
+  doc.setFillColor(0, 82, 165);
+  doc.rect(W*0.4, H-1.5, W*0.6, 1.5, "F");
+}
 
-  // ═══════════════════════════════
-  // PAGE 2 — BACK
-  // ═══════════════════════════════
-  doc.addPage([54,86]);
+function drawBack(doc, m, W, H, qrBase64){
+  // White background
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, W, H, "F");
 
-  doc.setFillColor(255,255,255);
-  doc.rect(0,0,W,H,"F");
+  // Header
+  drawHeader(doc, W);
 
-  // Same header
-  doc.setFillColor(232,160,32);
-  doc.rect(0,0,W,17,"F");
-  try{ doc.addImage(LOGO_DATA,"JPEG",1.5,1.5,13,13); }catch(e){}
-  doc.setTextColor(26,18,9);
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(6.2);
-  doc.text("HELPING SOCIETY MISSION &",17,6);
-  doc.text("VISION FOUNDATION",17,10.5);
-  doc.setFontSize(4.2);
-  doc.setFont("helvetica","normal");
-  doc.text("HSMVF VISION FOUNDATION",17,14);
-
-  // Same reg strip
-  doc.setFillColor(45,138,45);
-  doc.rect(0,17,30,5,"F");
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(4);
-  doc.setFont("helvetica","bold");
-  doc.text("Har Sarkar Dwara Manyata Prapt",1.5,20.5);
-  doc.setFillColor(232,160,32);
-  doc.rect(30,17,W-30,5,"F");
-  doc.setTextColor(26,18,9);
-  doc.setFontSize(4.5);
-  doc.text("REG- 231407",31.5,20.5);
-
-  // QR placeholder box (red border)
-  doc.setDrawColor(200,0,0);
-  doc.setLineWidth(0.7);
-  doc.rect(W/2-10,23,20,20,"S");
-  doc.setFontSize(3.5);
-  doc.setTextColor(150,150,150);
-  doc.text("QR Code",W/2,36,{align:"center"});
+  // QR Code with red border box
+  doc.setDrawColor(200, 0, 0);
+  doc.setLineWidth(0.8);
+  doc.rect(W/2-12, 25, 24, 24, "S");
+  if(qrBase64){
+    try{ doc.addImage(qrBase64, "PNG", W/2-11, 26, 22, 22); }catch(e){}
+  }
 
   // Back details
-  var backRows = [
-    ["S/O",     m.fatherName||"N/A"],
-    ["DOB",     formatDate(m.dob)||"N/A"],
+  var backDetails = [
+    ["S/O",     m.fatherName || "N/A"],
+    ["DOB",     fmtDate(m.dob)],
   ];
-  doc.setFontSize(5);
-  y = 48;
-  backRows.forEach(function(r){
-    doc.setTextColor(200,0,0); doc.setFont("helvetica","bold");
-    doc.text(r[0], 3, y);
-    doc.setTextColor(26,18,9); doc.setFont("helvetica","normal");
-    doc.text(":", 18, y);
-    doc.text(r[1], 20, y);
+  var y = 54;
+  backDetails.forEach(function(row){
+    doc.setTextColor(200, 0, 0);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(5);
+    doc.text(row[0], 2, y);
+    doc.setTextColor(26, 18, 9);
+    doc.setFont("helvetica","normal");
+    doc.text(":", 16, y);
+    doc.text(String(row[1]), 18, y);
     y += 5.5;
   });
 
   // Address
-  doc.setTextColor(200,0,0); doc.setFont("helvetica","bold");
+  doc.setTextColor(200, 0, 0);
+  doc.setFont("helvetica","bold");
   doc.setFontSize(5);
-  doc.text("Address", 3, y);
-  doc.setTextColor(26,18,9); doc.setFont("helvetica","normal");
-  doc.text(":", 18, y);
-  var addrLines = doc.splitTextToSize(m.address||"N/A", W-22);
-  addrLines.slice(0,3).forEach(function(l,i){
-    doc.text(l, 20, y + i*4.5);
+  doc.text("Address", 2, y);
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica","normal");
+  doc.text(":", 16, y);
+  var addrLines = doc.splitTextToSize(m.address || "N/A", W-20);
+  addrLines.slice(0,3).forEach(function(l, i){
+    doc.text(l, 18, y + i*4.5);
   });
 
-  // Red divider line
-  y = 67;
-  doc.setDrawColor(200,0,0);
+  // Red divider
+  doc.setDrawColor(200, 0, 0);
   doc.setLineWidth(0.5);
-  doc.line(3, y, W-3, y);
+  doc.line(2, 70, W-2, 70);
 
-  // CIN & NGO DARPAN
-  y = 71;
+  // CIN
   doc.setFontSize(4.5);
   doc.setFont("helvetica","bold");
-  doc.setTextColor(200,0,0);
-  doc.text("CIN", 3, y);
-  doc.setTextColor(26,18,9); doc.setFont("helvetica","normal");
-  doc.text(": U88900UP2025NPL231407", 14, y);
-  y += 4.5;
-  doc.setFont("helvetica","bold");
-  doc.setTextColor(200,0,0);
-  doc.text("NGO DARPAN", 3, y);
-  doc.setTextColor(26,18,9); doc.setFont("helvetica","normal");
-  doc.text(": UP/2025/0801291", 22, y);
-  y += 4;
-  doc.setFont("helvetica","bold");
-  doc.setTextColor(200,0,0);
-  doc.setFontSize(5);
-  doc.text("80G & 12 A, CSR regd.", 3, y);
-
-  // Dark footer with location
-  doc.setFillColor(26,18,9);
-  doc.rect(0,H-12,W,12,"F");
-  doc.setTextColor(232,160,32);
-  doc.setFontSize(7);
-  doc.text("@", 3, H-5);
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(4);
+  doc.setTextColor(200, 0, 0);
+  doc.text("CIN", 2, 74);
+  doc.setTextColor(26, 18, 9);
   doc.setFont("helvetica","normal");
-  doc.text("Address - Vijay nagar tripula,", 8, H-8);
-  doc.text("Maharajganj road, Raebareli UP india 229306", 8, H-4);
+  doc.text(": U88900UP2025NPL231407", 12, 74);
 
-  doc.save("HSMV-ID-Card-"+(m.memberId||m.id)+".pdf");
+  // NGO DARPAN
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(200, 0, 0);
+  doc.text("NGO DARPAN", 2, 78.5);
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica","normal");
+  doc.text(": UP/2025/0801291", 20, 78.5);
+
+  // 80G line
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(200, 0, 0);
+  doc.setFontSize(5);
+  doc.text("80G & 12 A, CSR regd.", 2, 83);
+
+  // Dark footer
+  doc.setFillColor(26, 18, 9);
+  doc.rect(0, H-10, W, 10, "F");
+
+  // Location pin
+  doc.setTextColor(232, 160, 32);
+  doc.setFontSize(8);
+  doc.text("@", 2, H-4);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(3.5);
+  doc.text("Address - Vijay nagar tripula,", 8, H-7);
+  doc.text("Maharajganj road, Raebareli UP india 229306", 8, H-3.5);
+
+  // Bottom line
+  doc.setFillColor(26, 18, 9);
+  doc.rect(0, H-1.5, W*0.4, 1.5, "F");
+  doc.setFillColor(0, 82, 165);
+  doc.rect(W*0.4, H-1.5, W*0.6, 1.5, "F");
 }
 
-function formatDate(d){
+function fmtDate(d){
   if(!d) return "N/A";
   try{
     var dt = new Date(d);
-    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return (dt.getDate()<10?"0":"")+dt.getDate()+"-"+months[dt.getMonth()]+"-"+dt.getFullYear();
-  }catch(e){return d;}
+    var mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return (dt.getDate()<10?"0":"")+dt.getDate()+"-"+mo[dt.getMonth()]+"-"+dt.getFullYear();
+  }catch(e){ return d; }
 }
 
-function getValidTo(fromDate){
+function validTo(fromDate){
   if(!fromDate) return "N/A";
   try{
-    var d=new Date(fromDate);
+    var d = new Date(fromDate);
     d.setFullYear(d.getFullYear()+1);
     d.setDate(d.getDate()-1);
-    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return (d.getDate()<10?"0":"")+d.getDate()+"-"+months[d.getMonth()]+"-"+d.getFullYear();
-  }catch(e){return "N/A";}
+    var mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return (d.getDate()<10?"0":"")+d.getDate()+"-"+mo[d.getMonth()]+"-"+d.getFullYear();
+  }catch(e){ return "N/A"; }
 }
 
 
@@ -576,4 +607,4 @@ async function downloadJoiningLetter(){
 }
 </script>
 </body>
-  </html>
+        </html>
