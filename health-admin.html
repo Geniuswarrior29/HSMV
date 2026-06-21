@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSMV Foundation - Central Live Admin Ledger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBlue: '#0b1d3a',
+                        royalBlue: '#1e40af',
+                        brightRed: '#dc2626',
+                        cleanBg: '#fdfdfd'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-cleanBg text-gray-700 font-sans antialiased">
+
+    <div id="login-screen" class="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md space-y-8 bg-white p-8 border border-gray-100 rounded-2xl shadow-sm text-center">
+            <div class="space-y-3">
+                <img src="https://i.ibb.co/dJ1jRjJm/IMG-20260420-WA0112-6.jpg" alt="HSMV Logo" class="w-16 h-16 mx-auto object-contain rounded-full">
+                <h2 class="text-2xl font-black text-darkBlue tracking-tight">Admin Gatekeeper Access</h2>
+                <p class="text-xs text-gray-400">Please enter the security password validation code to decrypt live database sheets.</p>
+            </div>
+            <form class="mt-8 space-y-4" onsubmit="validateAdminLogin(event)">
+                <input type="password" id="adminPassword" required class="w-full text-center text-sm border-b border-gray-200 py-3 focus:border-royalBlue outline-none bg-transparent transition" placeholder="••••••••">
+                <button type="submit" class="w-full bg-darkBlue hover:bg-royalBlue text-white font-bold text-sm py-3 rounded-xl transition shadow-sm tracking-wide">
+                    Authorize Security Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-portal" class="hidden max-w-5xl mx-auto px-6 py-10 space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
+            <div>
+                <h2 class="text-2xl font-black text-darkBlue">NGO Central Live Ledger Dashboard</h2>
+                <p class="text-xs text-gray-400">Real-time submissions synced from global cloud sheet server endpoints.</p>
+            </div>
+            <button onclick="logoutAdmin()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-4 py-2 rounded-lg">
+                Secure Logout
+            </button>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider">
+                        <th class="p-3">Receipt ID</th>
+                        <th class="p-3">Full Name</th>
+                        <th class="p-3">Mobile No.</th>
+                        <th class="p-3">Aadhaar Doc</th>
+                        <th class="p-3">DOB / Gender</th>
+                        <th class="p-3">Payment Proof Photo</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody" class="divide-y border-gray-100">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyjPNoJkIPrA3-b7d04r62edemjt4ATBHx-MPRZqDOFKneLhrora65kA7XkYOT-8MHr/exec";
+
+        function validateAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === "admin") {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-portal').classList.remove('hidden');
+                fetchCloudLedgerRows();
+            } else {
+                alert("Security Verification Code Invalid!");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminPassword').value = "";
+            document.getElementById('admin-portal').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        function fetchCloudLedgerRows() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic"><i class="fas fa-sync animate-spin mr-2"></i>Loading live database logs from Google Sheets...</td></tr>`;
+
+            fetch(GOOGLE_SCRIPT_WEBAPP_URL + "?action=read", {
+                method: "GET",
+                mode: "cors"
+            })
+            .then(res => res.json())
+            .then(records => {
+                tbody.innerHTML = "";
+                if(!records || records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">No cloud logs available inside the sheet registry.</td></tr>`;
+                    return;
+                }
+                records.forEach(rec => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 transition border-b border-gray-100";
+                    row.innerHTML = `
+                        <td class="p-3 font-bold text-darkBlue font-mono">${rec.receiptID || 'N/A'}</td>
+                        <td class="p-3 font-medium">${rec.name || 'N/A'}</td>
+                        <td class="p-3 text-gray-500">${rec.mobile || 'N/A'}</td>
+                        <td class="p-3 text-gray-500 font-mono">${rec.aadhaar || 'N/A'}</td>
+                        <td class="p-3 text-gray-400">${rec.dob || ''} (${rec.gender || ''})</td>
+                        <td class="p-3">
+                            <a href="${rec.fileUrl}" target="_blank" class="text-royalBlue font-bold hover:underline inline-flex items-center gap-1">
+                                <i class="fas fa-image"></i> View Photo
+                            </a>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch((err) => {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500 font-bold">Failed to render live data feed. Make sure to redeploy your cloud script correctly.</td></tr>`;
+            });
+        }
+    </script>
+</body>
+</html>
