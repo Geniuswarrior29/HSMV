@@ -35,7 +35,6 @@
             <nav class="flex gap-5 text-xs font-bold text-gray-400">
                 <a href="#home" class="text-royalBlue">Home</a>
                 <a href="#join" class="hover:text-royalBlue transition">Register</a>
-                <button onclick="openAdminPortal()" class="hover:text-royalBlue transition text-gray-500 font-black"><i class="fas fa-lock"></i> Admin Dashboard</button>
             </nav>
         </div>
     </header>
@@ -43,7 +42,7 @@
     <div id="loadingModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center text-white font-bold text-sm">
         <div class="bg-darkBlue p-6 rounded-xl flex items-center gap-3 shadow-lg">
             <i class="fas fa-circle-notch animate-spin text-brightRed text-xl"></i>
-            <span id="loadingText">Processing data... Please wait</span>
+            <span>Uploading data & photo to Secure Cloud... Please wait</span>
         </div>
     </div>
 
@@ -201,35 +200,6 @@
         </div>
     </div>
 
-    <div id="admin-portal" class="hidden max-w-4xl mx-auto px-6 py-10 space-y-6">
-        <div class="flex justify-between items-center border-b border-gray-200 pb-4">
-            <div>
-                <h2 class="text-2xl font-black text-darkBlue">NGO Central Live Ledger Dashboard</h2>
-                <p class="text-xs text-gray-400">Real-time submissions synced from global cloud sheet server.</p>
-            </div>
-            <button onclick="closeAdminPortal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-4 py-2 rounded-lg">
-                Exit Dashboard
-            </button>
-        </div>
-
-        <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider">
-                        <th class="p-3">Receipt ID</th>
-                        <th class="p-3">Full Name</th>
-                        <th class="p-3">Mobile No.</th>
-                        <th class="p-3">Aadhaar Doc</th>
-                        <th class="p-3">DOB / Gender</th>
-                        <th class="p-3">Payment Proof Photo</th>
-                    </tr>
-                </thead>
-                <tbody id="adminTableBody" class="divide-y border-gray-100">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-
     <footer class="bg-white border-t border-gray-100 mt-20 py-10 px-6">
         <div class="max-w-xl mx-auto space-y-6 text-xs text-gray-400 text-center sm:text-left">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-50 pb-6">
@@ -250,12 +220,10 @@
     </footer>
 
     <script>
-        // Bound explicitly with your custom web app endpoint URL
         const GOOGLE_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyjPNoJkIPrA3-b7d04r62edemjt4ATBHx-MPRZqDOFKneLhrora65kA7XkYOT-8MHr/exec";
 
         function handleCloudSubmission(e) {
             e.preventDefault();
-            document.getElementById('loadingText').innerText = "Uploading data & photo to Secure Cloud... Please wait";
             document.getElementById('loadingModal').classList.remove('hidden');
 
             const name = document.getElementById('regName').value;
@@ -313,7 +281,7 @@
             })
             .catch(err => {
                 document.getElementById('loadingModal').classList.add('hidden');
-                alert("Error connecting to server. Please ensure parameters match correctly.");
+                alert("Error connecting to cloud server.");
             });
         }
 
@@ -321,63 +289,6 @@
             document.getElementById('membershipForm').reset();
             document.getElementById('receipt-screen').classList.add('hidden');
             document.getElementById('main-user-portal').classList.remove('hidden');
-        }
-
-        function openAdminPortal() {
-            const password = prompt("Please enter the operational Admin Security Pin:");
-            if (password === "admin") {
-                document.getElementById('main-user-portal').classList.add('hidden');
-                document.getElementById('receipt-screen').classList.add('hidden');
-                document.getElementById('admin-portal').classList.remove('hidden');
-                fetchCloudLedgerRows();
-            } else if (password !== null) {
-                alert("Security Authorization Failed!");
-            }
-        }
-
-        function closeAdminPortal() {
-            document.getElementById('admin-portal').classList.add('hidden');
-            document.getElementById('main-user-portal').classList.remove('hidden');
-        }
-
-        // IMPROVED ROBUST FETCH ENGINE FOR WEB APP CHANNELS
-        function fetchCloudLedgerRows() {
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic"><i class="fas fa-sync animate-spin mr-2"></i>Loading live database logs from Google Sheets...</td></tr>`;
-
-            // Explicitly force fetch to hit the modified URL parameter block
-            fetch(GOOGLE_SCRIPT_WEBAPP_URL + "?action=read", {
-                method: "GET",
-                mode: "cors"
-            })
-            .then(res => res.json())
-            .then(records => {
-                tbody.innerHTML = "";
-                if(!records || records.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">No cloud logs available inside the sheet registry.</td></tr>`;
-                    return;
-                }
-                records.forEach(rec => {
-                    const row = document.createElement('tr');
-                    row.className = "hover:bg-gray-50 transition border-b border-gray-100";
-                    row.innerHTML = `
-                        <td class="p-3 font-bold text-darkBlue font-mono">${rec.receiptID || 'N/A'}</td>
-                        <td class="p-3 font-medium">${rec.name || 'N/A'}</td>
-                        <td class="p-3 text-gray-500">${rec.mobile || 'N/A'}</td>
-                        <td class="p-3 text-gray-500 font-mono">${rec.aadhaar || 'N/A'}</td>
-                        <td class="p-3 text-gray-400">${rec.dob || ''} (${rec.gender || ''})</td>
-                        <td class="p-3">
-                            <a href="${rec.fileUrl}" target="_blank" class="text-royalBlue font-bold hover:underline inline-flex items-center gap-1">
-                                <i class="fas fa-image"></i> View Photo
-                            </a>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            })
-            .catch((err) => {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500 font-bold">Failed to render live data feed. Make sure to redeploy your script as "Anyone" with a new version structure.</td></tr>`;
-            });
         }
     </script>
 </body>
