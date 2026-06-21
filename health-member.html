@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSMV Foundation - Live Cloud Membership Drive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBlue: '#0b1d3a',
+                        royalBlue: '#1e40af',
+                        brightRed: '#dc2626',
+                        cleanBg: '#fdfdfd'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-cleanBg text-gray-700 font-sans antialiased">
+
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-2xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <img src="https://i.ibb.co/dJ1jRjJm/IMG-20260420-WA0112-6.jpg" alt="HSMV Logo" class="w-14 h-14 object-contain rounded-full">
+                <div class="text-left">
+                    <h1 class="text-xl font-black text-darkBlue tracking-tight">HSMV FOUNDATION</h1>
+                    <p class="text-brightRed font-bold text-xs tracking-wider uppercase">Seva Hi Hamara Sankalp</p>
+                </div>
+            </div>
+            <nav class="flex gap-5 text-xs font-bold text-gray-400">
+                <a href="#home" class="text-royalBlue">Home</a>
+                <a href="#join" class="hover:text-royalBlue transition">Register</a>
+                <button onclick="openAdminPortal()" class="hover:text-royalBlue transition text-gray-500 font-black"><i class="fas fa-lock"></i> Admin Dashboard</button>
+            </nav>
+        </div>
+    </header>
+
+    <div id="loadingModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center text-white font-bold text-sm">
+        <div class="bg-darkBlue p-6 rounded-xl flex items-center gap-3 shadow-lg">
+            <i class="fas fa-circle-notch animate-spin text-brightRed text-xl"></i>
+            <span id="loadingText">Processing data... Please wait</span>
+        </div>
+    </div>
+
+    <div id="main-user-portal" class="block">
+        <main class="max-w-xl mx-auto px-6 py-10 space-y-12" id="home">
+            
+            <div class="space-y-4">
+                <span class="text-[10px] font-bold text-royalBlue tracking-widest uppercase bg-blue-50 px-2.5 py-1 rounded-md">
+                    Official Cloud Campaign 2026
+                </span>
+                <h2 class="text-3xl font-black text-darkBlue tracking-tight leading-tight">
+                    Healthcare Benefits & <br>Membership Drive
+                </h2>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Welcome to the official registration portal of HSMV Foundation. By enrolling as a verified contributor, you secure direct medical benefits while aiding our structural social welfare deployments.
+                </p>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-darkBlue uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-id-card text-brightRed text-xs"></i> 1-Year Health Card Benefit
+                </h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    With a basic registration contribution of <strong>₹1,101</strong>, you will receive a specialized <strong>1-Year Health Card</strong>. This card entitles the holder to a massive <span class="text-brightRed font-bold">50% discount on the total bill</span> across selected partner clinics and network hospitals.
+                </p>
+
+                <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mt-2 space-y-2">
+                    <h4 class="text-xs font-bold text-royalBlue uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-star text-xs"></i> Lifetime Upgrade Bonus
+                    </h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        If an active member successfully introduces or connects <strong>10 new individuals</strong> to this support framework, their membership status will automatically convert from a 1-year validation into a permanent <span class="text-royalBlue font-bold">Lifetime Validity Card</span>.
+                    </p>
+                </div>
+            </div>
+
+            <hr class="border-gray-100">
+
+            <div class="space-y-8" id="join">
+                <div class="space-y-6">
+                    <div class="space-y-1">
+                        <h3 class="text-base font-black text-darkBlue">1. Complete Registration Contribution</h3>
+                        <p class="text-xs text-gray-400">Please scan the official UCO Bank merchant terminal below and transfer the setup fee.</p>
+                    </div>
+
+                    <div class="border border-gray-100 rounded-2xl p-6 bg-white space-y-6 text-center">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-gray-400 tracking-wider uppercase">Contribution Amount</p>
+                            <div class="text-4xl font-black text-darkBlue">₹1,101</div>
+                        </div>
+
+                        <div class="mx-auto w-48 p-2 border border-gray-100 rounded-xl bg-white shadow-sm">
+                            <img src="https://i.ibb.co/tPF5W5Lx/IMG-20260420-WA0113-2.jpg" alt="UCO Bank Payment Terminal" class="w-full h-auto object-contain rounded-lg">
+                        </div>
+
+                        <div class="space-y-1">
+                            <p class="text-[11px] font-mono text-gray-500 bg-gray-50 py-1.5 px-3 rounded-lg inline-block select-all">
+                                Getepay.ucbqrapp87256
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div class="space-y-6">
+                    <div class="space-y-1">
+                        <h3 class="text-base font-black text-darkBlue">2. Identity Verification Form</h3>
+                        <p class="text-xs text-gray-400">Provide precise legal credentials matching your identity profile for cloud database record creation.</p>
+                    </div>
+
+                    <form id="membershipForm" class="space-y-5" onsubmit="handleCloudSubmission(event)">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Full Legal Name</label>
+                                <input type="text" id="regName" required class="w-full text-sm border-b border-gray-200 py-2 focus:border-royalBlue outline-none bg-transparent transition" placeholder="Enter your full name">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Active Mobile Number</label>
+                                <input type="tel" id="regMobile" required class="w-full text-sm border-b border-gray-200 py-2 focus:border-royalBlue outline-none bg-transparent transition" placeholder="+91 XXXXX XXXXX">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Aadhaar / National ID Number (12 Digits)</label>
+                                <input type="text" id="regAadhaar" required pattern="\d{12}" class="w-full text-sm border-b border-gray-200 py-2 focus:border-royalBlue outline-none bg-transparent transition" placeholder="0000 0000 0000">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Date of Birth</label>
+                                    <input type="date" id="regDOB" required class="w-full text-sm border-b border-gray-200 py-2 focus:border-royalBlue outline-none bg-transparent transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Gender</label>
+                                    <select id="regGender" required class="w-full text-sm border-b border-gray-200 py-2 focus:border-royalBlue outline-none bg-transparent transition bg-white">
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Upload Payment Screenshot <span class="text-brightRed">*</span></label>
+                                <input type="file" id="regFile" required accept="image/*" class="w-full text-xs text-gray-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-gray-100 file:text-gray-600 hover:file:bg-gray-200 file:cursor-pointer transition">
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-darkBlue hover:bg-royalBlue text-white font-bold text-sm py-3.5 rounded-xl transition shadow-sm tracking-wide">
+                                Submit & Save to Cloud Database
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="receipt-screen" class="hidden max-w-xl mx-auto px-6 py-12 space-y-8">
+        <div class="border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-white space-y-6" id="printable-receipt">
+            <div class="text-center space-y-2">
+                <img src="https://i.ibb.co/dJ1jRjJm/IMG-20260420-WA0112-6.jpg" alt="Logo" class="w-12 h-12 mx-auto rounded-full">
+                <h3 class="text-lg font-black text-darkBlue tracking-tight">HSMV FOUNDATION</h3>
+                <p class="text-[10px] text-brightRed uppercase tracking-wider font-bold">Official Registration Receipt</p>
+            </div>
+            
+            <hr class="border-gray-100">
+            
+            <div class="space-y-2 text-xs">
+                <div class="flex justify-between"><span class="text-gray-400">Receipt ID:</span><span id="recID" class="font-bold text-darkBlue"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Applicant Name:</span><span id="recName" class="font-bold"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Mobile Number:</span><span id="recMobile" class="font-bold"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Aadhaar Card:</span><span id="recAadhaar" class="font-bold"></span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Initial Card Validity:</span><span class="font-bold text-royalBlue">1 Year (50% Bill Discount)</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Paid Amount:</span><span class="font-black text-darkBlue">₹1,101.00</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Status:</span><span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Saved to Cloud</span></div>
+            </div>
+
+            <hr class="border-gray-100">
+            <p class="text-[9px] text-gray-400 text-center leading-relaxed">This is an authorized system-generated confirmation receipt. Your permanent clinical benefit identity card is valid post backend data ledger logs validation.</p>
+        </div>
+        
+        <div class="flex gap-4">
+            <button onclick="window.print()" class="w-1/2 bg-royalBlue text-white font-bold text-xs py-3 rounded-xl shadow-sm text-center">
+                <i class="fas fa-print mr-1"></i> Download / Print Receipt
+            </button>
+            <button onclick="resetPortal()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-3 rounded-xl text-center">
+                Back to Portal
+            </button>
+        </div>
+    </div>
+
+    <div id="admin-portal" class="hidden max-w-4xl mx-auto px-6 py-10 space-y-6">
+        <div class="flex justify-between items-center border-b border-gray-200 pb-4">
+            <div>
+                <h2 class="text-2xl font-black text-darkBlue">NGO Central Live Ledger Dashboard</h2>
+                <p class="text-xs text-gray-400">Real-time submissions synced from global cloud sheet server.</p>
+            </div>
+            <button onclick="closeAdminPortal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-4 py-2 rounded-lg">
+                Exit Dashboard
+            </button>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider">
+                        <th class="p-3">Receipt ID</th>
+                        <th class="p-3">Full Name</th>
+                        <th class="p-3">Mobile No.</th>
+                        <th class="p-3">Aadhaar Doc</th>
+                        <th class="p-3">DOB / Gender</th>
+                        <th class="p-3">Payment Proof Photo</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody" class="divide-y border-gray-100">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-gray-100 mt-20 py-10 px-6">
+        <div class="max-w-xl mx-auto space-y-6 text-xs text-gray-400 text-center sm:text-left">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-50 pb-6">
+                <div class="space-y-1">
+                    <p class="text-darkBlue font-bold text-xs uppercase tracking-wider">Registered Head Office</p>
+                    <p class="text-gray-500 font-medium">Vijaynagar, Tripula Chauraha, Raebareli, Uttar Pradesh, India - 229306</p>
+                </div>
+                <div>
+                    <a href="tel:+916392760740" class="inline-flex items-center gap-2 text-brightRed hover:text-darkBlue font-black transition tracking-wide">
+                        <i class="fas fa-phone-alt"></i> Helpline: +91 6392760740
+                    </a>
+                </div>
+            </div>
+            <div class="space-y-2 text-[11px] text-gray-400">
+                <span><strong>CIN:</strong> U88900UP2025NPL231407</span> | <span><strong>Reg No:</strong> 231407</span> | <span><strong>NGO Darpan ID:</strong> UP/2025/0801291</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Bound explicitly with your custom web app endpoint URL
+        const GOOGLE_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyjPNoJkIPrA3-b7d04r62edemjt4ATBHx-MPRZqDOFKneLhrora65kA7XkYOT-8MHr/exec";
+
+        function handleCloudSubmission(e) {
+            e.preventDefault();
+            document.getElementById('loadingText').innerText = "Uploading data & photo to Secure Cloud... Please wait";
+            document.getElementById('loadingModal').classList.remove('hidden');
+
+            const name = document.getElementById('regName').value;
+            const mobile = document.getElementById('regMobile').value;
+            const aadhaar = document.getElementById('regAadhaar').value;
+            const dob = document.getElementById('regDOB').value;
+            const gender = document.getElementById('regGender').value;
+            const fileInput = document.getElementById('regFile').files[0];
+            const receiptID = "HSMV-" + Math.floor(100000 + Math.random() * 900000);
+
+            if (fileInput) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const base64Data = event.target.result.split(',')[1];
+                    
+                    const payload = {
+                        action: "insert",
+                        receiptID: receiptID,
+                        name: name,
+                        mobile: mobile,
+                        aadhaar: aadhaar,
+                        dob: dob,
+                        gender: gender,
+                        fileData: base64Data,
+                        fileName: fileInput.name,
+                        mimeType: fileInput.type
+                    };
+
+                    executePost(payload, receiptID, name, mobile, aadhaar);
+                };
+                reader.readAsDataURL(fileInput);
+            } else {
+                alert("Please attach a payment proof screenshot to proceed.");
+                document.getElementById('loadingModal').classList.add('hidden');
+            }
+        }
+
+        function executePost(payload, receiptID, name, mobile, aadhaar) {
+            fetch(GOOGLE_SCRIPT_WEBAPP_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('loadingModal').classList.add('hidden');
+                
+                document.getElementById('recID').innerText = receiptID;
+                document.getElementById('recName').innerText = name;
+                document.getElementById('recMobile').innerText = mobile;
+                document.getElementById('recAadhaar').innerText = aadhaar;
+
+                document.getElementById('main-user-portal').classList.add('hidden');
+                document.getElementById('receipt-screen').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            })
+            .catch(err => {
+                document.getElementById('loadingModal').classList.add('hidden');
+                alert("Error connecting to server. Please ensure parameters match correctly.");
+            });
+        }
+
+        function resetPortal() {
+            document.getElementById('membershipForm').reset();
+            document.getElementById('receipt-screen').classList.add('hidden');
+            document.getElementById('main-user-portal').classList.remove('hidden');
+        }
+
+        function openAdminPortal() {
+            const password = prompt("Please enter the operational Admin Security Pin:");
+            if (password === "admin") {
+                document.getElementById('main-user-portal').classList.add('hidden');
+                document.getElementById('receipt-screen').classList.add('hidden');
+                document.getElementById('admin-portal').classList.remove('hidden');
+                fetchCloudLedgerRows();
+            } else if (password !== null) {
+                alert("Security Authorization Failed!");
+            }
+        }
+
+        function closeAdminPortal() {
+            document.getElementById('admin-portal').classList.add('hidden');
+            document.getElementById('main-user-portal').classList.remove('hidden');
+        }
+
+        // IMPROVED ROBUST FETCH ENGINE FOR WEB APP CHANNELS
+        function fetchCloudLedgerRows() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic"><i class="fas fa-sync animate-spin mr-2"></i>Loading live database logs from Google Sheets...</td></tr>`;
+
+            // Explicitly force fetch to hit the modified URL parameter block
+            fetch(GOOGLE_SCRIPT_WEBAPP_URL + "?action=read", {
+                method: "GET",
+                mode: "cors"
+            })
+            .then(res => res.json())
+            .then(records => {
+                tbody.innerHTML = "";
+                if(!records || records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">No cloud logs available inside the sheet registry.</td></tr>`;
+                    return;
+                }
+                records.forEach(rec => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 transition border-b border-gray-100";
+                    row.innerHTML = `
+                        <td class="p-3 font-bold text-darkBlue font-mono">${rec.receiptID || 'N/A'}</td>
+                        <td class="p-3 font-medium">${rec.name || 'N/A'}</td>
+                        <td class="p-3 text-gray-500">${rec.mobile || 'N/A'}</td>
+                        <td class="p-3 text-gray-500 font-mono">${rec.aadhaar || 'N/A'}</td>
+                        <td class="p-3 text-gray-400">${rec.dob || ''} (${rec.gender || ''})</td>
+                        <td class="p-3">
+                            <a href="${rec.fileUrl}" target="_blank" class="text-royalBlue font-bold hover:underline inline-flex items-center gap-1">
+                                <i class="fas fa-image"></i> View Photo
+                            </a>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch((err) => {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500 font-bold">Failed to render live data feed. Make sure to redeploy your script as "Anyone" with a new version structure.</td></tr>`;
+            });
+        }
+    </script>
+</body>
+</html>
