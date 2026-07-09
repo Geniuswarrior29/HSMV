@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSMVF Portal - Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-box {
+            background-color: #eff6ff;
+            color: var(--secondary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Admin specific color styling */
+        .admin-card .icon-box {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .card-details h3 {
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-details p {
+            font-size: 0.85rem;
+            color: #64748b;
+            word-break: break-all;
+        }
+
+        .visit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .visit-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .admin-card .visit-btn {
+            background-color: #dc2626;
+        }
+        .admin-card .visit-btn:hover {
+            background-color: #ef4444;
+        }
+
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>HSMVF Portal</h1>
+        <p>Welcome to hsmvf.com. Access all live website modules and management tools below.</p>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+
+            <!-- About Page -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-info-circle"></i></div>
+                    <div class="card-details">
+                        <h3>About Us</h3>
+                        <p>https://hsmvf.com/about.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/about.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Card Generator -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-id-card"></i></div>
+                    <div class="card-details">
+                        <h3>Card Generator</h3>
+                        <p>https://hsmvf.com/card-generator.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/card-generator.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Letter Generator -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-file-signature"></i></div>
+                    <div class="card-details">
+                        <h3>Letter Generator</h3>
+                        <p>https://hsmvf.com/letter-generator.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/letter-generator.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Member Login -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-right-to-bracket"></i></div>
+                    <div class="card-details">
+                        <h3>Member Login</h3>
+                        <p>https://hsmvf.com/member-login.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/member-login.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Membership -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-user-plus"></i></div>
+                    <div class="card-details">
+                        <h3>Membership</h3>
+                        <p>https://hsmvf.com/membership.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/membership.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Health Member -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <div class="card-details">
+                        <h3>Health Member</h3>
+                        <p>https://hsmvf.com/health-member.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/health-member.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-file-contract"></i></div>
+                    <div class="card-details">
+                        <h3>Terms & Conditions</h3>
+                        <p>https://hsmvf.com/terms.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/terms.html" class="visit-btn">Open Page <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <!-- Main Admin -->
+            <div class="card admin-card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="card-details">
+                        <h3>Admin Panel</h3>
+                        <p>https://hsmvf.com/admin.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/admin.html" class="visit-btn">Access Admin <i class="fa-solid fa-lock"></i></a>
+            </div>
+
+            <!-- Health Admin -->
+            <div class="card admin-card">
+                <div class="card-info">
+                    <div class="icon-box"><i class="fa-solid fa-user-md"></i></div>
+                    <div class="card-details">
+                        <h3>Health Admin</h3>
+                        <p>https://hsmvf.com/health-admin.html</p>
+                    </div>
+                </div>
+                <a href="https://hsmvf.com/health-admin.html" class="visit-btn">Access Admin <i class="fa-solid fa-lock"></i></a>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 hsmvf.com. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
