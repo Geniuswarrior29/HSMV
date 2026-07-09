@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSMVF Appointment Letter Generator</title>
+    <style>
+        :root {
+            --primary-orange: #ff9900;
+            --primary-green: #008000;
+            --dark-brown: #4a1504;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .admin-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 550px;
+            margin-bottom: 30px;
+        }
+        .admin-panel h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid var(--primary-orange);
+            padding-bottom: 8px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            flex: 1;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        .gen-letter-btn { background-color: #e67e22; }
+        .print-btn { background-color: #0056b3; }
+
+        /* ================= APPOINTMENT LETTER DESIGN ================= */
+        .offer-letter-page {
+            width: 820px;
+            height: 580px;
+            background: #fffdf6;
+            border: 3px solid #b8860b;
+            position: relative;
+            box-sizing: border-box;
+            padding: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        /* Background Watermark */
+        .offer-letter-page::before {
+            content: "";
+            position: absolute;
+            top: 52%; left: 50%;
+            width: 260px; height: 260px;
+            transform: translate(-50%, -50%);
+            background: url('WhatsApp Image 2026-06-21 at 15.39.55.jpeg') no-repeat center;
+            background-size: contain;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        
+        .ol-main-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border-bottom: 2px solid #ffcc00;
+            padding-bottom: 5px;
+        }
+        .ol-logo { width: 75px; height: 75px; object-fit: contain; mix-blend-mode: multiply; }
+        .ol-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--dark-brown);
+            text-align: center;
+            margin: 0;
+            letter-spacing: 0.3px;
+        }
+        .ol-gov-bar {
+            background: var(--primary-green) !important;
+            color: white !important;
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 15px;
+            font-weight: bold;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .ol-meta-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 5px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+        }
+        .ol-badge-title {
+            background: linear-gradient(90deg, #b8860b, #e67e22) !important;
+            color: white !important;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 3px 22px;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+        }
+        
+        .ol-id-date-row {
+            display: flex; 
+            justify-content: space-between; 
+            padding: 0 5px; 
+            font-size: 13px; 
+            font-weight: bold; 
+            margin-bottom: 12px;
+        }
+
+        /* Hindi Content Box */
+        .ol-body-content {
+            padding: 0 5px;
+            font-size: 14px;
+            line-height: 1.75;
+            color: #111;
+            text-align: justify;
+            font-weight: bold;
+            flex: 1;
+        }
+        .highlight-red { color: red; font-weight: bold; }
+        
+        /* Footer Layout */
+        .ol-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+            margin-bottom: 35px;
+            position: relative;
+        }
+        .ol-social-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ol-social-icons-box {
+            display: flex;
+            gap: 4px;
+        }
+        .ol-social-icons-box span {
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 3px;
+        }
+        .icon-fb { background-color: #3b5998; }
+        .icon-tw { background-color: #1da1f2; }
+        .icon-yt { background-color: #ff0000; }
+        .icon-ig { background-color: #e1306c; }
+
+        .ol-mob-box {
+            background: var(--dark-brown) !important;
+            color: white !important;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 4px 15px;
+            border-radius: 2px;
+        }
+        
+        /* ================= FIXED: SIGNATURE OVERLAYED EXACTLY IN STAMP'S MIDDLE BLANK SPACE ================= */
+        .ol-signature-area {
+            position: relative;
+            width: 180px;
+            height: 110px; /* Gives perfect vertical canvas space above the line */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center; /* Horizontally centers both assets */
+        }
+        /* Lower Layer: The Circular Stamp */
+        .ol-real-stamp {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            bottom: 8px; /* Rests right above the signature line text */
+            z-index: 1;
+            object-fit: contain;
+        }
+        /* Top Layer: Centered perfectly within the blank middle space of the stamp */
+        .ol-real-sign {
+            width: 80px; /* Slightly scaled to match the inner diameter bounds perfectly */
+            height: auto;
+            position: absolute;
+            bottom: 30px; /* Pushed precisely into the center circle pocket of the stamp */
+            z-index: 2;
+            object-fit: contain;
+        }
+        .ol-sig-line {
+            border-top: 1.5px solid #222;
+            font-size: 13px;
+            font-weight: bold;
+            padding-top: 4px;
+            color: #111;
+            z-index: 3;
+            position: relative;
+            width: 100%;
+            text-align: center;
+        }
+        .ol-base-footer {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: var(--dark-brown) !important;
+            color: white !important;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 8px 0;
+            letter-spacing: 0.3px;
+        }
+
+        /* Print Layouts */
+        @media print {
+            body { background: white; padding: 0; }
+            .admin-panel { display: none !important; }
+            .offer-letter-page { box-shadow: none; border: 3px solid #b8860b; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CONTROL PANEL FORM -->
+    <div class="admin-panel">
+        <h2>Appointment Letter Generator</h2>
+        <form id="letterForm" onsubmit="generateLetter(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="inputName" value="Prashant Tripathi" required>
+                </div>
+                <div class="form-group">
+                    <label>Designation / Post</label>
+                    <input type="text" id="inputDesignation" value="मीडिया प्रभारी" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Father's Name</label>
+                    <input type="text" id="inputFather" value="Yogendra kumar Tripathi" required>
+                </div>
+                <div class="form-group">
+                    <label>ID No.</label>
+                    <input type="text" id="inputID" value="0068" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Letter Issue Date</label>
+                    <input type="text" id="inputDate" value="04-03-2026" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Mobile No.</label>
+                    <input type="tel" id="inputMobile" value="6392760740" maxlength="10" required>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button type="submit" class="gen-letter-btn">Update Letter Data</button>
+                <button type="button" class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ================= APPOINTMENT LETTER PAGE CONTAINER ================= -->
+    <div class="offer-letter-page">
+        <div class="ol-main-header">
+            <img class="ol-logo" src="WhatsApp Image 2026-06-21 at 15.39.55.jpeg" alt="Logo">
+            <div class="ol-title">HELPING SOCIETY MISSION & VISION FOUNDATION</div>
+        </div>
+        <div class="ol-gov-bar">
+            <span>प्रदेश सरकार द्वारा मान्यता प्राप्त</span>
+            <span>Reg. No. : 231407</span>
+        </div>
+        
+        <div class="ol-meta-grid">
+            <div>NGO DARPAN : UP/2025/0801291</div>
+            <div class="ol-badge-title">नियुक्ति पत्र</div>
+            <div>CIN NO. : U88900UP2025NPL231407</div>
+        </div>
+
+        <div class="ol-id-date-row">
+            <div>ID No. - <span id="olID">0068</span></div>
+            <div>Date - <span id="olDate">04-03-2026</span></div>
+        </div>
+
+        <div class="ol-body-content">
+            आदरणीय श्री/श्रीमती/सुश्री <span class="highlight-red" id="olName">Prashant Tripathi</span> 
+            पुत्र/पुत्री/पति <span class="highlight-red" id="olFather">Yogendra kumar Tripathi</span> आपके सामाजिक कार्यों के प्रति आपकी निष्ठा को देखते हुए अपार हर्ष के साथ सूचित किया जाता है कि 
+            <span class="highlight-red">"हेल्पिंग सोसाइटी मिशन एंड विजन फाउंडेशन"</span> में आपको 
+            <span class="highlight-red" id="olDesignation">मीडिया प्रभारी</span> बनाया जाता है। 
+            हमें आशा ही नहीं अपितु पूर्ण विश्वास है कि आप संस्थान की नीतियों व सिद्धांतों से जन-मानस को अवगत करायेंगे/करायेंगी और संस्थान को प्रबल मजबूत बनायेंगे। संस्थापक एवं संचालक जी के नेतृत्व में घर-घर के सम्मान में, हर व्यक्ति को प्रबल, सशक्त, शिक्षित व आत्मनिर्भर बनाने के संकल्प को साकार करते हुए <span class="highlight-red">"हेल्पिंग सोसाइटी मिशन एंड विजन फाउंडेशन"</span> के विचारों को जन-जन तक पहुँचायेंगे व समाज को संगठित कर अपने राष्ट्र को शक्तिशाली बनायेंगे।
+        </div>
+
+        <!-- Footer Row Section -->
+        <div class="ol-footer-row">
+            <div class="ol-social-block">
+                <div class="ol-social-icons-box">
+                    <span class="icon-fb">f</span>
+                    <span class="icon-tw">t</span>
+                    <span class="icon-yt">y</span>
+                    <span class="icon-ig">i</span>
+                </div>
+                <div class="ol-mob-box">Mob. No. : <span id="olMobile">6392760740</span></div>
+            </div>
+
+            <!-- Signature block with centered layout inside the stamp's white circle space -->
+            <div class="ol-signature-area">
+                <img class="ol-real-stamp" src="vikas-stamp-removebg-preview.png" alt="Stamp">
+                <img class="ol-real-sign" src="vikas-sign-removebg-preview.png" alt="Signature">
+                <div class="ol-sig-line">Authorised Signature</div>
+            </div>
+        </div>
+
+        <div class="ol-base-footer">
+            Reg. Office - Vijay Nager Tripura, Mahrajganj Road Raebareli, Uttar Pradesh India - 229306
+        </div>
+    </div>
+
+    <!-- LOGIC MANAGEMENT SCRIPT -->
+    <script>
+        function generateLetter(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("inputName").value;
+            const designation = document.getElementById("inputDesignation").value;
+            const father = document.getElementById("inputFather").value;
+            const idNo = document.getElementById("inputID").value;
+            const issueDate = document.getElementById("inputDate").value;
+            const mobile = document.getElementById("inputMobile").value;
+
+            document.getElementById("olName").innerText = name;
+            document.getElementById("olDesignation").innerText = designation;
+            document.getElementById("olFather").innerText = father;
+            document.getElementById("olID").innerText = idNo;
+            document.getElementById("olDate").innerText = issueDate;
+            document.getElementById("olMobile").innerText = mobile;
+        }
+    </script>
+</body>
+</html>
