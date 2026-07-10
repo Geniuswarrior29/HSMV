@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSMV Slides Admin</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --border:#2a2f3a;
+    --accent:#4f8cff; --accent2:#3a6fd8; --text:#e8eaed; --muted:#9aa2b1;
+    --danger:#e05555; --success:#3ecf8e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--text); padding:20px 14px 60px;
+  }
+  h1{font-size:1.3rem; margin:0 0 4px;}
+  .sub{color:var(--muted); font-size:.85rem; margin-bottom:20px;}
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:18px; margin-bottom:20px;
+  }
+  label{display:block; font-size:.8rem; color:var(--muted); margin:12px 0 6px;}
+  input[type=text], input[type=number], textarea{
+    width:100%; background:var(--panel2); border:1px solid var(--border);
+    color:var(--text); padding:10px 12px; border-radius:10px; font-size:.95rem;
+    font-family:inherit;
+  }
+  textarea{resize:vertical; min-height:70px;}
+  .file-row{
+    display:flex; align-items:center; gap:10px; margin-top:6px;
+  }
+  input[type=file]{ display:none; }
+  .file-btn{
+    background:var(--panel2); border:1px dashed var(--border); color:var(--muted);
+    padding:10px 14px; border-radius:10px; font-size:.85rem; cursor:pointer; flex:1; text-align:center;
+  }
+  .preview{
+    width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid var(--border);
+    display:none;
+  }
+  button.primary{
+    width:100%; margin-top:18px; padding:12px; border:none; border-radius:10px;
+    background:var(--accent); color:#fff; font-weight:600; font-size:.95rem; cursor:pointer;
+  }
+  button.primary:active{ background:var(--accent2); }
+  button.primary:disabled{ opacity:.5; }
+  .status{ font-size:.82rem; margin-top:10px; min-height:18px; }
+  .status.ok{ color:var(--success); }
+  .status.err{ color:var(--danger); }
+
+  .slide-item{
+    display:flex; gap:12px; background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:12px; margin-bottom:10px; align-items:flex-start;
+  }
+  .slide-item img{
+    width:64px; height:64px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--panel2);
+  }
+  .slide-info{ flex:1; min-width:0; }
+  .slide-info .t{ font-weight:600; font-size:.92rem; }
+  .slide-info .d{ color:var(--muted); font-size:.78rem; margin:2px 0; }
+  .slide-info .n{ color:var(--accent); font-size:.78rem; font-weight:600; }
+  .slide-actions{ display:flex; flex-direction:column; gap:6px; }
+  .slide-actions button{
+    border:none; border-radius:8px; padding:6px 10px; font-size:.75rem; cursor:pointer;
+  }
+  .edit-btn{ background:var(--panel2); color:var(--text); border:1px solid var(--border) !important; }
+  .del-btn{ background:rgba(224,85,85,.15); color:var(--danger); }
+
+  .section-title{ font-size:.95rem; margin:24px 0 10px; color:var(--muted); }
+  .empty{ color:var(--muted); font-size:.85rem; text-align:center; padding:20px; }
+  #setupWarning{
+    background:rgba(224,85,85,.12); border:1px solid var(--danger); color:#ffb3b3;
+    padding:12px; border-radius:10px; font-size:.8rem; margin-bottom:18px; display:none;
+  }
+</style>
+</head>
+<body>
+
+<h1>HSMV Slides Admin</h1>
+<div class="sub">Photo, title, description aur number seedha yahan se update karo</div>
+
+<div id="setupWarning">
+  ⚠️ WEB_APP_URL abhi set nahi hai. Neeche diye instructions follow karke Apps Script deploy karo, phir script tag me URL paste karo.
+</div>
+
+<div class="card">
+  <div id="formTitle" style="font-weight:600;">Naya Slide Add Karo</div>
+
+  <label>Title</label>
+  <input type="text" id="title" placeholder="e.g. Beds Distribution">
+
+  <label>Description</label>
+  <textarea id="description" placeholder="e.g. Rae bareli ke Mahotsav me..."></textarea>
+
+  <label>Number</label>
+  <input type="text" id="number" placeholder="e.g. 20+">
+
+  <label>Photo</label>
+  <div class="file-row">
+    <label class="file-btn" for="photoInput" id="fileLabel">Photo Chuno</label>
+    <input type="file" id="photoInput" accept="image/*">
+    <img id="previewImg" class="preview">
+  </div>
+
+  <button class="primary" id="submitBtn" onclick="submitSlide()">Add Slide</button>
+  <button class="primary" id="cancelEditBtn" style="background:#3a3f4a; display:none;" onclick="cancelEdit()">Cancel Edit</button>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="section-title">Existing Slides</div>
+<div id="slideList"><div class="empty">Loading...</div></div>
+
+<script>
+  // 👉 PASTE YOUR DEPLOYED APPS SCRIPT WEB APP URL HERE
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0zkyK2WaFrCwCNdssiSqwTbxvGtcZh52NoO80mIhuF52yeb67F1fqLXp5QT5XeNE_PQ/exec";
+
+  let editingRow = null;
+  let selectedBase64 = null;
+  let selectedFileName = null;
+
+  if (!WEB_APP_URL || WEB_APP_URL.indexOf("PASTE_YOUR") !== -1) {
+    document.getElementById('setupWarning').style.display = 'block';
+  }
+
+  document.getElementById('photoInput').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if (!file) return;
+    selectedFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      selectedBase64 = evt.target.result;
+      const img = document.getElementById('previewImg');
+      img.src = selectedBase64;
+      img.style.display = 'block';
+      document.getElementById('fileLabel').textContent = file.name;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function setStatus(msg, type){
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + (type || '');
+  }
+
+  async function loadSlides(){
+    const listEl = document.getElementById('slideList');
+    try{
+      const res = await fetch(WEB_APP_URL + '?action=list');
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Failed to load');
+      renderSlides(json.data);
+    }catch(err){
+      listEl.innerHTML = '<div class="empty">Load nahi hua: ' + err.message + '</div>';
+    }
+  }
+
+  function renderSlides(slides){
+    const listEl = document.getElementById('slideList');
+    if (!slides.length){
+      listEl.innerHTML = '<div class="empty">Koi slide nahi hai abhi</div>';
+      return;
+    }
+    listEl.innerHTML = slides.map(s => `
+      <div class="slide-item">
+        <img src="${s.imageUrl}" onerror="this.style.opacity=0.3">
+        <div class="slide-info">
+          <div class="t">${escapeHtml(s.title)}</div>
+          <div class="d">${escapeHtml(s.description)}</div>
+          <div class="n">${escapeHtml(String(s.number))}</div>
+        </div>
+        <div class="slide-actions">
+          <button class="edit-btn" onclick='startEdit(${JSON.stringify(s)})'>Edit</button>
+          <button class="del-btn" onclick="deleteSlide(${s.row})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  function startEdit(slide){
+    editingRow = slide.row;
+    document.getElementById('title').value = slide.title;
+    document.getElementById('description').value = slide.description;
+    document.getElementById('number').value = slide.number;
+    document.getElementById('previewImg').src = slide.imageUrl;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('fileLabel').textContent = 'Nayi photo chuno (optional)';
+    document.getElementById('formTitle').textContent = 'Slide Edit Karo (row ' + slide.row + ')';
+    document.getElementById('submitBtn').textContent = 'Update Slide';
+    document.getElementById('cancelEditBtn').style.display = 'block';
+    selectedBase64 = null;
+    selectedFileName = null;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function cancelEdit(){
+    editingRow = null;
+    selectedBase64 = null;
+    selectedFileName = null;
+    document.getElementById('title').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('number').value = '';
+    document.getElementById('previewImg').style.display = 'none';
+    document.getElementById('fileLabel').textContent = 'Photo Chuno';
+    document.getElementById('formTitle').textContent = 'Naya Slide Add Karo';
+    document.getElementById('submitBtn').textContent = 'Add Slide';
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    setStatus('');
+  }
+
+  async function submitSlide(){
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const number = document.getElementById('number').value.trim();
+
+    if (!title || !description || !number){
+      setStatus('Sab fields bharo pehle', 'err');
+      return;
+    }
+    if (!editingRow && !selectedBase64){
+      setStatus('Photo select karo', 'err');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    setStatus('Saving...', '');
+
+    const payload = {
+      action: editingRow ? 'update' : 'add',
+      title, description, number,
+      fileName: selectedFileName
+    };
+    if (selectedBase64) payload.imageBase64 = selectedBase64;
+    if (editingRow) payload.row = editingRow;
+
+    try{
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Failed');
+      setStatus(editingRow ? 'Update ho gaya ✅' : 'Add ho gaya ✅', 'ok');
+      cancelEdit();
+      loadSlides();
+    }catch(err){
+      setStatus('Error: ' + err.message, 'err');
+    }finally{
+      btn.disabled = false;
+    }
+  }
+
+  async function deleteSlide(row){
+    if (!confirm('Ye slide delete karna hai?')) return;
+    try{
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete', row })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Failed');
+      loadSlides();
+    }catch(err){
+      alert('Delete nahi hua: ' + err.message);
+    }
+  }
+
+  loadSlides();
+</script>
+</body>
+</html>
