@@ -95,8 +95,7 @@
     <footer class="bg-white border-t border-gray-100 py-8 mt-auto">
         <div class="max-w-6xl mx-auto px-4 text-center">
             <p class="text-sm text-gray-500">
-                &copy; <script>document.write(new Date().getFullYear())</script> HSMV Foundation. All rights reserved. 
-                <a href="blood-admin.html" class="text-royalBlue hover:underline ml-2"><i class="fas fa-lock text-xs mr-1"></i>Admin</a>
+                &copy; <script>document.write(new Date().getFullYear())</script> HSMV Foundation. All rights reserved.
             </p>
         </div>
     </footer>
@@ -113,6 +112,7 @@
         let currentDonors = [];
 
         function getBloodGroupColor(group) {
+            if (!group) return 'bg-gray-50 text-gray-400 border-gray-200';
             if(group.includes('O')) return 'bg-blue-50 text-blue-700 border-blue-200';
             if(group.includes('AB')) return 'bg-purple-50 text-purple-700 border-purple-200';
             return 'bg-red-50 text-brightRed border-red-200'; // Default for A and B
@@ -122,7 +122,8 @@
             donorsGrid.innerHTML = '';
             
             const filtered = currentDonors.filter(donor => {
-                const matchesName = donor.name.toLowerCase().includes(filterText.toLowerCase());
+                const donorName = donor.name || '';
+                const matchesName = donorName.toLowerCase().includes(filterText.toLowerCase());
                 const matchesGroup = filterGroup === 'all' || donor.group === filterGroup;
                 return matchesName && matchesGroup;
             });
@@ -150,6 +151,7 @@
                             <div>
                                 <h3 class="text-lg sm:text-xl font-bold text-darkBlue mb-1" title="${donor.name}">${donor.name}</h3>
                                 <p class="text-xs sm:text-sm text-gray-400">Registered Blood Donor</p>
+                                ${donor.city ? '<p class="text-xs sm:text-sm text-gray-500 mt-1"><i class="fas fa-map-marker-alt mr-1"></i>' + donor.city + '</p>' : ''}
                             </div>
                         </div>
                         <div class="inline-flex flex-col items-center justify-center border px-4 py-2 rounded-xl font-black text-lg sm:text-xl ${colorClass} min-w-[80px]">

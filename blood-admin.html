@@ -30,7 +30,22 @@
         }
     </style>
 </head>
-<body class="bg-cleanBg text-gray-700 font-sans antialiased">
+<body class="bg-cleanBg text-gray-700 font-sans antialiased overflow-hidden" id="bodyEl">
+    <!-- Password Overlay -->
+    <div id="passwordOverlay" class="fixed inset-0 bg-darkBlue z-50 flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full text-center">
+            <i class="fas fa-lock text-4xl text-royalBlue mb-4"></i>
+            <h2 class="text-2xl font-bold text-darkBlue mb-2">Admin Access</h2>
+            <p class="text-gray-500 mb-6 text-sm">Please enter the admin password to continue.</p>
+            <form id="passwordForm" class="space-y-4">
+                <input type="password" id="adminPassword" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-royalBlue focus:ring-1 focus:ring-royalBlue text-center" placeholder="Enter Password" required>
+                <p id="passwordError" class="text-red-500 text-sm hidden">Incorrect password!</p>
+                <button type="submit" class="w-full bg-royalBlue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors">
+                    Unlock
+                </button>
+            </form>
+        </div>
+    </div>
     
     <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <!-- Header -->
@@ -81,6 +96,18 @@
                         <option value="O-">O-</option>
                     </select>
                 </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">City</label>
+                    <input type="text" id="donorCity" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all" placeholder="Enter city">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Full Address</label>
+                    <input type="text" id="donorAddress" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all" placeholder="Enter full address">
+                </div>
+                <div class="space-y-2 lg:col-span-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Added By</label>
+                    <input type="text" id="donorAddedBy" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all" placeholder="Enter referrer name">
+                </div>
                 <div class="lg:col-span-4 flex justify-end mt-2">
                     <button type="submit" class="bg-brightRed hover:bg-red-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
                         <i class="fas fa-plus-circle"></i> Add Donor
@@ -91,9 +118,15 @@
 
         <!-- Donors List -->
         <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden fade-in" style="animation-delay: 0.1s;">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h2 class="text-xl font-bold text-darkBlue">Donor Database</h2>
-                <span id="donorCount" class="bg-brightRed text-white text-xs font-bold px-3 py-1 rounded-full">0 Donors</span>
+            <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-darkBlue">Donor Database</h2>
+                    <span id="donorCount" class="bg-brightRed text-white text-xs font-bold px-3 py-1 rounded-full">0 Donors</span>
+                </div>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="adminSearchInput" placeholder="Search by 'Added By'..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-royalBlue text-sm w-full sm:w-64">
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -101,8 +134,9 @@
                         <tr class="bg-white border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider text-xs">
                             <th class="p-5">Name</th>
                             <th class="p-5">Blood Group</th>
-                            <th class="p-5">Contact Number</th>
-                            <th class="p-5">Email</th>
+                            <th class="p-5">Contact Info</th>
+                            <th class="p-5">Location</th>
+                            <th class="p-5">Added By</th>
                             <th class="p-5 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -132,22 +166,28 @@
         // Global list to keep track
         let currentDonors = [];
 
-        function renderDonors(donors) {
+        function renderDonors(donors, filterText = '') {
             donorTableBody.innerHTML = '';
-            donorCount.textContent = `${donors.length} Donor${donors.length !== 1 ? 's' : ''}`;
+            
+            const filteredDonors = donors.filter(donor => {
+                const addedBy = donor.addedby ? donor.addedby.toLowerCase() : '';
+                return addedBy.includes(filterText.toLowerCase());
+            });
 
-            if (donors.length === 0) {
+            donorCount.textContent = `${filteredDonors.length} Donor${filteredDonors.length !== 1 ? 's' : ''}`;
+
+            if (filteredDonors.length === 0) {
                 emptyState.classList.remove('hidden');
             } else {
                 emptyState.classList.add('hidden');
                 
-                donors.forEach((donor, index) => {
+                filteredDonors.forEach((donor, index) => {
                     const row = document.createElement('tr');
                     row.className = "hover:bg-gray-50 transition-colors group";
                     
                     let bgBadgeClass = "bg-red-100 text-red-700";
-                    if(donor.group.includes('O')) bgBadgeClass = "bg-blue-100 text-blue-700";
-                    else if(donor.group.includes('AB')) bgBadgeClass = "bg-purple-100 text-purple-700";
+                    if(donor.group && donor.group.includes('O')) bgBadgeClass = "bg-blue-100 text-blue-700";
+                    else if(donor.group && donor.group.includes('AB')) bgBadgeClass = "bg-purple-100 text-purple-700";
                     
                     row.innerHTML = `
                         <td class="p-5 font-bold text-darkBlue">${donor.name}</td>
@@ -156,8 +196,15 @@
                                 <i class="fas fa-tint mr-1"></i> ${donor.group}
                             </span>
                         </td>
-                        <td class="p-5 text-gray-600">${donor.number}</td>
-                        <td class="p-5 text-gray-600">${donor.email || '<span class="text-gray-400 italic">N/A</span>'}</td>
+                        <td class="p-5 text-gray-600">
+                            <div>${donor.number}</div>
+                            <div class="text-xs text-gray-400">${donor.email || 'N/A'}</div>
+                        </td>
+                        <td class="p-5 text-gray-600">
+                            <div class="font-semibold text-sm">${donor.city || 'N/A'}</div>
+                            <div class="text-xs text-gray-400">${donor.address || 'N/A'}</div>
+                        </td>
+                        <td class="p-5 text-gray-600 font-medium">${donor.addedby || 'N/A'}</td>
                         <td class="p-5 text-right">
                             <button onclick="deleteDonor('${donor.id}')" class="text-gray-400 hover:text-brightRed bg-white hover:bg-red-50 w-8 h-8 rounded-full transition-all opacity-0 group-hover:opacity-100">
                                 <i class="fas fa-trash-alt"></i>
@@ -171,20 +218,21 @@
 
         async function fetchDonors() {
             if(GOOGLE_SCRIPT_URL === "YOUR_WEB_APP_URL_HERE") {
-                donorTableBody.innerHTML = '<tr><td colspan="5" class="p-5 text-center text-red-500 font-bold">Please add your Google Script URL in the code!</td></tr>';
+                donorTableBody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-red-500 font-bold">Please add your Google Script URL in the code!</td></tr>';
                 return;
             }
             
-            donorTableBody.innerHTML = '<tr><td colspan="5" class="p-5 text-center text-gray-400"><i class="fas fa-sync animate-spin mr-2"></i>Loading from Google Sheets...</td></tr>';
+            donorTableBody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-gray-400"><i class="fas fa-sync animate-spin mr-2"></i>Loading from Google Sheets...</td></tr>';
             
             try {
                 const res = await fetch(GOOGLE_SCRIPT_URL + "?action=read");
                 const data = await res.json();
                 currentDonors = data;
-                renderDonors(data);
+                const filterVal = document.getElementById('adminSearchInput') ? document.getElementById('adminSearchInput').value : '';
+                renderDonors(data, filterVal);
             } catch (error) {
                 console.error(error);
-                donorTableBody.innerHTML = '<tr><td colspan="5" class="p-5 text-center text-red-500">Failed to load data.</td></tr>';
+                donorTableBody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-red-500">Failed to load data.</td></tr>';
             }
         }
 
@@ -204,9 +252,12 @@
             const number = encodeURIComponent(document.getElementById('donorNumber').value.trim());
             const email = encodeURIComponent(document.getElementById('donorEmail').value.trim());
             const group = encodeURIComponent(document.getElementById('donorGroup').value);
+            const city = encodeURIComponent(document.getElementById('donorCity').value.trim());
+            const address = encodeURIComponent(document.getElementById('donorAddress').value.trim());
+            const addedby = encodeURIComponent(document.getElementById('donorAddedBy').value.trim());
             
             try {
-                const url = `${GOOGLE_SCRIPT_URL}?action=add&name=${name}&number=${number}&email=${email}&group=${group}`;
+                const url = `${GOOGLE_SCRIPT_URL}?action=add&name=${name}&number=${number}&email=${email}&group=${group}&city=${city}&address=${address}&addedby=${addedby}`;
                 await fetch(url);
                 
                 addDonorForm.reset();
@@ -227,7 +278,7 @@
 
         async function deleteDonor(id) {
             if(confirm('Are you sure you want to remove this donor?')) {
-                donorTableBody.innerHTML = '<tr><td colspan="5" class="p-5 text-center text-gray-400"><i class="fas fa-trash animate-bounce mr-2"></i>Deleting...</td></tr>';
+                donorTableBody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-gray-400"><i class="fas fa-trash animate-bounce mr-2"></i>Deleting...</td></tr>';
                 try {
                     await fetch(`${GOOGLE_SCRIPT_URL}?action=delete&id=${id}`);
                     fetchDonors();
@@ -240,6 +291,23 @@
 
         // Event Listeners
         addDonorForm.addEventListener('submit', addDonor);
+        
+        if (document.getElementById('adminSearchInput')) {
+            document.getElementById('adminSearchInput').addEventListener('input', (e) => {
+                renderDonors(currentDonors, e.target.value);
+            });
+        }
+        
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pwd = document.getElementById('adminPassword').value;
+            if(pwd === 'HSMVF2026') {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('bodyEl').classList.remove('overflow-hidden');
+            } else {
+                document.getElementById('passwordError').classList.remove('hidden');
+            }
+        });
 
         // Initial Render
         document.addEventListener('DOMContentLoaded', fetchDonors);
