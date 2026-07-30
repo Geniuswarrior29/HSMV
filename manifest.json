@@ -1,0 +1,16 @@
+{
+  "name": "Helping Society Mission & Vision Foundation",
+  "short_name": "HSMV",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FDF6E3",
+  "theme_color": "#E8A020",
+  "icons": [
+    {
+      "src": "icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

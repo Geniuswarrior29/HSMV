@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Helping Society Mission &amp; Vision Foundation | HSMV</title>
+<link rel="manifest" href="manifest.json" />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root{--gold:#E8A020;--deep:#1a1209;--cream:#FDF6E3;--green:#3a7d44;--dark-green:#255c2e;--text:#2d2410;--light:#fff8ee;--wa:#25D366;--shadow:0 8px 40px rgba(0,0,0,0.13); --nav-bg:rgba(253,246,227,0.97); --nav-text:#2d2410; --nav-border:rgba(0,0,0,0.1); --hero-bg:linear-gradient(135deg,#FDF6E3 0%,#fff8ee 40%,#f4e8cf 100%); --hero-text:#2d2410; --hero-subtext:rgba(45,36,16,0.7); --slides-bg:#fff8ee; --slides-title:#2d2410; --slides-sub:#5a4a35; --btn-outline-border:rgba(45,36,16,0.3);}
@@ -593,6 +594,18 @@ installAppBtn.addEventListener('click', async (e) => {
     alert('App installation is not supported by your browser or the app is already installed.');
   }
 });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      })
+      .catch(err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
+}
 </script>
 </body>
 </html>
