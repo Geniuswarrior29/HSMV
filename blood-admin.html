@@ -123,9 +123,15 @@
                     <h2 class="text-xl font-bold text-darkBlue">Donor Database</h2>
                     <span id="donorCount" class="bg-brightRed text-white text-xs font-bold px-3 py-1 rounded-full">0 Donors</span>
                 </div>
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="adminSearchInput" placeholder="Search by 'Added By'..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-royalBlue text-sm w-full sm:w-64">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="adminSearchInput" placeholder="Search by Name/Added By..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-royalBlue text-sm w-full sm:w-48">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="adminDistrictSearch" placeholder="Search by District..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-royalBlue text-sm w-full sm:w-48">
+                    </div>
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -153,9 +159,64 @@
         </div>
     </div>
 
+    <!-- Edit Donor Modal -->
+    <div id="editDonorModal" class="fixed inset-0 bg-darkBlue/80 z-50 flex flex-col items-center justify-center p-4 hidden">
+        <div class="bg-white p-6 lg:p-8 rounded-2xl shadow-xl max-w-4xl w-full relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h2 class="text-xl font-bold text-darkBlue mb-6 border-b border-gray-100 pb-3">Edit Donor Details</h2>
+            <form id="editDonorForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <input type="hidden" id="editDonorId">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Full Name *</label>
+                    <input type="text" id="editDonorName" required class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Mobile Number *</label>
+                    <input type="tel" id="editDonorNumber" required class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Email (Optional)</label>
+                    <input type="email" id="editDonorEmail" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Blood Group *</label>
+                    <select id="editDonorGroup" required class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all bg-white">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">City/District</label>
+                    <input type="text" id="editDonorCity" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Full Address</label>
+                    <input type="text" id="editDonorAddress" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all">
+                </div>
+                <div class="space-y-2 lg:col-span-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Added By</label>
+                    <input type="text" id="editDonorAddedBy" class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brightRed focus:ring-1 focus:ring-brightRed transition-all">
+                </div>
+                <div class="lg:col-span-4 flex justify-end mt-2">
+                    <button type="submit" class="bg-royalBlue hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLgbjITZNfDymYtXoRvxJRN2JbbvFPEAECEw0Ye9RHIOMMUPHLS-eWPf9SYix1jfVW/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHeT7A_3NtqgmH751ZO2wOw0uMO7hi6e96lhDRUQtYOK5xSlGhQ4qBf24-_vP9acjT/exec";
 
         // DOM Elements
         const addDonorForm = document.getElementById('addDonorForm');
@@ -166,12 +227,18 @@
         // Global list to keep track
         let currentDonors = [];
 
-        function renderDonors(donors, filterText = '') {
+        function renderDonors(donors, filterText = '', filterDistrict = '') {
             donorTableBody.innerHTML = '';
             
             const filteredDonors = donors.filter(donor => {
                 const addedBy = donor.addedby ? donor.addedby.toLowerCase() : '';
-                return addedBy.includes(filterText.toLowerCase());
+                const name = donor.name ? donor.name.toLowerCase() : '';
+                const city = donor.city ? donor.city.toLowerCase() : '';
+                
+                const matchesText = addedBy.includes(filterText.toLowerCase()) || name.includes(filterText.toLowerCase());
+                const matchesDistrict = city.includes(filterDistrict.toLowerCase());
+                
+                return matchesText && matchesDistrict;
             });
 
             donorCount.textContent = `${filteredDonors.length} Donor${filteredDonors.length !== 1 ? 's' : ''}`;
@@ -205,8 +272,11 @@
                             <div class="text-xs text-gray-400">${donor.address || 'N/A'}</div>
                         </td>
                         <td class="p-5 text-gray-600 font-medium">${donor.addedby || 'N/A'}</td>
-                        <td class="p-5 text-right">
-                            <button onclick="deleteDonor('${donor.id}')" class="text-gray-400 hover:text-brightRed bg-white hover:bg-red-50 w-8 h-8 rounded-full transition-all opacity-0 group-hover:opacity-100">
+                        <td class="p-5 text-right whitespace-nowrap">
+                            <button onclick="openEditModal('${donor.id}')" class="text-gray-400 hover:text-royalBlue bg-white hover:bg-blue-50 w-8 h-8 rounded-full transition-all opacity-0 group-hover:opacity-100 mr-1" title="Edit Donor">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteDonor('${donor.id}')" class="text-gray-400 hover:text-brightRed bg-white hover:bg-red-50 w-8 h-8 rounded-full transition-all opacity-0 group-hover:opacity-100" title="Delete Donor">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
@@ -229,7 +299,8 @@
                 const data = await res.json();
                 currentDonors = data;
                 const filterVal = document.getElementById('adminSearchInput') ? document.getElementById('adminSearchInput').value : '';
-                renderDonors(data, filterVal);
+                const districtVal = document.getElementById('adminDistrictSearch') ? document.getElementById('adminDistrictSearch').value : '';
+                renderDonors(data, filterVal, districtVal);
             } catch (error) {
                 console.error(error);
                 donorTableBody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-red-500">Failed to load data.</td></tr>';
@@ -289,12 +360,75 @@
             }
         }
 
+        // Edit Donor Logic
+        function openEditModal(id) {
+            const donor = currentDonors.find(d => d.id === id || d.id == id);
+            if(!donor) return;
+
+            document.getElementById('editDonorId').value = donor.id;
+            document.getElementById('editDonorName').value = donor.name || '';
+            document.getElementById('editDonorNumber').value = donor.number || '';
+            document.getElementById('editDonorEmail').value = donor.email || '';
+            document.getElementById('editDonorGroup').value = donor.group || 'A+';
+            document.getElementById('editDonorCity').value = donor.city || '';
+            document.getElementById('editDonorAddress').value = donor.address || '';
+            document.getElementById('editDonorAddedBy').value = donor.addedby || '';
+
+            document.getElementById('editDonorModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editDonorModal').classList.add('hidden');
+        }
+
+        async function updateDonor(e) {
+            e.preventDefault();
+            const btn = document.getElementById('editDonorForm').querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const id = encodeURIComponent(document.getElementById('editDonorId').value);
+            const name = encodeURIComponent(document.getElementById('editDonorName').value.trim());
+            const number = encodeURIComponent(document.getElementById('editDonorNumber').value.trim());
+            const email = encodeURIComponent(document.getElementById('editDonorEmail').value.trim());
+            const group = encodeURIComponent(document.getElementById('editDonorGroup').value);
+            const city = encodeURIComponent(document.getElementById('editDonorCity').value.trim());
+            const address = encodeURIComponent(document.getElementById('editDonorAddress').value.trim());
+            const addedby = encodeURIComponent(document.getElementById('editDonorAddedBy').value.trim());
+
+            try {
+                const url = `${GOOGLE_SCRIPT_URL}?action=update&id=${id}&name=${name}&number=${number}&email=${email}&group=${group}&city=${city}&address=${address}&addedby=${addedby}`;
+                await fetch(url);
+                
+                closeEditModal();
+                fetchDonors(); // Refresh list
+                
+                // Show a quick success alert
+                setTimeout(() => alert("Donor details updated! (Note: Ensure your Google Script supports ?action=update)"), 500);
+            } catch (error) {
+                alert("Failed to update donor.");
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        }
+
         // Event Listeners
+        document.getElementById('editDonorForm').addEventListener('submit', updateDonor);
         addDonorForm.addEventListener('submit', addDonor);
         
         if (document.getElementById('adminSearchInput')) {
             document.getElementById('adminSearchInput').addEventListener('input', (e) => {
-                renderDonors(currentDonors, e.target.value);
+                const dVal = document.getElementById('adminDistrictSearch') ? document.getElementById('adminDistrictSearch').value : '';
+                renderDonors(currentDonors, e.target.value, dVal);
+            });
+        }
+        
+        if (document.getElementById('adminDistrictSearch')) {
+            document.getElementById('adminDistrictSearch').addEventListener('input', (e) => {
+                const sVal = document.getElementById('adminSearchInput') ? document.getElementById('adminSearchInput').value : '';
+                renderDonors(currentDonors, sVal, e.target.value);
             });
         }
         
