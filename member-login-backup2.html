@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Member Login | HSMV Foundation</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:"Segoe UI",sans-serif;background:#f5f0e8;min-height:100vh;}
@@ -63,513 +63,6 @@ body{font-family:"Segoe UI",sans-serif;background:#f5f0e8;min-height:100vh;}
 .pending-note{text-align:center;padding:28px 18px;background:#fff8ee;border-radius:10px;border:1px dashed #E8A020;}
 .pending-note p{font-size:0.8rem;color:#8a7455;line-height:1.7;}
 @media(max-width:520px){.doc-grid{grid-template-columns:1fr 1fr;}.info-grid{grid-template-columns:1fr;}}
-/* ID Card Styles */
-
-        :root {
-            --primary-orange: #ff9900;
-            --primary-green: #008000;
-            --dark-bg: #111111;
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        /* ID CARD CONTAINER VISUALS */
-        .id-card-wrapper {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .id-card {
-            width: 400px;
-            height: 600px;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #ddd;
-            
-            /* Forces backgrounds to show when printing/downloading */
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        
-        /* Header section layout */
-        .card-header {
-            background: white !important;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-        }
-        .logo-img {
-            width: 65px;
-            height: 65px;
-            object-fit: contain;
-            mix-blend-mode: multiply; 
-        }
-        .header-title {
-            text-align: center;
-            color: black;
-            font-weight: 900;
-            font-size: 16px;
-            line-height: 1.2;
-            flex: 1;
-        }
-        .sub-header-bar {
-            display: flex;
-            background: var(--primary-green) !important;
-            color: white !important;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 4px 10px;
-            justify-content: space-between;
-            align-items: center;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .reg-badge {
-            background: #ffcc00 !important;
-            color: black !important;
-            padding: 2px 8px;
-            border-radius: 2px;
-        }
-
-        /* Front Card Specifics */
-        .photo-container {
-            margin: 20px auto 10px auto;
-            width: 130px;
-            height: 160px;
-            border: 2px solid red;
-            border-radius: 8px;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative; 
-            overflow: visible; /* स्टांप को फ्रेम से बाहर दिखाने के लिए */
-        }
-        .photo-container img.profile-pic {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        /* ================= FIXED: LOWER RIGHT OVERLAY WITH PRECISION CENTERED SIGNATURE ================= */
-        .photo-overlay-stamp {
-            width: 180px; /* परफेक्ट विजुअल बैलेंस के लिए साइज थोड़ा सा ट्यून किया */
-            height: 180px;
-            position: absolute;
-            bottom: -50px; /* फोटो के निचले हिस्से (Lower Right) में सेट किया */
-            right: -90px;  /* आधा भाग (180px का आधा) फोटो के बिल्कुल बाहर रहेगा */
-            z-index: 10;
-            object-fit: contain;
-            pointer-events: none;
-        }
-        .photo-overlay-sign {
-            width: 210px; 
-            height: auto;
-            position: absolute;
-            bottom: -20px; /* सिग्नेचर को स्टांप के बिल्कुल वर्टिकल सेंटर (बीचों-बीच) में लाने के लिए नीचे किया */
-            right: -115px; /* हॉरिजॉन्टल सेंटर मैच करने के लिए परफेक्ट अलाइनमेंट */
-            z-index: 11;
-            object-fit: contain;
-            pointer-events: none;
-        }
-
-        .member-name {
-            text-align: center;
-            color: red;
-            font-size: 22px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin: 25px 0 0 0; /* स्टांप के फैलाव की वजह से नाम को ओवरलैप से बचाने के लिए सेफ डिस्टेंस */
-        }
-        .member-desig {
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 2px 0 15px 0;
-        }
-        
-        /* Data Fields Style */
-        .data-table {
-            width: 85%;
-            margin: 0 auto;
-            font-size: 13px;
-            border-collapse: collapse;
-        }
-        .data-table td {
-            padding: 4px 0;
-            vertical-align: top;
-        }
-        .field-label {
-            font-weight: bold;
-            color: red;
-            width: 110px;
-        }
-        .field-label.back-label {
-            color: red;
-            width: 90px;
-        }
-        .field-sep {
-            width: 15px;
-            font-weight: bold;
-        }
-        .field-value {
-            font-weight: bold;
-            color: #000;
-        }
-
-        /* Back Card Specifics */
-        .qr-container {
-            margin: 20px auto 10px auto;
-            width: 120px;
-            height: 120px;
-            border: 1px solid red;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .qr-container img {
-            width: 100%;
-            height: 100%;
-        }
-        .divider-line {
-            border-top: 1px solid #ccc;
-            margin: 15px 25px;
-        }
-        .legal-notice {
-            width: 85%;
-            margin: 10px auto;
-            font-size: 11px;
-            font-weight: bold;
-            color: red;
-        }
-
-        /* Footer layouts */
-        .footer-front {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 45px;
-            background: linear-gradient(115deg, transparent 35%, var(--dark-bg) 35.5%) !important;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 20px;
-            box-sizing: border-box;
-            color: white !important;
-            font-weight: bold;
-            font-size: 16px;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .footer-back {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 55px;
-            background: var(--dark-bg) !important;
-            color: white !important;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            box-sizing: border-box;
-            font-size: 10px;
-            font-weight: bold;
-            line-height: 1.3;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .footer-back-icon {
-            background: #ffcc00 !important;
-            color: black !important;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-        /* Print Override styles */
-        
-            .id-card { 
-                box-shadow: none; 
-                border: 1px solid #ddd; 
-                page-break-inside: avoid;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-        }
-    
-/* Letter Styles */
-
-        :root {
-            --primary-orange: #ff9900;
-            --primary-green: #008000;
-            --dark-brown: #4a1504;
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        /* ================= APPOINTMENT LETTER DESIGN ================= */
-        .offer-letter-page {
-            width: 820px;
-            height: 580px;
-            background: #fffdf6;
-            border: 3px solid #b8860b;
-            position: relative;
-            box-sizing: border-box;
-            padding: 25px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        
-        /* Background Watermark */
-        .offer-letter-page::before {
-            content: "";
-            position: absolute;
-            top: 52%; left: 50%;
-            width: 260px; height: 260px;
-            transform: translate(-50%, -50%);
-            background: url('https://i.ibb.co/cKssRvxh/Whats-App-Image-2026-06-21-at-15-39-55.jpg') no-repeat center;
-            background-size: contain;
-            opacity: 0.05;
-            pointer-events: none;
-        }
-        
-        .ol-main-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            border-bottom: 2px solid #ffcc00;
-            padding-bottom: 5px;
-        }
-        .ol-logo { width: 75px; height: 75px; object-fit: contain; mix-blend-mode: multiply; }
-        .ol-title {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--dark-brown);
-            text-align: center;
-            margin: 0;
-            letter-spacing: 0.3px;
-        }
-        .ol-gov-bar {
-            background: var(--primary-green) !important;
-            color: white !important;
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 15px;
-            font-weight: bold;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-        .ol-meta-grid {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 8px 5px;
-            font-size: 12px;
-            font-weight: bold;
-            color: #333;
-        }
-        .ol-badge-title {
-            background: linear-gradient(90deg, #b8860b, #e67e22) !important;
-            color: white !important;
-            font-size: 15px;
-            font-weight: bold;
-            padding: 3px 22px;
-            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
-        }
-        
-        .ol-id-date-row {
-            display: flex; 
-            justify-content: space-between; 
-            padding: 0 5px; 
-            font-size: 13px; 
-            font-weight: bold; 
-            margin-bottom: 12px;
-        }
-
-        /* Hindi Content Box */
-        .ol-body-content {
-            padding: 0 5px;
-            font-size: 14px;
-            line-height: 1.75;
-            color: #111;
-            text-align: justify;
-            font-weight: bold;
-            flex: 1;
-        }
-        .highlight-red { color: red; font-weight: bold; }
-        
-        /* Footer Layout */
-        .ol-footer-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5px;
-            margin-bottom: 35px;
-            position: relative;
-        }
-        .ol-social-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .ol-social-icons-box {
-            display: flex;
-            gap: 4px;
-        }
-        .ol-social-icons-box span {
-            width: 18px;
-            height: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 10px;
-            font-weight: 900;
-            border-radius: 3px;
-        }
-        .icon-fb { background-color: #3b5998; }
-        .icon-tw { background-color: #1da1f2; }
-        .icon-yt { background-color: #ff0000; }
-        .icon-ig { background-color: #e1306c; }
-
-        .ol-mob-box {
-            background: var(--dark-brown) !important;
-            color: white !important;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 4px 15px;
-            border-radius: 2px;
-        }
-        
-        /* ================= FIXED: SIGNATURE OVERLAYED EXACTLY IN STAMP'S MIDDLE BLANK SPACE ================= */
-        .ol-signature-area {
-            position: relative;
-            width: 180px;
-            height: 110px; /* Gives perfect vertical canvas space above the line */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center; /* Horizontally centers both assets */
-        }
-        /* Lower Layer: The Circular Stamp */
-        .ol-real-stamp {
-            width: 100px;
-            height: 100px;
-            position: absolute;
-            bottom: 8px; /* Rests right above the signature line text */
-            z-index: 1;
-            object-fit: contain;
-        }
-        /* Top Layer: Centered perfectly within the blank middle space of the stamp */
-        .ol-real-sign {
-            width: 80px; /* Slightly scaled to match the inner diameter bounds perfectly */
-            height: auto;
-            position: absolute;
-            bottom: 30px; /* Pushed precisely into the center circle pocket of the stamp */
-            z-index: 2;
-            object-fit: contain;
-        }
-        .ol-sig-line {
-            border-top: 1.5px solid #222;
-            font-size: 13px;
-            font-weight: bold;
-            padding-top: 4px;
-            color: #111;
-            z-index: 3;
-            position: relative;
-            width: 100%;
-            text-align: center;
-        }
-        .ol-base-footer {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: var(--dark-brown) !important;
-            color: white !important;
-            text-align: center;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 8px 0;
-            letter-spacing: 0.3px;
-        }
-
-        /* Print Layouts */
-        
-        }
-    
-/* Certificate Styles */
-
-        .certificate-page {
-            width: 820px;
-            height: 580px;
-            background: #fffdf6;
-            border: 3px solid #b8860b;
-            position: relative;
-            box-sizing: border-box;
-            padding: 25px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .certificate-page::before {
-            content: "";
-            position: absolute;
-            top: 52%; left: 50%;
-            width: 260px; height: 260px;
-            transform: translate(-50%, -50%);
-            background: url('https://i.ibb.co/cKssRvxh/Whats-App-Image-2026-06-21-at-15-39-55.jpg') no-repeat center;
-            background-size: contain;
-            opacity: 0.05;
-            pointer-events: none;
-        }
-        .cert-badge-title {
-            background: linear-gradient(90deg, #b8860b, #e67e22) !important;
-            color: white !important;
-            font-size: 15px;
-            font-weight: bold;
-            padding: 3px 22px;
-            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
-        }
-
 </style>
 </head>
 <body>
@@ -662,59 +155,28 @@ function doLogin(){
   btn.disabled = true;
   btn.textContent = "Logging in...";
 
-  // TEMPORARY BYPASS FOR TESTING
-  if (mid === "TEST" && pass === "test") {
-    btn.disabled = false;
-    btn.textContent = "Login";
-    memberData = {
-      id: "TEST",
-      memberId: "TEST",
-      name: "Test User",
-      post: "Developer",
-      phone: "9876543210",
-      joiningDate: new Date().toISOString(),
-      memberStatus: "approved",
-      bloodGroup: "O+",
-      fatherName: "Test Father",
-      address: "Test Address, India"
-    };
-    localStorage.setItem("hsmv_mid", mid);
-    showDashboard();
-    return;
-  }
-
+  // Use GET - no CORS issue
   var url = SHEET_URL + "?action=login&memberId=" + encodeURIComponent(mid) + "&password=" + encodeURIComponent(btoa(pass));
   
   fetch(url)
-  .then(function(r) { return r.text(); })
-  .then(function(text) {
+  .then(function(r){ return r.json(); })
+  .then(function(d){
     btn.disabled = false;
     btn.textContent = "Login";
-    var d;
-    try { 
-      d = JSON.parse(text); 
-    } catch (err_parse) { 
-      console.error(text); 
-      err.textContent = "Google Script Error: Backend returned HTML. (Check console)"; 
-      err.style.display = "block"; 
-      return; 
+    if(d.status !== "success"){
+      err.textContent = d.message || "Login failed";
+      err.style.display = "block";
+      return;
     }
-    
-    if(d.status !== "success"){ 
-      err.textContent = d.message || "Login failed"; 
-      err.style.display = "block"; 
-      return; 
-    }
-    
-    memberData = d.member; 
-    memberData.id = mid; 
-    localStorage.setItem("hsmv_mid", mid); 
+    memberData = d.member;
+    memberData.id = mid;
+    localStorage.setItem("hsmv_mid", mid);
     showDashboard();
   })
   .catch(function(e){
-    btn.disabled = false; 
-    btn.textContent = "Login"; 
-    err.textContent = "Connection error: " + e.message; 
+    btn.disabled = false;
+    btn.textContent = "Login";
+    err.textContent = "Connection error: " + e.message;
     err.style.display = "block";
   });
 }
@@ -764,6 +226,274 @@ function showDashboard(){
     :'<div class="pending-note"><div style="font-size:1.8rem;margin-bottom:9px;">\uD83D\uDD12</div><p>Documents tab available honge jab admin aapki application approve kar le.<br/>Approval ke baad yahan se ID Card, Certificate aur Joining Letter download kar sakte hain.</p></div>';
 }
 
+function getDate(){
+  if(memberData&&memberData.approvedAt) return new Date(memberData.approvedAt).toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"});
+  return new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"});
+}
+
+async function downloadIDCard(){
+  var jspdf = window.jspdf;
+  var m = memberData;
+
+  // QR code URL - website link
+  var websiteUrl = "https://geniuswarrior29.github.io/HSMV";
+
+  // Generate QR using Google Charts API
+  var qrUrl = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=" + encodeURIComponent(websiteUrl) + "&choe=UTF-8";
+
+  // Load QR image
+  var qrBase64 = await loadImageAsBase64(qrUrl);
+
+  // Card: portrait 54mm x 86mm
+  var doc = new jspdf.jsPDF({orientation:"portrait", unit:"mm", format:[54,86]});
+  var W = 54, H = 86;
+
+  // ══════════════ FRONT PAGE ══════════════
+  drawFront(doc, m, W, H, qrBase64);
+
+  // ══════════════ BACK PAGE ══════════════
+  doc.addPage([54, 86]);
+  drawBack(doc, m, W, H, qrBase64);
+
+  doc.save("HSMV-ID-Card-" + (m.memberId||m.id) + ".pdf");
+}
+
+function loadImageAsBase64(url){
+  return new Promise(function(resolve){
+    var img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = function(){
+      var canvas = document.createElement("canvas");
+      canvas.width = img.width; canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      try{ resolve(canvas.toDataURL("image/png")); }
+      catch(e){ resolve(""); }
+    };
+    img.onerror = function(){ resolve(""); };
+    img.src = url;
+  });
+}
+
+function drawHeader(doc, W){
+  // Gold header background
+  doc.setFillColor(232, 160, 32);
+  doc.rect(0, 0, W, 18, "F");
+
+  // Logo circle
+  try{
+    doc.addImage(LOGO_DATA, "JPEG", 1, 1, 15, 15);
+  }catch(e){}
+
+  // NGO Name text
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6.5);
+  doc.text("HELPING SOCIETY MISSION &", 18, 7);
+  doc.text("VISION FOUNDATION", 18, 12);
+
+  // Green strip
+  doc.setFillColor(34, 120, 34);
+  doc.rect(0, 18, 30, 5.5, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(3.8);
+  doc.text("Pratyek Sarkar Dwara", 1.5, 20.5);
+  doc.text("Manyata Prapt", 1.5, 23);
+
+  // Yellow REG strip
+  doc.setFillColor(232, 160, 32);
+  doc.rect(30, 18, W-30, 5.5, "F");
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(4.5);
+  doc.text("REG- 231407", 32, 21.5);
+}
+
+function drawFront(doc, m, W, H, qrBase64){
+  // White background
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, W, H, "F");
+
+  // Header
+  drawHeader(doc, W);
+
+  // Photo box with red border
+  doc.setDrawColor(200, 0, 0);
+  doc.setLineWidth(0.8);
+  doc.rect(9, 26, 18, 22, "S");
+  if(m.photo && m.photo.startsWith("data:image")){
+    try{ doc.addImage(m.photo, "JPEG", 9, 26, 18, 22); }catch(e){}
+  } else {
+    doc.setFontSize(3.5);
+    doc.setTextColor(180,180,180);
+    doc.text("Photo", 18, 38, {align:"center"});
+  }
+
+  // Member Name - Bold Red
+  doc.setTextColor(200, 0, 0);
+  doc.setFont("helvetica", "bold");
+  var nm = (m.name || "MEMBER NAME").toUpperCase();
+  var fs = nm.length > 18 ? 6 : nm.length > 14 ? 7 : 8.5;
+  doc.setFontSize(fs);
+  doc.text(nm, W/2, 52, {align:"center"});
+
+  // Post - Black bold below name
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(5.5);
+  doc.text(m.post || "Member", W/2, 57, {align:"center"});
+
+  // Details rows
+  var details = [
+    ["ID No.",      m.memberId || m.id || ""],
+    ["Blood Group", m.bloodGroup || "N/A"],
+    ["Mobile",      "6392760740"],
+    ["Valid From",  fmtDate(m.joiningDate)],
+    ["Valid To",    validTo(m.joiningDate)]
+  ];
+  var y = 63;
+  details.forEach(function(row){
+    doc.setTextColor(200, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(4.5);
+    doc.text(row[0], 2, y);
+    doc.setTextColor(26, 18, 9);
+    doc.setFont("helvetica", "normal");
+    doc.text(":", 19, y);
+    doc.text(String(row[1]), 21, y);
+    y += 4;
+  });
+
+  // Social icons
+  var socials = [
+    {x:2,  color:[24,119,242], label:"f"},
+    {x:8,  color:[0,0,0],      label:"t"},
+    {x:14, color:[255,0,0],    label:"Y"},
+    {x:20, color:[193,53,132], label:"I"}
+  ];
+  socials.forEach(function(s){
+    doc.setFillColor(s.color[0], s.color[1], s.color[2]);
+    doc.roundedRect(s.x, 80, 5, 5, 1, 1, "F");
+    doc.setTextColor(255,255,255);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(4);
+    doc.text(s.label, s.x+2.5, 83.5, {align:"center"});
+  });
+
+  // Phone badge - dark with gold diagonal
+  doc.setFillColor(26, 18, 9);
+  doc.rect(28, 79, W-28, 7, "F");
+  doc.setFillColor(232, 160, 32);
+  // Diagonal accent
+  doc.triangle(28, 79, 34, 79, 28, 86, "F");
+  doc.setTextColor(232, 160, 32);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(6);
+  doc.text("6392760740", W-1.5, 84, {align:"right"});
+
+  // Bottom colored line
+  doc.setFillColor(26, 18, 9);
+  doc.rect(0, H-1.5, W*0.4, 1.5, "F");
+  doc.setFillColor(0, 82, 165);
+  doc.rect(W*0.4, H-1.5, W*0.6, 1.5, "F");
+}
+
+function drawBack(doc, m, W, H, qrBase64){
+  // White background
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, W, H, "F");
+
+  // Header
+  drawHeader(doc, W);
+
+  // QR Code with red border box
+  doc.setDrawColor(200, 0, 0);
+  doc.setLineWidth(0.8);
+  doc.rect(W/2-12, 25, 24, 24, "S");
+  if(qrBase64){
+    try{ doc.addImage(qrBase64, "PNG", W/2-11, 26, 22, 22); }catch(e){}
+  }
+
+  // Back details
+  var backDetails = [
+    ["S/O",     m.fatherName || "N/A"],
+    ["DOB",     fmtDate(m.dob)],
+  ];
+  var y = 54;
+  backDetails.forEach(function(row){
+    doc.setTextColor(200, 0, 0);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(5);
+    doc.text(row[0], 2, y);
+    doc.setTextColor(26, 18, 9);
+    doc.setFont("helvetica","normal");
+    doc.text(":", 16, y);
+    doc.text(String(row[1]), 18, y);
+    y += 5.5;
+  });
+
+  // Address
+  doc.setTextColor(200, 0, 0);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(5);
+  doc.text("Address", 2, y);
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica","normal");
+  doc.text(":", 16, y);
+  var addrLines = doc.splitTextToSize(m.address || "N/A", W-20);
+  addrLines.slice(0,3).forEach(function(l, i){
+    doc.text(l, 18, y + i*4.5);
+  });
+
+  // Red divider
+  doc.setDrawColor(200, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.line(2, 70, W-2, 70);
+
+  // CIN
+  doc.setFontSize(4.5);
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(200, 0, 0);
+  doc.text("CIN", 2, 74);
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica","normal");
+  doc.text(": U88900UP2025NPL231407", 12, 74);
+
+  // NGO DARPAN
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(200, 0, 0);
+  doc.text("NGO DARPAN", 2, 78.5);
+  doc.setTextColor(26, 18, 9);
+  doc.setFont("helvetica","normal");
+  doc.text(": UP/2025/0801291", 20, 78.5);
+
+  // 80G line
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(200, 0, 0);
+  doc.setFontSize(5);
+  doc.text("80G & 12 A, CSR regd.", 2, 83);
+
+  // Dark footer
+  doc.setFillColor(26, 18, 9);
+  doc.rect(0, H-10, W, 10, "F");
+
+  // Location pin
+  doc.setTextColor(232, 160, 32);
+  doc.setFontSize(8);
+  doc.text("@", 2, H-4);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(3.5);
+  doc.text("Address - Vijay nagar tripula,", 8, H-7);
+  doc.text("Maharajganj road, Raebareli UP india 229306", 8, H-3.5);
+
+  // Bottom line
+  doc.setFillColor(26, 18, 9);
+  doc.rect(0, H-1.5, W*0.4, 1.5, "F");
+  doc.setFillColor(0, 82, 165);
+  doc.rect(W*0.4, H-1.5, W*0.6, 1.5, "F");
+}
 
 function fmtDate(d){
   if(!d) return "N/A";
@@ -785,362 +515,96 @@ function validTo(fromDate){
   }catch(e){ return "N/A"; }
 }
 
-function getDate(){
-  if(memberData&&memberData.approvedAt) return new Date(memberData.approvedAt).toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\//g, '-');
-  return new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\//g, '-');
-}
 
-async function downloadIDCard(){
-  var m = memberData;
-  var template = document.getElementById('idCardTemplate');
-  var hiddenContainer = document.getElementById('hiddenTemplates');
-  
-  // Populate data
-  template.querySelector('#cardName').innerText = m.name || "";
-  template.querySelector('#cardDesignation').innerText = m.post || "Member";
-  template.querySelector('#cardID').innerText = m.memberId || m.id || "0000";
-  template.querySelector('#cardBloodGroup').innerText = m.bloodGroup || "N/A";
-  template.querySelector('#cardMobile').innerText = m.phone || "N/A";
-  template.querySelector('#cardFooterMobile').innerText = m.phone || "N/A";
-  template.querySelector('#cardFather').innerText = m.fatherName || "N/A";
-  template.querySelector('#cardAddress').innerText = m.address || "N/A";
-  
-  if (m.dob) {
-    template.querySelector('#cardDOB').innerText = fmtDate(m.dob);
-  } else {
-    template.querySelector('#cardDOB').innerText = "N/A";
-  }
-
-  var dynamicToday = m.joiningDate ? new Date(m.joiningDate) : new Date();
-  var dynamicOneYearLater = new Date(dynamicToday);
-  dynamicOneYearLater.setFullYear(dynamicToday.getFullYear() + 1);
-  dynamicOneYearLater.setDate(dynamicToday.getDate() - 1);
-
-  template.querySelector('#cardValidFrom').innerText = fmtDate(dynamicToday);
-  template.querySelector('#cardValidTo').innerText = fmtDate(dynamicOneYearLater);
-
-  if (m.photo) {
-    template.querySelector('#cardPhoto').src = m.photo;
-  }
-
-  hiddenContainer.style.display = 'block';
-  template.style.display = 'flex';
-  template.style.position = 'fixed';
-  template.style.top = '0';
-  template.style.left = '0';
-  template.style.zIndex = '-1000';
-  
-  var opt = {
-    margin:       0,
-    filename:     'HSMV-IDCard-'+(m.memberId||m.id)+'.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowHeight: template.scrollHeight + 50 },
-    jsPDF:        { unit: 'px', format: [840, 620], orientation: 'landscape' }
-  };
-  
-  await html2pdf().set(opt).from(template).save();
-  template.style.display = 'none';
-  template.style.position = 'static';
-  template.style.zIndex = 'auto';
-  hiddenContainer.style.display = 'none';
+async function downloadCertificate(){
+  var jspdf=window.jspdf;var doc=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  var m=memberData;var W=210;
+  doc.setFillColor(253,246,227);doc.rect(0,0,W,297,"F");
+  doc.setDrawColor(232,160,32);doc.setLineWidth(3);doc.rect(8,8,W-16,281,"S");
+  doc.setLineWidth(0.5);doc.rect(11,11,W-22,275,"S");
+  doc.setFillColor(26,18,9);doc.rect(8,8,W-16,28,"F");
+  doc.setTextColor(232,160,32);doc.setFontSize(10.5);doc.setFont("helvetica","bold");
+  doc.text("HELPING SOCIETY MISSION & VISION FOUNDATION",W/2,20,{align:"center"});
+  doc.setFontSize(6.5);doc.setTextColor(200,185,155);
+  doc.text("Raebareli, Uttar Pradesh, India  |  hsmvfoundation@gmail.com",W/2,28,{align:"center"});
+  doc.setFontSize(21);doc.setTextColor(26,18,9);doc.setFont("helvetica","bold");
+  doc.text("Certificate of Membership",W/2,57,{align:"center"});
+  doc.setDrawColor(232,160,32);doc.setLineWidth(1);doc.line(40,62,W-40,62);doc.setLineWidth(0.3);doc.line(50,64,W-50,64);
+  if(m.photo&&m.photo.startsWith("data:image")){try{doc.setDrawColor(232,160,32);doc.setLineWidth(1.5);doc.rect(W/2-14,69,28,34,"S");doc.addImage(m.photo,"JPEG",W/2-14,69,28,34);}catch(e){}}
+  doc.setFontSize(10.5);doc.setTextColor(80,60,20);doc.setFont("helvetica","normal");
+  doc.text("This is to certify that",W/2,114,{align:"center"});
+  doc.setFontSize(19);doc.setTextColor(26,18,9);doc.setFont("helvetica","bold");
+  doc.text(m.name||"",W/2,126,{align:"center"});
+  doc.setFontSize(9.5);doc.setTextColor(80,60,20);doc.setFont("helvetica","normal");
+  doc.text("has been duly enrolled as a member of",W/2,136,{align:"center"});
+  doc.setFontSize(12.5);doc.setTextColor(232,160,32);doc.setFont("helvetica","bold");
+  doc.text("Helping Society Mission & Vision Foundation",W/2,146,{align:"center"});
+  doc.setFontSize(9.5);doc.setTextColor(80,60,20);doc.setFont("helvetica","normal");
+  doc.text("with the designation of",W/2,155,{align:"center"});
+  doc.setFontSize(12.5);doc.setTextColor(26,18,9);doc.setFont("helvetica","bold");
+  doc.text((m.post||"Member").toUpperCase(),W/2,164,{align:"center"});
+  doc.setFillColor(255,248,230);doc.setDrawColor(232,160,32);doc.setLineWidth(0.5);doc.rect(30,171,W-60,30,"FD");
+  doc.setFontSize(8.5);doc.setTextColor(80,60,20);doc.setFont("helvetica","normal");
+  doc.text("Member ID: "+(m.memberId||m.id),48,180);doc.text("Date of Joining: "+(m.joiningDate||"-"),48,187);doc.text("Date of Issue: "+getDate(),48,194);
+  doc.text("Phone: "+(m.phone||"-"),W/2+8,180);doc.text("Aadhar: "+(m.aadhar||"-"),W/2+8,187);
+  doc.setDrawColor(26,18,9);doc.setLineWidth(0.5);doc.line(38,238,88,238);doc.line(W-88,238,W-38,238);
+  doc.setFontSize(7.5);doc.setTextColor(80,60,20);
+  doc.text("Member Signature",63,244,{align:"center"});doc.text("Authorised Signatory",W-63,244,{align:"center"});
+  doc.setFont("helvetica","bold");doc.text("HSMV Foundation",W-63,249,{align:"center"});
+  doc.setFontSize(8.5);doc.setTextColor(232,160,32);doc.setFont("helvetica","bolditalic");
+  doc.text('"Ahsaan Nahi, Madad Kijiye"',W/2,260,{align:"center"});
+  doc.setFillColor(26,18,9);doc.rect(8,270,W-16,17,"F");
+  doc.setTextColor(200,185,155);doc.setFontSize(6.5);doc.setFont("helvetica","normal");
+  doc.text("This certificate is issued by Helping Society Mission & Vision Foundation, Raebareli, Uttar Pradesh",W/2,279,{align:"center"});
+  doc.save("HSMV-Certificate-"+(m.memberId||m.id)+".pdf");
 }
 
 async function downloadJoiningLetter(){
-  var m = memberData;
-  var template = document.getElementById('letterTemplate');
-  var hiddenContainer = document.getElementById('hiddenTemplates');
-  
-  // Populate data
-  template.querySelector('#olName').innerText = m.name || "";
-  template.querySelector('#olDesignation').innerText = m.post || "Member";
-  template.querySelector('#olID').innerText = m.memberId || m.id || "0000";
-  template.querySelector('#olFather').innerText = m.fatherName || "N/A";
-  template.querySelector('#olMobile').innerText = m.phone || "N/A";
-  template.querySelector('#olDate').innerText = m.joiningDate ? fmtDate(m.joiningDate) : getDate();
-  
-  hiddenContainer.style.display = 'block';
-  template.style.display = 'block';
-  template.style.position = 'fixed';
-  template.style.top = '0';
-  template.style.left = '0';
-  template.style.zIndex = '-1000';
-
-  var opt = {
-    margin:       0,
-    filename:     'HSMV-JoiningLetter-'+(m.memberId||m.id)+'.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowHeight: template.scrollHeight + 50 },
-    jsPDF:        { unit: 'px', format: [820, 580], orientation: 'landscape' }
-  };
-  
-  await html2pdf().set(opt).from(template).save();
-  template.style.display = 'none';
-  template.style.position = 'static';
-  template.style.zIndex = 'auto';
-  hiddenContainer.style.display = 'none';
-}
-
-async function downloadCertificate(){
-  var m = memberData;
-  var template = document.getElementById('certificateTemplate');
-  var hiddenContainer = document.getElementById('hiddenTemplates');
-  
-  // Populate data
-  template.querySelector('#certName').innerText = m.name || "";
-  template.querySelector('#certDesignation').innerText = m.post || "Member";
-  template.querySelector('#certID').innerText = m.memberId || m.id || "0000";
-  template.querySelector('#certFather').innerText = m.fatherName || "N/A";
-  template.querySelector('#certMobile').innerText = m.phone || "N/A";
-  template.querySelector('#certDate').innerText = m.joiningDate ? fmtDate(m.joiningDate) : getDate();
-  
-  hiddenContainer.style.display = 'block';
-  template.style.display = 'block';
-  template.style.position = 'fixed';
-  template.style.top = '0';
-  template.style.left = '0';
-  template.style.zIndex = '-1000';
-
-  var opt = {
-    margin:       0,
-    filename:     'HSMV-Certificate-'+(m.memberId||m.id)+'.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowHeight: template.scrollHeight + 50 },
-    jsPDF:        { unit: 'px', format: [820, 580], orientation: 'landscape' }
-  };
-  
-  await html2pdf().set(opt).from(template).save();
-  template.style.display = 'none';
-  template.style.position = 'static';
-  template.style.zIndex = 'auto';
-  hiddenContainer.style.display = 'none';
+  var jspdf=window.jspdf;var doc=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  var m=memberData;var W=210;
+  doc.setFillColor(253,246,227);doc.rect(0,0,W,297,"F");
+  doc.setFillColor(26,18,9);doc.rect(0,0,W,36,"F");
+  doc.setTextColor(232,160,32);doc.setFontSize(11.5);doc.setFont("helvetica","bold");
+  doc.text("HELPING SOCIETY MISSION & VISION FOUNDATION",W/2,13,{align:"center"});
+  doc.setFontSize(6.5);doc.setTextColor(200,185,155);
+  doc.text("Raebareli, UP, India  |  +91 63927 60740  |  hsmvfoundation@gmail.com",W/2,20,{align:"center"});
+  doc.setFontSize(5.5);doc.text('"Ahsaan Nahi, Madad Kijiye"',W/2,27,{align:"center"});
+  doc.setDrawColor(232,160,32);doc.setLineWidth(1);doc.line(0,36,W,36);
+  doc.setTextColor(80,60,20);doc.setFontSize(8.5);doc.setFont("helvetica","normal");
+  doc.text("Date: "+getDate(),W-18,49,{align:"right"});
+  doc.text("Ref No.: HSMV/MEM/"+(m.memberId||m.id),18,49);
+  doc.setFontSize(10.5);doc.setFont("helvetica","bold");doc.setTextColor(26,18,9);
+  doc.text("Subject: Joining Letter - Membership Confirmation",18,64);
+  doc.setDrawColor(232,160,32);doc.setLineWidth(0.5);doc.line(18,66,W-18,66);
+  doc.setFontSize(9.5);doc.setFont("helvetica","normal");doc.setTextColor(50,35,10);
+  doc.text("Dear "+(m.name||"Member")+",",18,76);
+  doc.text("We are pleased to inform you that your membership application to Helping Society",18,88);
+  doc.text("Mission & Vision Foundation (HSMV) has been reviewed and approved by our committee.",18,95);
+  doc.text("You are hereby enrolled as an official member of HSMV Foundation with effect from",18,106);
+  doc.text((m.joiningDate||getDate())+". Your membership details are as follows:",18,113);
+  doc.setFillColor(255,248,230);doc.setDrawColor(232,160,32);doc.setLineWidth(0.5);doc.rect(18,120,W-36,44,"FD");
+  doc.setFont("helvetica","bold");doc.setTextColor(26,18,9);doc.setFontSize(8.5);
+  doc.text("Member Name   :",26,129);doc.setFont("helvetica","normal");doc.text(m.name||"",70,129);
+  doc.setFont("helvetica","bold");doc.text("Member ID      :",26,137);doc.setFont("helvetica","normal");doc.text(m.memberId||m.id,70,137);
+  doc.setFont("helvetica","bold");doc.text("Designation    :",26,145);doc.setFont("helvetica","normal");doc.text(m.post||"Member",70,145);
+  doc.setFont("helvetica","bold");doc.text("Date of Joining:",26,153);doc.setFont("helvetica","normal");doc.text(m.joiningDate||"-",70,153);
+  doc.setFont("helvetica","bold");doc.text("Phone            :",26,161);doc.setFont("helvetica","normal");doc.text(m.phone||"-",70,161);
+  doc.setFont("helvetica","normal");doc.setTextColor(50,35,10);doc.setFontSize(9.5);
+  doc.text("As a member of HSMV Foundation, you are expected to uphold our values and",18,176);
+  doc.text("contribute actively to our mission of social welfare and community service.",18,183);
+  doc.text("We welcome you to our growing family and look forward to your valuable contribution.",18,194);
+  doc.text("Yours sincerely,",18,208);
+  doc.setFont("helvetica","bold");doc.setTextColor(26,18,9);
+  doc.text("HSMV Foundation",18,222);
+  doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(80,60,20);
+  doc.text("Helping Society Mission & Vision Foundation",18,228);
+  doc.text("Raebareli, Uttar Pradesh, India",18,233);
+  doc.setFillColor(26,18,9);doc.rect(0,271,W,26,"F");
+  doc.setTextColor(200,185,155);doc.setFontSize(6.5);
+  doc.text("This is a computer-generated letter issued by HSMV Foundation. For queries: +91 63927 60740",W/2,281,{align:"center"});
+  doc.text('"Ahsaan Nahi, Madad Kijiye" | hsmvfoundation@gmail.com',W/2,287,{align:"center"});
+  doc.save("HSMV-Joining-Letter-"+(m.memberId||m.id)+".pdf");
 }
 </script>
-
-<!-- HIDDEN TEMPLATES FOR PDF GENERATION -->
-<div id="hiddenTemplates" style="display: none;">
-    <!-- ID Card Template -->
-    <div id="idCardTemplate" class="id-card-wrapper" style="width: 840px;">
-        
-        
-        <!-- ================= FRONT SIDE ================= -->
-        <div class="id-card">
-            <div class="card-header">
-                <img class="logo-img" src="https://i.ibb.co/cKssRvxh/Whats-App-Image-2026-06-21-at-15-39-55.jpg" alt="Logo">
-                <div class="header-title">HELPING SOCIETY MISSION &<br>VISION FOUNDATION</div>
-            </div>
-            <div class="sub-header-bar">
-                <span>प्रत्येक सरकार द्वारा मान्यता प्राप्त</span>
-                <span class="reg-badge">REG- 231407</span>
-            </div>
-
-            <!-- Overlapping layout perfectly positioned at the lower right corner -->
-            <div class="photo-container">
-                <img id="cardPhoto" class="profile-pic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24'><path fill='%23ccc' d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z'/></svg>" alt="Profile Picture">
-                <img class="photo-overlay-stamp" src="https://i.ibb.co/HDdVBS1W/vikas-stamp-removebg-preview.png" alt="Stamp">
-                <img class="photo-overlay-sign" src="https://i.ibb.co/Pz65fS5B/vikas-sign-removebg-preview.png" alt="Signature">
-            </div>
-
-            <h3 class="member-name" id="cardName">DEV</h3>
-            <div class="member-desig" id="cardDesignation">web developer and manager</div>
-
-            <table class="data-table">
-                <tr>
-                    <td class="field-label">ID No.</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardID">0001</td>
-                </tr>
-                <tr>
-                    <td class="field-label">Blood Group</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardBloodGroup">O+</td>
-                </tr>
-                <tr>
-                    <td class="field-label">Mobile</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardMobile">8957799335</td>
-                </tr>
-                <tr>
-                    <td class="field-label">Valid From</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardValidFrom">02-Jul-2026</td>
-                </tr>
-                <tr>
-                    <td class="field-label">Valid To</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardValidTo">01-Jul-2027</td>
-                </tr>
-            </table>
-
-            <div class="footer-front" id="cardFooterMobile">8957799335</div>
-        </div>
-
-        <!-- ================= BACK SIDE ================= -->
-        <div class="id-card">
-            <div class="card-header">
-                <img class="logo-img" src="https://i.ibb.co/cKssRvxh/Whats-App-Image-2026-06-21-at-15-39-55.jpg" alt="Logo">
-                <div class="header-title">HELPING SOCIETY MISSION &<br>VISION FOUNDATION</div>
-            </div>
-            <div class="sub-header-bar">
-                <span>प्रत्येक सरकार द्वारा मान्यता प्राप्त</span>
-                <span class="reg-badge">REG- 231407</span>
-            </div>
-
-            <div class="qr-container">
-                <img src="https://i.ibb.co/VcCRXTZm/qrcode-hsmvf-com-1.png" alt="qr-code">
-            </div>
-
-            <table class="data-table">
-                <tr>
-                    <td class="field-label back-label">S/O</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardFather">Gopal Narayan Srivastava</td>
-                </tr>
-                <tr>
-                    <td class="field-label back-label">DOB</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardDOB">29-Aug-2006</td>
-                </tr>
-                <tr>
-                    <td class="field-label back-label">Address</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value" id="cardAddress" style="font-size: 12px; line-height: 1.3;">Ahiyapur Raebareli, 229001 UP</td>
-                </tr>
-            </table>
-
-            <div class="divider-line"></div>
-
-            <table class="data-table">
-                <tr>
-                    <td class="field-label back-label" style="width:100px;">CIN</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value">U88900UP2025NPL231407</td>
-                </tr>
-                <tr>
-                    <td class="field-label back-label">NGO DARPAN</td>
-                    <td class="field-sep">:</td>
-                    <td class="field-value">UP/2025/0801291</td>
-                </tr>
-            </table>
-
-            <div class="legal-notice">80G & 12 A, CSR regd.</div>
-
-            <div class="footer-back">
-                <div class="footer-back-icon">📍</div>
-                <div>Address - Vijay nagar tripula,<br>Maharajganj road, Raebareli UP india 229306</div>
-            </div>
-        </div>
-
-    
-    </div>
-
-    <!-- Letter Template -->
-    <div id="letterTemplate" class="offer-letter-page">
-        
-        <div class="ol-main-header">
-            <img class="ol-logo" src="https://i.ibb.co/cKssRvxh/Whats-App-Image-2026-06-21-at-15-39-55.jpg" alt="Logo">
-            <div class="ol-title">HELPING SOCIETY MISSION & VISION FOUNDATION</div>
-        </div>
-        <div class="ol-gov-bar">
-            <span>प्रदेश सरकार द्वारा मान्यता प्राप्त</span>
-            <span>Reg. No. : 231407</span>
-        </div>
-        
-        <div class="ol-meta-grid">
-            <div>NGO DARPAN : UP/2025/0801291</div>
-            <div class="ol-badge-title">नियुक्ति पत्र</div>
-            <div>CIN NO. : U88900UP2025NPL231407</div>
-        </div>
-
-        <div class="ol-id-date-row">
-            <div>ID No. - <span id="olID">0068</span></div>
-            <div>Date - <span id="olDate">04-03-2026</span></div>
-        </div>
-
-        <div class="ol-body-content">
-            आदरणीय श्री/श्रीमती/सुश्री <span class="highlight-red" id="olName">Prashant Tripathi</span> 
-            पुत्र/पुत्री/पति <span class="highlight-red" id="olFather">Yogendra kumar Tripathi</span> आपके सामाजिक कार्यों के प्रति आपकी निष्ठा को देखते हुए अपार हर्ष के साथ सूचित किया जाता है कि 
-            <span class="highlight-red">"हेल्पिंग सोसाइटी मिशन एंड विजन फाउंडेशन"</span> में आपको 
-            <span class="highlight-red" id="olDesignation">मीडिया प्रभारी</span> बनाया जाता है। 
-            हमें आशा ही नहीं अपितु पूर्ण विश्वास है कि आप संस्थान की नीतियों व सिद्धांतों से जन-मानस को अवगत करायेंगे/करायेंगी और संस्थान को प्रबल मजबूत बनायेंगे। संस्थापक एवं संचालक जी के नेतृत्व में घर-घर के सम्मान में, हर व्यक्ति को प्रबल, सशक्त, शिक्षित व आत्मनिर्भर बनाने के संकल्प को साकार करते हुए <span class="highlight-red">"हेल्पिंग सोसाइटी मिशन एंड विजन फाउंडेशन"</span> के विचारों को जन-जन तक पहुँचायेंगे व समाज को संगठित कर अपने राष्ट्र को शक्तिशाली बनायेंगे।
-        </div>
-
-        <!-- Footer Row Section -->
-        <div class="ol-footer-row">
-            <div class="ol-social-block">
-                <div class="ol-qr-box" style="display: flex; align-items: center; justify-content: center; width: 60px; height: 60px;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hsmvf.com" alt="Website QR Code" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
-                <div class="ol-mob-box">Mob. No. : <span id="olMobile">6392760740</span></div>
-            </div>
-
-            <!-- Signature block with centered layout inside the stamp's white circle space -->
-            <div class="ol-signature-area">
-                <img class="ol-real-stamp" src="https://i.ibb.co/HDdVBS1W/vikas-stamp-removebg-preview.png" alt="Stamp">
-                <img class="ol-real-sign" src="https://i.ibb.co/Pz65fS5B/vikas-sign-removebg-preview.png" alt="Signature">
-                <div class="ol-sig-line">Authorised Signature</div>
-            </div>
-        </div>
-
-        <div class="ol-base-footer">
-            Reg. Office - Vijay Nager Tripura, Mahrajganj Road Raebareli, Uttar Pradesh India - 229306
-        </div>
-    
-    </div>
-
-    <!-- Certificate Template -->
-    <div id="certificateTemplate" class="certificate-page">
-        
-        <div class="ol-main-header">
-            <img class="ol-logo" src="https://i.ibb.co/cKssRvxh/Whats-App-Image-2026-06-21-at-15-39-55.jpg" alt="Logo">
-            <div class="ol-title">HELPING SOCIETY MISSION & VISION FOUNDATION</div>
-        </div>
-        <div class="ol-gov-bar">
-            <span>प्रदेश सरकार द्वारा मान्यता प्राप्त</span>
-            <span>Reg. No. : 231407</span>
-        </div>
-        
-        <div class="ol-meta-grid">
-            <div>NGO DARPAN : UP/2025/0801291</div>
-            <div class="cert-badge-title">प्रमाण पत्र</div>
-            <div>CIN NO. : U88900UP2025NPL231407</div>
-        </div>
-
-        <div class="ol-id-date-row">
-            <div>ID No. - <span id="certID">0068</span></div>
-            <div>Date - <span id="certDate">04-03-2026</span></div>
-        </div>
-
-        <div class="ol-body-content">
-            आदरणीय श्री/श्रीमती/सुश्री <span class="highlight-red" id="certName">Prashant Tripathi</span> 
-            पुत्र/पुत्री/पति <span class="highlight-red" id="certFather">Yogendra kumar Tripathi</span> आपके सामाजिक कार्यों के प्रति आपकी निष्ठा को देखते हुए अपार हर्ष के साथ सूचित किया जाता है कि 
-            <span class="highlight-red">"हेल्पिंग सोसाइटी मिशन एंड विजन फाउंडेशन"</span> में आपको 
-            <span class="highlight-red" id="certDesignation">मीडिया प्रभारी</span> होने का प्रमाण पत्र प्रदान किया जाता है। 
-            हमें आशा ही नहीं अपितु पूर्ण विश्वास है कि आप संस्थान की नीतियों व सिद्धांतों से जन-मानस को अवगत करायेंगे/करायेंगी और संस्थान को प्रबल मजबूत बनायेंगे। संस्थापक एवं संचालक जी के नेतृत्व में घर-घर के सम्मान में, हर व्यक्ति को प्रबल, सशक्त, शिक्षित व आत्मनिर्भर बनाने के संकल्प को साकार करते हुए <span class="highlight-red">"हेल्पिंग सोसाइटी मिशन एंड विजन फाउंडेशन"</span> के विचारों को जन-जन तक पहुँचायेंगे व समाज को संगठित कर अपने राष्ट्र को शक्तिशाली बनायेंगे।
-        </div>
-
-        <!-- Footer Row Section -->
-        <div class="ol-footer-row">
-            <div class="ol-social-block">
-                <div class="ol-qr-box" style="display: flex; align-items: center; justify-content: center; width: 60px; height: 60px;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hsmvf.com" alt="Website QR Code" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
-                <div class="ol-mob-box">Mob. No. : <span id="certMobile">6392760740</span></div>
-            </div>
-
-            <!-- Signature block with centered layout inside the stamp's white circle space -->
-            <div class="ol-signature-area">
-                <img class="ol-real-stamp" src="https://i.ibb.co/HDdVBS1W/vikas-stamp-removebg-preview.png" alt="Stamp">
-                <img class="ol-real-sign" src="https://i.ibb.co/Pz65fS5B/vikas-sign-removebg-preview.png" alt="Signature">
-                <div class="ol-sig-line">Authorised Signature</div>
-            </div>
-        </div>
-
-        <div class="ol-base-footer">
-            Reg. Office - Vijay Nager Tripura, Mahrajganj Road Raebareli, Uttar Pradesh India - 229306
-        </div>
-    
-    </div>
-</div>
-
 </body>
         </html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Student Admin Portal | HSMV</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Segoe UI",sans-serif;background:#f0ece4;color:#2d2410;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#1a1209;border-right:2px solid #E8A020;display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:14px;border-bottom:1px solid rgba(232,160,32,0.3);display:flex;align-items:center;gap:8px;}
+.sb-logo img{width:36px;height:36px;border-radius:50%;border:2px solid #E8A020;}
+.sb-logo span{color:#fff;font-size:0.8rem;font-weight:600;line-height:1.3;}
+.sb-logo small{display:block;color:#E8A020;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;}
+.nav-item{padding:12px 16px;color:rgba(255,255,255,0.6);font-size:0.82rem;cursor:pointer;border-left:3px solid transparent;transition:.2s;display:flex;align-items:center;gap:8px;}
+.nav-item:hover,.nav-item.active{color:#fff;background:rgba(232,160,32,0.08);border-left-color:#E8A020;}
+.sb-foot{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,0.1);}
+.btn-lo{width:100%;padding:9px;background:rgba(220,53,69,0.15);color:#ff6b6b;border:1px solid rgba(220,53,69,0.3);border-radius:5px;font-size:0.78rem;cursor:pointer;}
+.main{margin-left:210px;padding:20px;min-height:100vh;}
+.topbar{background:#fff;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);flex-wrap:wrap;gap:8px;}
+.topbar h1{font-family:Georgia,serif;font-size:1rem;color:#1a1209;}
+.search-box{padding:7px 12px;border:1.5px solid #e0d0b0;border-radius:6px;font-size:0.8rem;outline:none;width:190px;}
+.search-box:focus{border-color:#E8A020;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.sc{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-top:3px solid #E8A020;}
+.sc.g{border-top-color:#3a7d44;}.sc.o{border-top-color:#856404;}.sc.r{border-top-color:#dc3545;}
+.sc-num{font-family:Georgia,serif;font-size:1.8rem;font-weight:900;color:#1a1209;}
+.sc-lbl{font-size:0.62rem;color:#8a7455;text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.tcard{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+.tc-head{padding:14px 18px;border-bottom:1px solid #f0e8d8;}
+.tc-head h2{font-family:Georgia,serif;font-size:0.92rem;color:#1a1209;}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{background:#faf6ee;padding:9px 12px;font-size:0.63rem;font-weight:700;text-transform:uppercase;color:#8a7455;text-align:left;border-bottom:2px solid #f0e8d8;}
+td{padding:10px 12px;font-size:0.78rem;border-bottom:1px solid #f8f0e4;vertical-align:middle;}
+tr:hover td{background:#fffdf7;}
+.sb{padding:3px 9px;border-radius:10px;font-size:0.63rem;font-weight:700;text-transform:uppercase;}
+.sp{background:#fff3cd;color:#856404;}.sa{background:#d1e7dd;color:#0f5132;}.sr{background:#f8d7da;color:#842029;}
+.abtn{display:flex;gap:5px;flex-wrap:wrap;}
+.app-btn{padding:4px 9px;background:#3a7d44;color:#fff;border:none;border-radius:4px;font-size:0.68rem;font-weight:600;cursor:pointer;}
+.rej-btn{padding:4px 9px;background:#dc3545;color:#fff;border:none;border-radius:4px;font-size:0.68rem;font-weight:600;cursor:pointer;}
+.viw-btn{padding:4px 9px;background:#E8A020;color:#1a1209;border:none;border-radius:4px;font-size:0.68rem;font-weight:600;cursor:pointer;}
+.mp{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #E8A020;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.mh{padding:16px 18px;border-bottom:1px solid #f0e8d8;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;}
+.mh h3{font-family:Georgia,serif;font-size:0.95rem;color:#1a1209;}
+.mc{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#8a7455;}
+.mb{padding:18px;}
+.mprofile{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+.mph{width:85px;height:85px;border-radius:10px;object-fit:cover;border:3px solid #E8A020;flex-shrink:0;}
+.mid-t{background:#1a1209;color:#E8A020;padding:2px 9px;border-radius:4px;font-size:0.68rem;font-weight:700;letter-spacing:1px;display:inline-block;margin-bottom:6px;}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;margin-top:10px;}
+.ir{font-size:0.76rem;line-height:1.5;}
+.ir span{color:#8a7455;display:block;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.5px;}
+.ssprev{width:100%;border-radius:8px;border:2px solid #3a7d44;margin-top:12px;}
+.ma{padding:14px 18px;border-top:1px solid #f0e8d8;display:flex;gap:8px;justify-content:flex-end;}
+.empty{text-align:center;padding:36px;color:#8a7455;font-size:0.82rem;}
+.loading{text-align:center;padding:28px;color:#E8A020;font-size:0.82rem;}
+.sbar{padding:8px 16px;font-size:0.72rem;text-align:center;background:#3a7d44;color:#fff;}
+.mob-btn{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#E8A020;border:none;border-radius:6px;padding:8px 10px;cursor:pointer;font-size:1rem;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:.3s;}.sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}.stats{grid-template-columns:1fr 1fr;}.mob-btn{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="sbar" id="sbar">Loading...</div>
+<button class="mob-btn" id="mobBtn">&#9776;</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <img src="icon.jpg" alt="HSMV"/>
+    <span>Student Admin<small>PORTAL</small></span>
+  </div>
+  <div class="nav-item" style="border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom: 10px; flex-direction:column; align-items:flex-start;">
+    <label style="color:#3498db; font-size:0.75rem; margin-bottom: 5px;">Database: Firebase (Students)</label>
+  </div>
+  <div class="nav-item active" id="n-all">&#128101; All Records</div>
+  <div class="nav-item" id="n-pending">&#9203; Pending <span id="pc" style="background:#E8A020;color:#1a1209;border-radius:8px;padding:1px 7px;font-size:0.62rem;font-weight:700;margin-left:4px;"></span></div>
+  <div class="nav-item" id="n-approved">&#9989; Approved</div>
+  <div class="nav-item" id="n-rejected">&#10060; Rejected</div>
+  <div class="sb-foot">
+    <button class="btn-lo" id="refreshBtn" style="margin-bottom:8px; background:rgba(58,125,68,0.15); color:#3a7d44; border-color:rgba(58,125,68,0.3);">&#8635; Refresh</button>
+    <button class="btn-lo" id="exportBtn">&#128190; Export DB</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1 id="pageTitle">All Members</h1>
+    <input type="text" class="search-box" id="searchBox" placeholder="Search name, ID..."/>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sc-num" id="s0">-</div><div class="sc-lbl">Total</div></div>
+    <div class="sc o"><div class="sc-num" id="s1">-</div><div class="sc-lbl">Pending</div></div>
+    <div class="sc g"><div class="sc-num" id="s2">-</div><div class="sc-lbl">Approved</div></div>
+    <div class="sc r"><div class="sc-num" id="s3">-</div><div class="sc-lbl">Rejected</div></div>
+  </div>
+  <div class="tcard">
+    <div class="tc-head"><h2 id="tTitle">All Applications</h2></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Photo</th><th>ID</th><th>Name</th><th>Phone</th><th>Post</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="mh"><h3>Member Details</h3><button class="mc" id="closeModalBtn">&#10005;</button></div>
+    <div class="mb" id="mbody"></div>
+    <div class="ma" id="mact"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+firebase.initializeApp(FIREBASE_CONFIG);
+var db = firebase.firestore();
+var currentDbType = "students";
+
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzeuxIZmhTKTsh3uKaXGo9fgqWCtQYMANOmFHugYPQn1wnMod8GFRGWeQgLoDIgrC7Y/exec";
+var allMembers = [];
+var curFilter = "all";
+
+function sb(msg, ok) {
+  var b = document.getElementById("sbar");
+  b.textContent = msg;
+  b.style.background = ok === true ? "#3a7d44" : ok === false ? "#dc3545" : "#856404";
+}
+
+function loadData() {
+  sb("Loading " + currentDbType + "...", null);
+  if (currentDbType === "members") {
+    // Use GET to avoid CORS
+    fetch(SHEET_URL + "?action=get_members")
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if(d.status !== "success") throw new Error(d.message || "Failed");
+      allMembers = d.members || [];
+      allMembers.forEach(function(m) { if(!m.id) m.id = m.memberId; });
+      sb("Loaded " + allMembers.length + " record(s)", true);
+      updateStats();
+      renderTable();
+      var p = allMembers.filter(function(m) { return m.status === "pending"; }).length;
+      document.getElementById("pc").textContent = p || "";
+    })
+    .catch(function(e) {
+      sb("Error: " + e.message, false);
+      document.getElementById("tbody").innerHTML = "<tr><td colspan='7' class='empty'>Load failed: " + e.message + "</td></tr>";
+    });
+  } else {
+    // Load from Firebase
+    db.collection("students").get().then(function(snap) {
+      allMembers = [];
+      snap.forEach(function(doc) {
+        var data = doc.data();
+        data.id = doc.id;
+        if (!data.memberId) data.memberId = doc.id;
+        allMembers.push(data);
+      });
+      sb("Loaded " + allMembers.length + " student(s)", true);
+      updateStats();
+      renderTable();
+      var p = allMembers.filter(function(m) { return m.status === "pending"; }).length;
+      document.getElementById("pc").textContent = p || "";
+    }).catch(function(e) {
+      sb("Error: " + e.message, false);
+      document.getElementById("tbody").innerHTML = "<tr><td colspan='7' class='empty'>Load failed: " + e.message + "</td></tr>";
+    });
+  }
+}
+
+function updateStats() {
+  document.getElementById("s0").textContent = allMembers.length;
+  document.getElementById("s1").textContent = allMembers.filter(function(m){return m.status==="pending";}).length;
+  document.getElementById("s2").textContent = allMembers.filter(function(m){return m.status==="approved";}).length;
+  document.getElementById("s3").textContent = allMembers.filter(function(m){return m.status==="rejected";}).length;
+}
+
+function showTab(tab) {
+  curFilter = tab;
+  ["all","pending","approved","rejected"].forEach(function(t) {
+    document.getElementById("n-"+t).classList.remove("active");
+  });
+  document.getElementById("n-"+tab).classList.add("active");
+  var titles = {all:"All Members", pending:"Pending", approved:"Approved Members", rejected:"Rejected"};
+  document.getElementById("pageTitle").textContent = titles[tab];
+  renderTable();
+}
+
+function renderTable() {
+  var q = (document.getElementById("searchBox").value || "").toLowerCase();
+  var list = allMembers.filter(function(m) {
+    if(curFilter !== "all" && m.status !== curFilter) return false;
+    if(q && !(m.name||"").toLowerCase().includes(q) && !(m.memberId||"").toLowerCase().includes(q)) return false;
+    return true;
+  });
+  var tb = document.getElementById("tbody");
+  if(!list.length) { tb.innerHTML = "<tr><td colspan='7' class='empty'>No records found</td></tr>"; return; }
+  var rows = "";
+  for(var i = 0; i < list.length; i++) {
+    var m = list[i];
+    var st = m.status || "pending";
+    var cls = st==="approved" ? "sa" : st==="rejected" ? "sr" : "sp";
+    var ph = m.photo ? "<img src='" + m.photo + "' class='mp'/>" : "<div style='width:34px;height:34px;border-radius:50%;background:#e0d0b0;display:flex;align-items:center;justify-content:center;'>&#128100;</div>";
+    rows += "<tr>";
+    rows += "<td>" + ph + "</td>";
+    rows += "<td style='color:#E8A020;font-weight:700;font-size:0.72rem;'>" + (m.memberId||m.id||"") + "</td>";
+    rows += "<td>" + (m.name||"") + "</td>";
+    rows += "<td>" + (m.phone||"") + "</td>";
+    rows += "<td>" + (currentDbType === "students" ? (m.college||"") : (m.post||"")) + "</td>";
+    rows += "<td><span class='sb " + cls + "'>" + st + "</span></td>";
+    rows += "<td><div class='abtn'>";
+    rows += "<button class='viw-btn' data-id='" + (m.memberId||m.id) + "'>View</button>";
+    if(st === "pending") {
+      rows += "<button class='app-btn' data-id='" + (m.memberId||m.id) + "'>&#10003;</button>";
+      rows += "<button class='rej-btn' data-id='" + (m.memberId||m.id) + "'>&#10007;</button>";
+    }
+    rows += "</div></td>";
+    rows += "</tr>";
+  }
+  tb.innerHTML = rows;
+  var headRow = document.querySelector("thead tr");
+  if(headRow && headRow.children[4]) {
+    headRow.children[4].textContent = currentDbType === "students" ? "College" : "Post";
+  }
+
+  // Attach events after render
+  tb.querySelectorAll(".viw-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() { viewMember(this.getAttribute("data-id")); });
+  });
+  tb.querySelectorAll(".app-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() { doApprove(this.getAttribute("data-id")); });
+  });
+  tb.querySelectorAll(".rej-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() { doReject(this.getAttribute("data-id")); });
+  });
+}
+
+function viewMember(id) {
+  var m = null;
+  for(var i = 0; i < allMembers.length; i++) {
+    if(allMembers[i].memberId === id || allMembers[i].id === id) { m = allMembers[i]; break; }
+  }
+  if(!m) return;
+  var st = m.status || "pending";
+  var cls = st==="approved" ? "sa" : st==="rejected" ? "sr" : "sp";
+  var html = "<div class='mprofile'>";
+  if(m.photo) html += "<img src='" + m.photo + "' class='mph'/>";
+  html += "<div><div class='mid-t'>" + (m.memberId||m.id||"") + "</div>";
+  html += "<h2 style='font-family:Georgia,serif;font-size:1rem;margin:5px 0;'>" + (m.name||"") + "</h2>";
+  html += "<span class='sb " + cls + "'>" + st + "</span></div></div>";
+  html += "<div class='igrid'>";
+  html += "<div class='ir'><span>Phone</span>" + (m.phone||"-") + "</div>";
+  if (currentDbType === "members") {
+    html += "<div class='ir'><span>DOB</span>" + (m.dob||"-") + "</div>";
+    html += "<div class='ir'><span>Blood Group</span>" + (m.bloodGroup||"-") + "</div>";
+    html += "<div class='ir'><span>Father Name</span>" + (m.fatherName||"-") + "</div>";
+    html += "<div class='ir'><span>Post</span>" + (m.post||"-") + "</div>";
+    html += "<div class='ir'><span>Aadhar</span>" + (m.aadhar||"-") + "</div>";
+    html += "<div class='ir'><span>PAN</span>" + (m.pan||"N/A") + "</div>";
+    html += "<div class='ir'><span>Joining</span>" + (m.joiningDate||"-") + "</div>";
+    html += "<div class='ir'><span>Submitted</span>" + (m.submittedAt||"-") + "</div>";
+  } else {
+    html += "<div class='ir'><span>College/School</span>" + (m.college||"-") + "</div>";
+    html += "<div class='ir'><span>Father Name</span>" + (m.fatherName||"-") + "</div>";
+    html += "<div class='ir'><span>Aadhar</span>" + (m.aadhar||"-") + "</div>";
+    html += "<div class='ir'><span>PAN</span>" + (m.pan||"N/A") + "</div>";
+    html += "<div class='ir'><span>Submitted</span>" + (m.submittedAt||"-") + "</div>";
+    if(m.paymentScreenshot) {
+      html += "<div class='ir' style='grid-column: span 2; margin-top: 10px;'><span>Payment Screenshot</span><br><img src='" + m.paymentScreenshot + "' style='max-width:100%; border-radius:6px; border:2px solid #E8A020; margin-top:5px;'/></div>";
+    }
+  }
+  html += "</div>";
+  html += "<div class='ir' style='margin-top:10px;font-size:0.76rem;'><span style='color:#8a7455;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.5px;display:block;'>Address</span>" + (m.address||"-") + "</div>";
+  document.getElementById("mbody").innerHTML = html;
+
+  var actHtml = "";
+  if(st === "pending") {
+    actHtml += "<button class='app-btn' style='padding:9px 18px;font-size:0.8rem;' data-id='" + (m.memberId||m.id) + "' id='modalApproveBtn'>&#10003; Approve</button>";
+    actHtml += "<button class='rej-btn' style='padding:9px 18px;font-size:0.8rem;' data-id='" + (m.memberId||m.id) + "' id='modalRejectBtn'>&#10007; Reject</button>";
+  } else {
+    actHtml = "<span style='font-size:0.78rem;color:#8a7455;margin-right:10px;'>Status: " + st + "</span>";
+  }
+  
+  if (currentDbType === "students") {
+    actHtml += "<button class='viw-btn' style='padding:9px 18px;font-size:0.8rem; margin-left:5px;' data-id='" + (m.memberId||m.id) + "' id='modalEditBtn'>&#9998; Edit</button>";
+    actHtml += "<button class='rej-btn' style='padding:9px 18px;font-size:0.8rem; margin-left:5px;' data-id='" + (m.memberId||m.id) + "' id='modalDeleteBtn'>&#128465; Delete</button>";
+  }
+  document.getElementById("mact").innerHTML = actHtml;
+
+  if(st === "pending") {
+    document.getElementById("modalApproveBtn").addEventListener("click", function() {
+      doApprove(this.getAttribute("data-id"));
+      closeModal();
+    });
+    document.getElementById("modalRejectBtn").addEventListener("click", function() {
+      doReject(this.getAttribute("data-id"));
+      closeModal();
+    });
+  }
+  
+  if (currentDbType === "students") {
+    document.getElementById("modalEditBtn").addEventListener("click", function() {
+      var field = prompt("Which field do you want to edit? (e.g., name, phone, college, address, aadhar, pan)");
+      if (field) {
+        var newVal = prompt("Enter new value for " + field + ":", m[field] || "");
+        if (newVal !== null) {
+          var updateObj = {};
+          updateObj[field] = newVal;
+          db.collection("students").doc(m.id).update(updateObj).then(function() {
+            alert("Updated successfully!");
+            loadData();
+            closeModal();
+          });
+        }
+      }
+    });
+    document.getElementById("modalDeleteBtn").addEventListener("click", function() {
+      if(confirm("Are you sure you want to delete this student record completely?")) {
+        db.collection("students").doc(m.id).delete().then(function() {
+          alert("Deleted successfully!");
+          loadData();
+          closeModal();
+        });
+      }
+    });
+  }
+
+  document.getElementById("modal").classList.add("show");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("show");
+}
+
+function patchStatus(id, status, reason) {
+  if (currentDbType === "members") {
+    var url = SHEET_URL + "?action=update_status&memberId=" + encodeURIComponent(id) + "&status=" + encodeURIComponent(status) + "&reason=" + encodeURIComponent(reason||"");
+    fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if(d.status === "success") {
+        alert(status === "approved" ? "Approved!" : "Rejected.");
+        loadData();
+      } else {
+        alert("Error: " + (d.message||"Unknown"));
+      }
+    })
+    .catch(function(e) { alert("Error: " + e.message); });
+  } else {
+    var updateObj = {
+      status: status,
+      reason: reason || ""
+    };
+    if (status === "approved" || status === "rejected") {
+      updateObj.paymentScreenshot = firebase.firestore.FieldValue.delete();
+    }
+    db.collection("students").doc(id).update(updateObj).then(function() {
+      alert(status === "approved" ? "Approved!" : "Rejected.");
+      loadData();
+    }).catch(function(e) {
+      alert("Error: " + e.message);
+    });
+  }
+}
+
+function doApprove(id) {
+  if(!confirm("Approve this member?")) return;
+  patchStatus(id, "approved", "");
+}
+
+function doReject(id) {
+  var reason = prompt("Rejection reason (optional):") || "";
+  patchStatus(id, "rejected", reason);
+}
+
+// Event listeners
+document.getElementById("mobBtn").addEventListener("click", function() {
+  document.getElementById("sidebar").classList.toggle("open");
+});
+document.getElementById("refreshBtn").addEventListener("click", loadData);
+
+document.getElementById("exportBtn").addEventListener("click", async function() {
+  try {
+    sb("Exporting...", null);
+    var snap = await db.collection("students").get();
+    var data = [];
+    snap.forEach(doc => data.push(doc.data()));
+    var blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "students_db_export.json";
+    a.click();
+    sb("Exported successfully", true);
+  } catch(e) {
+    sb("Export failed: " + e.message, false);
+  }
+});
+
+document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+document.getElementById("searchBox").addEventListener("input", renderTable);
+document.getElementById("n-all").addEventListener("click", function() { showTab("all"); });
+document.getElementById("n-pending").addEventListener("click", function() { showTab("pending"); });
+document.getElementById("n-approved").addEventListener("click", function() { showTab("approved"); });
+document.getElementById("n-rejected").addEventListener("click", function() { showTab("rejected"); });
+
+// Start
+loadData();
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>

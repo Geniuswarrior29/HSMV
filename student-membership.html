@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Student Membership Registration | HSMV Foundation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b,#334155);background-size:200% 200%;animation:gradientBG 10s ease infinite;color:#f8fafc;min-height:100vh;}
+@keyframes gradientBG{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.topbar{background:rgba(15,23,42,0.7);backdrop-filter:blur(10px);padding:12px 5%;display:flex;align-items:center;gap:15px;border-bottom:1px solid rgba(255,255,255,0.1);position:sticky;top:0;z-index:100;box-shadow:0 4px 30px rgba(0,0,0,0.1);}
+.topbar img{width:45px;height:45px;border-radius:50%;border:2px solid #3b82f6;box-shadow:0 0 10px rgba(59,130,246,0.5);}
+.topbar-title{color:#fff;font-size:0.95rem;font-weight:700;line-height:1.2;}
+.topbar-title span{display:block;font-size:0.65rem;color:#60a5fa;letter-spacing:2px;text-transform:uppercase;}
+.topbar a{margin-left:auto;color:#fff;text-decoration:none;font-size:0.8rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:6px 14px;border-radius:6px;transition:0.3s;}
+.topbar a:hover{background:#3b82f6;border-color:#3b82f6;}
+.hero{text-align:center;padding:40px 5% 30px;animation:fadeInUp 0.8s ease-out;}
+.hero h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px;}
+.hero h1 span{color:#3b82f6;text-shadow:0 0 20px rgba(59,130,246,0.5);}
+.hero p{color:#94a3b8;font-size:0.9rem;}
+.container{max-width:650px;margin:0 auto;padding:0 15px 60px;}
+.progress-bar{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;margin-bottom:25px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);}
+.progress-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);border-radius:3px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);width:33%;box-shadow:0 0 10px rgba(59,130,246,0.6);}
+.step-bar{display:flex;align-items:center;margin-bottom:30px;animation:fadeInUp 0.9s ease-out;}
+.step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.sc{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.05);color:#64748b;font-size:0.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);transition:0.4s;}
+.sc.active{background:#3b82f6;color:#fff;border-color:#3b82f6;box-shadow:0 0 15px rgba(59,130,246,0.4);transform:scale(1.1);}
+.sc.done{background:#10b981;color:#fff;border-color:#10b981;}
+.sl{font-size:0.65rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600;transition:0.4s;}
+.sl.active{color:#3b82f6;}
+.sline{flex:1;height:2px;background:rgba(255,255,255,0.1);margin-top:-15px;transition:0.4s;}
+.sline.done{background:#10b981;}
+.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:25px 20px;box-shadow:0 10px 30px rgba(0,0,0,0.2);margin-bottom:20px;animation:fadeInUp 1s ease-out;animation-fill-mode:both;}
+.card h2{font-size:1.1rem;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:12px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.fg{margin-bottom:15px;}
+.fg label{display:block;font-size:0.75rem;font-weight:600;letter-spacing:0.5px;color:#cbd5e1;margin-bottom:6px;}
+.fg label .req{color:#ef4444;}
+.fg label .opt{color:#64748b;font-weight:400;text-transform:none;font-size:0.7rem;}
+.fg input,.fg select,.fg textarea{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-family:inherit;font-size:0.9rem;color:#fff;background:rgba(0,0,0,0.2);outline:none;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);}
+.fg input:focus,.fg textarea:focus{border-color:#3b82f6;background:rgba(0,0,0,0.3);box-shadow:0 0 0 3px rgba(59,130,246,0.2);transform:translateY(-1px);}
+.fg input::placeholder{color:#64748b;}
+.fg textarea{resize:vertical;min-height:80px;}
+.err{color:#ef4444;font-size:0.75rem;margin-top:5px;display:none;animation:fadeInUp 0.2s;}
+.fe input,.fe textarea{border-color:#ef4444!important;background:rgba(239,68,68,0.05)!important;}
+.upload-box{border:2px dashed rgba(255,255,255,0.2);border-radius:12px;padding:25px 15px;text-align:center;cursor:pointer;transition:0.3s;background:rgba(0,0,0,0.1);}
+.upload-box:hover{border-color:#3b82f6;background:rgba(59,130,246,0.05);transform:translateY(-2px);}
+.upload-box .ico{font-size:1.8rem;margin-bottom:8px;opacity:0.8;}
+.upload-box p{font-size:0.85rem;color:#cbd5e1;margin-bottom:5px;}
+.upload-box .fn{font-size:0.75rem;color:#10b981;font-weight:600;}
+.qr-card{background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1));backdrop-filter:blur(10px);border:1px solid rgba(59,130,246,0.2);border-radius:16px;padding:30px 20px;color:#fff;text-align:center;margin-bottom:20px;animation:fadeInUp 1.2s ease-out;animation-fill-mode:both;}
+.qr-card h2{font-size:1.2rem;margin-bottom:8px;font-weight:700;}
+.qr-card p{font-size:0.85rem;color:#94a3b8;margin-bottom:20px;}
+.amt{background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);border-radius:8px;display:inline-block;padding:10px 25px;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:25px;letter-spacing:1px;box-shadow:0 4px 15px rgba(59,130,246,0.3);}
+.qr-card img{width:100%;max-width:260px;height:auto;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.4);margin:0 auto 15px;display:block;border:3px solid rgba(255,255,255,0.1);transition:transform 0.3s;}
+.qr-card img:hover{transform:scale(1.03);}
+.upiid{font-size:0.8rem;color:#cbd5e1;font-weight:500;letter-spacing:0.5px;}
+.btn-main{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;font-family:inherit;box-shadow:0 4px 15px rgba(59,130,246,0.4);text-transform:uppercase;letter-spacing:1px;}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,0.5);background:linear-gradient(135deg,#4f46e5,#3b82f6);}
+.btn-main:disabled{background:rgba(255,255,255,0.1);color:#64748b;cursor:not-allowed;box-shadow:none;transform:none;}
+@media(max-width:520px){.frow{grid-template-columns:1fr;gap:0;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <img src="icon.jpg" alt="HSMV"/>
+  <div class="topbar-title">HSMV Foundation<span>Student Membership Registration</span></div>
+  <a href="index.html">&#8592; Back</a>
+</div>
+<div class="hero">
+  <h1>Join <span>HSMV Foundation</span></h1>
+  <p>Fill the form below &mdash; Registration fee &#8377;19 only</p>
+</div>
+<div class="container">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="step-bar">
+    <div class="step"><div class="sc active" id="sc1">1</div><div class="sl active" id="sl1">Details</div></div>
+    <div class="sline" id="ln1"></div>
+    <div class="step"><div class="sc" id="sc2">2</div><div class="sl" id="sl2">Payment</div></div>
+    <div class="sline" id="ln2"></div>
+    <div class="step"><div class="sc" id="sc3">3</div><div class="sl" id="sl3">Submit</div></div>
+  </div>
+
+  <div id="formSection">
+    <!-- Removed notebox here as requested -->
+    <div class="card">
+      <h2>&#128100; Personal Details</h2>
+      <div class="frow">
+        <div class="fg" id="fg_name">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" id="f_name" placeholder="Poora naam"/>
+          <div class="err" id="e_name">Name required</div>
+        </div>
+        <div class="fg" id="fg_phone">
+          <label>WhatsApp Number <span class="req">*</span></label>
+          <input type="tel" id="f_phone" placeholder="+91 XXXXX XXXXX"/>
+          <div class="err" id="e_phone">Valid number required</div>
+        </div>
+      </div>
+      <div class="fg" id="fg_email">
+        <label>Email <span class="req">*</span></label>
+        <input type="email" id="f_email" placeholder="aapka@email.com"/>
+        <div class="err" id="e_email">Valid email required</div>
+      </div>
+      <div class="fg" id="fg_college">
+        <label>College/School Name <span class="req">*</span></label>
+        <input type="text" id="f_college" placeholder="Aapka Institute Name"/>
+        <div class="err" id="e_college">College/School Name required</div>
+      </div>
+      <div class="fg" id="fg_father">
+        <label>Father / Husband Name <span class="req">*</span></label>
+        <input type="text" id="f_father" placeholder="Pita / Pati ka naam"/>
+        <div class="err" id="e_father">Father name required</div>
+      </div>
+      <div class="fg" id="fg_address">
+        <label>Full Address <span class="req">*</span></label>
+        <textarea id="f_address" placeholder="Ghar no., Mohalla, Tehsil, Zila, State, PIN"></textarea>
+        <div class="err" id="e_address">Address required</div>
+      </div>
+      <div class="frow">
+        <div class="fg" id="fg_aadhar">
+          <label>Aadhar Number <span class="req">*</span></label>
+          <input type="text" id="f_aadhar" placeholder="XXXX XXXX XXXX" maxlength="14"/>
+          <div class="err" id="e_aadhar">12 digit Aadhar required</div>
+        </div>
+        <div class="fg">
+          <label>PAN <span class="opt">(Optional)</span></label>
+          <input type="text" id="f_pan" placeholder="ABCDE1234F" maxlength="10"/>
+        </div>
+      </div>
+
+      <div class="fg" id="fg_pass">
+        <label>Password (for member login) <span class="req">*</span></label>
+        <input type="password" id="f_pass" placeholder="Minimum 6 characters"/>
+        <div class="err" id="e_pass">Min 6 characters required</div>
+      </div>
+    </div>
+
+
+
+    <div class="qr-card">
+      <h2>&#128179; Registration Fee Payment</h2>
+      <p>Niche QR scan karke fee pay karein</p>
+      <div class="amt">&#8377; 101 (School) / &#8377; 201 (College)</div>
+      <img src="qr.jpg" alt="UCO Bank UPI QR"/>
+      <div class="upiid">UCO Bank &mdash; Getepay.ucbqrapp897256</div>
+    </div>
+
+    <div class="card" style="border-top-color:#3a7d44;">
+      <h2>&#128190; Payment Screenshot</h2>
+      <p style="font-size:0.74rem;color:#8a7455;margin-bottom:11px;">Payment ka screenshot upload karein</p>
+      <div class="upload-box" onclick="document.getElementById('f_ss').click()">
+        <div class="ico">&#128247;</div>
+        <p>Payment screenshot upload karein</p>
+        <div class="fn" id="ss_fn">Koi file select nahi</div>
+      </div>
+      <input type="file" id="f_ss" accept="image/*" style="display:none" onchange="previewFile(this,'ss_fn','ss_prev')"/>
+      <img id="ss_prev" style="display:none;width:100%;max-height:115px;object-fit:cover;border-radius:6px;margin-top:9px;border:2px solid #3a7d44;"/>
+      <div class="err" id="e_ss" style="display:none;">Payment screenshot required</div>
+    </div>
+
+    <button class="btn-main" id="submitBtn" onclick="submitMembership()">&#128196; Submit Student Membership Application</button>
+    <p style="text-align:center;font-size:0.68rem;color:#bbb;margin-top:7px;">Data database mein securely save hoga</p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+firebase.initializeApp(FIREBASE_CONFIG);
+var db = firebase.firestore();
+
+
+
+function previewFile(input, fnId, prevId){
+  if(input.files && input.files[0]){
+    document.getElementById(fnId).textContent = input.files[0].name;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var prev = document.getElementById(prevId);
+      prev.src = e.target.result;
+      prev.style.display = "block";
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function compressImage(file, maxW, qual){
+  return new Promise(function(resolve){
+    if(!file){ resolve(""); return; }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var canvas = document.createElement("canvas");
+        var w = img.width, h = img.height;
+        if(w > maxW){ h = Math.round(h * maxW / w); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", qual));
+      };
+      img.onerror = function(){ resolve(""); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ resolve(""); };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Aadhar formatting
+document.getElementById("f_aadhar").addEventListener("input", function(){
+  var v = this.value.replace(/[^0-9]/g, "").substring(0, 12);
+  this.value = v.replace(/([0-9]{4})([0-9]{4})([0-9]{4})/, "$1 $2 $3");
+});
+
+// Removed f_date reference
+
+function showErr(id, show){
+  var el = document.getElementById(id);
+  if(el) el.style.display = show ? "block" : "none";
+}
+function markErr(id, err){
+  var el = document.getElementById(id);
+  if(el){ if(err) el.classList.add("fe"); else el.classList.remove("fe"); }
+}
+
+
+
+async function submitMembership(){
+  var name    = document.getElementById("f_name").value.trim();
+  var phone   = document.getElementById("f_phone").value.trim();
+  var email   = document.getElementById("f_email").value.trim();
+  var college = document.getElementById("f_college").value.trim();
+  var father  = document.getElementById("f_father").value.trim();
+  var address = document.getElementById("f_address").value.trim();
+  var aadhar  = document.getElementById("f_aadhar").value.trim();
+  var pan     = document.getElementById("f_pan").value.trim();
+  var pass    = document.getElementById("f_pass").value;
+  var ssFile    = document.getElementById("f_ss").files[0];
+
+  var valid = true;
+  if(!name){showErr("e_name",true);markErr("fg_name",true);valid=false;}
+  else{showErr("e_name",false);markErr("fg_name",false);}
+
+  if(!phone || phone.replace(/[^0-9]/g,"").length < 10){showErr("e_phone",true);markErr("fg_phone",true);valid=false;}
+  else{showErr("e_phone",false);markErr("fg_phone",false);}
+
+  if(!email || !email.includes("@")){showErr("e_email",true);markErr("fg_email",true);valid=false;}
+  else{showErr("e_email",false);markErr("fg_email",false);}
+
+  if(!college){showErr("e_college",true);markErr("fg_college",true);valid=false;}
+  else{showErr("e_college",false);markErr("fg_college",false);}
+
+  if(!father){showErr("e_father",true);markErr("fg_father",true);valid=false;}
+  else{showErr("e_father",false);markErr("fg_father",false);}
+
+  if(!address){showErr("e_address",true);markErr("fg_address",true);valid=false;}
+  else{showErr("e_address",false);markErr("fg_address",false);}
+
+  if(!aadhar || aadhar.replace(/[^0-9]/g,"").length < 12){showErr("e_aadhar",true);markErr("fg_aadhar",true);valid=false;}
+  else{showErr("e_aadhar",false);markErr("fg_aadhar",false);}
+
+  if(!pass || pass.length < 6){showErr("e_pass",true);markErr("fg_pass",true);valid=false;}
+  else{showErr("e_pass",false);markErr("fg_pass",false);}
+
+  if(!valid){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+
+  var btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Submitting... Please wait";
+  document.getElementById("progressFill").style.width = "66%";
+
+  try {
+    var ssB64    = await compressImage(ssFile, 800, 0.6);
+
+    var payload = {
+      name: name,
+      phone: phone.replace(/[^0-9]/g, ""),
+      email: email,
+      college: college,
+      fatherName: father,
+      address: address,
+      aadhar: aadhar,
+      pan: pan,
+      password: btoa(pass),
+      paymentScreenshot: ssB64,
+      status: "pending",
+      submittedAt: new Date().toISOString()
+    };
+
+    await db.collection("students").add(payload);
+
+    document.getElementById("progressFill").style.width = "100%";
+    document.getElementById("sc1").className = "sc done";
+    document.getElementById("ln1").className = "sline done";
+    document.getElementById("sc2").className = "sc done";
+    document.getElementById("ln2").className = "sline done";
+    document.getElementById("sc3").className = "sc active";
+    document.getElementById("sl3").className = "sl active";
+
+    var blurDiv = document.createElement("div");
+    blurDiv.style.position = "fixed";
+    blurDiv.style.top = "0"; blurDiv.style.left = "0"; blurDiv.style.width = "100%"; blurDiv.style.height = "100%";
+    blurDiv.style.background = "rgba(255,255,255,0.7)";
+    blurDiv.style.backdropFilter = "blur(5px)";
+    blurDiv.style.zIndex = "9998";
+    
+    var popup = document.createElement("div");
+    popup.style.position = "fixed";
+    popup.style.top = "50%"; popup.style.left = "50%";
+    popup.style.transform = "translate(-50%, -50%)";
+    popup.style.background = "#fff";
+    popup.style.padding = "30px";
+    popup.style.borderRadius = "10px";
+    popup.style.boxShadow = "0 5px 25px rgba(0,0,0,0.2)";
+    popup.style.textAlign = "center";
+    popup.style.zIndex = "9999";
+    popup.innerHTML = "<h2 style='color:#3a7d44;margin-bottom:10px;'>&#9989; Application Submitted!</h2><p style='color:#666;'>Your file is submitted. Please wait.</p>";
+    
+    document.body.appendChild(blurDiv);
+    document.body.appendChild(popup);
+    
+    window.scrollTo({top:0, behavior:"smooth"});
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = "Submit Membership Application";
+    alert("Error: " + err.message);
+  }
+}
+</script>
+</body>
+        </html>
+
