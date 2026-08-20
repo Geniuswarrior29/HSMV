@@ -357,6 +357,10 @@
                 <textarea id="inputAddress" rows="3" required>Ahiyapur Raebareli, 229001 UP</textarea>
             </div>
             <div class="form-group">
+                <label>Valid To (Expiry Date)</label>
+                <input type="date" id="inputValidTo" required>
+            </div>
+            <div class="form-group">
                 <label>Upload Photo</label>
                 <input type="file" id="inputPhoto" accept="image/*" onchange="previewImage(event)">
             </div>
@@ -488,6 +492,13 @@
             return `${day}-${month}-${year}`;
         }
 
+        function formatDateForInput(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function initDates() {
             const today = new Date();
             const oneYearLater = new Date();
@@ -496,6 +507,10 @@
 
             document.getElementById("cardValidFrom").innerText = formatDateString(today);
             document.getElementById("cardValidTo").innerText = formatDateString(oneYearLater);
+            
+            if (document.getElementById("inputValidTo")) {
+                document.getElementById("inputValidTo").value = formatDateForInput(oneYearLater);
+            }
             
             let currentId = parseInt(document.getElementById("inputIdNumber").value, 10);
             if(isNaN(currentId)) currentId = 1;
@@ -546,12 +561,13 @@
             }
 
             const dynamicToday = new Date();
-            const dynamicOneYearLater = new Date();
-            dynamicOneYearLater.setFullYear(dynamicToday.getFullYear() + 1);
-            dynamicOneYearLater.setDate(dynamicToday.getDate() - 1);
-
             document.getElementById("cardValidFrom").innerText = formatDateString(dynamicToday);
-            document.getElementById("cardValidTo").innerText = formatDateString(dynamicOneYearLater);
+
+            const validToInput = document.getElementById("inputValidTo").value;
+            if(validToInput) {
+                const validToDate = new Date(validToInput);
+                document.getElementById("cardValidTo").innerText = formatDateString(validToDate);
+            }
 
             updateIdDisplay(currentId);
             document.getElementById("inputIdNumber").value = currentId + 1;
