@@ -320,6 +320,10 @@
         <h2>ID Card Dashboard</h2>
         <form id="idForm" onsubmit="generateCard(event)">
             <div class="form-group">
+                <label>ID No.</label>
+                <input type="number" id="inputIdNumber" value="1" min="1" required>
+            </div>
+            <div class="form-group">
                 <label>Full Name</label>
                 <input type="text" id="inputName" value="DEV" required>
             </div>
@@ -347,10 +351,6 @@
             <div class="form-group">
                 <label>Date of Birth</label>
                 <input type="date" id="inputDOB" value="2006-08-29" required>
-            </div>
-            <div class="form-group">
-                <label>Mobile Number</label>
-                <input type="tel" id="inputMobile" maxlength="10" value="8957799335" required>
             </div>
             <div class="form-group">
                 <label>Address</label>
@@ -403,7 +403,7 @@
                 <tr>
                     <td class="field-label">Mobile</td>
                     <td class="field-sep">:</td>
-                    <td class="field-value" id="cardMobile">8957799335</td>
+                    <td class="field-value" id="cardMobile">63927 60740</td>
                 </tr>
                 <tr>
                     <td class="field-label">Valid From</td>
@@ -417,7 +417,7 @@
                 </tr>
             </table>
 
-            <div class="footer-front" id="cardFooterMobile">8957799335</div>
+            <div class="footer-front" id="cardFooterMobile">63927 60740</div>
         </div>
 
         <!-- ================= BACK SIDE ================= -->
@@ -480,8 +480,6 @@
 
     <!-- LOGIC MANAGEMENT SCRIPT -->
     <script>
-        let numericIdCounter = 1;
-
         function formatDateString(dateObj) {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const day = String(dateObj.getDate()).padStart(2, '0');
@@ -498,11 +496,14 @@
 
             document.getElementById("cardValidFrom").innerText = formatDateString(today);
             document.getElementById("cardValidTo").innerText = formatDateString(oneYearLater);
-            updateIdDisplay();
+            
+            let currentId = parseInt(document.getElementById("inputIdNumber").value, 10);
+            if(isNaN(currentId)) currentId = 1;
+            updateIdDisplay(currentId);
         }
 
-        function updateIdDisplay() {
-            const idString = String(numericIdCounter).padStart(4, '0');
+        function updateIdDisplay(idNum) {
+            const idString = String(idNum).padStart(4, '0');
             document.getElementById("cardID").innerText = idString;
         }
 
@@ -520,12 +521,15 @@
         function generateCard(event) {
             event.preventDefault();
 
+            let currentId = parseInt(document.getElementById("inputIdNumber").value, 10);
+            if(isNaN(currentId)) currentId = 1;
+
             const name = document.getElementById("inputName").value;
             const designation = document.getElementById("inputDesignation").value;
             const bloodGroup = document.getElementById("inputBloodGroup").value;
             const father = document.getElementById("inputFather").value;
             const dobInput = document.getElementById("inputDOB").value;
-            const mobile = document.getElementById("inputMobile").value;
+            const mobile = "63927 60740";
             const address = document.getElementById("inputAddress").value;
 
             document.getElementById("cardName").innerText = name;
@@ -549,8 +553,8 @@
             document.getElementById("cardValidFrom").innerText = formatDateString(dynamicToday);
             document.getElementById("cardValidTo").innerText = formatDateString(dynamicOneYearLater);
 
-            updateIdDisplay();
-            numericIdCounter++;
+            updateIdDisplay(currentId);
+            document.getElementById("inputIdNumber").value = currentId + 1;
         }
 
         window.onload = initDates;
