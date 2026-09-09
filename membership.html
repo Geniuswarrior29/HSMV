@@ -369,7 +369,23 @@ async function submitMembership(){
   if(!pass || pass.length < 6){showErr("e_pass",true);markErr("fg_pass",true);valid=false;}
   else{showErr("e_pass",false);markErr("fg_pass",false);}
 
-  if(!valid){ window.scrollTo({top:0, behavior:"smooth"}); return; }
+  if(!photoFile){showErr("e_photo",true);valid=false;}
+  else{showErr("e_photo",false);}
+
+  if(!ssFile){showErr("e_ss",true);valid=false;}
+  else{showErr("e_ss",false);}
+
+  if(!valid){ 
+    var errs = document.getElementsByClassName("err");
+    for(var i=0; i<errs.length; i++){
+      if(errs[i].style.display === "block"){
+        errs[i].parentElement.scrollIntoView({behavior: "smooth", block: "center"});
+        return;
+      }
+    }
+    window.scrollTo({top:0, behavior:"smooth"}); 
+    return; 
+  }
 
   var btn = document.getElementById("submitBtn");
   btn.disabled = true;
