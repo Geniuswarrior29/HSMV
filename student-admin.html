@@ -362,14 +362,30 @@ function patchStatus(id, status, reason) {
       status: status,
       reason: reason || ""
     };
-    if (status === "approved" || status === "rejected") {
-      updateObj.paymentScreenshot = firebase.firestore.FieldValue.delete();
-    }
-    db.collection("students").doc(id).update(updateObj).then(function() {
-      alert(status === "approved" ? "Approved!" : "Rejected.");
+    
+    var btnApprove = document.querySelectorAll('.app-btn');
+    var btnReject = document.querySelectorAll('.rej-btn');
+    btnApprove.forEach(b => b.disabled = true);
+    btnReject.forEach(b => b.disabled = true);
+
+    var timeoutPromise = new Promise(function(_, reject) {
+      setTimeout(function() { reject(new Error("Timeout: Firebase connection slow or blocked.")); }, 10000);
+    });
+
+    Promise.race([
+      db.collection("students").doc(id).update(updateObj),
+      timeoutPromise
+    ])
+    .then(function() {
+      btnApprove.forEach(b => b.disabled = false);
+      btnReject.forEach(b => b.disabled = false);
+      alert(status === "approved" ? "Approved successfully!" : "Rejected successfully.");
       loadData();
     }).catch(function(e) {
-      alert("Error: " + e.message);
+      btnApprove.forEach(b => b.disabled = false);
+      btnReject.forEach(b => b.disabled = false);
+      console.error("Firebase Update Error: ", e);
+      alert("Error: " + e.message + "\n\n(Note: Agar permission denied hai, toh Firebase Database rules check karein ki 'update' allowed hai ya nahi)");
     });
   }
 }

@@ -304,7 +304,14 @@ async function submitMembership(){
       submittedAt: new Date().toISOString()
     };
 
-    await db.collection("students").add(payload);
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout: Database connect nahi ho paya. Please check internet ya Firebase domain permissions.")), 15000)
+    );
+
+    await Promise.race([
+      db.collection("students").add(payload),
+      timeoutPromise
+    ]);
 
     document.getElementById("progressFill").style.width = "100%";
     document.getElementById("sc1").className = "sc done";
