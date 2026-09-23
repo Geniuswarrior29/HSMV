@@ -119,15 +119,10 @@ tr:hover td{background:#fffdf7;}
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="firebase-config.js"></script>
 <script>
-firebase.initializeApp(FIREBASE_CONFIG);
-var db = firebase.firestore();
 var currentDbType = "members";
 
-var SHEET_URL = "https://script.google.com/macros/s/AKfycbzeuxIZmhTKTsh3uKaXGo9fgqWCtQYMANOmFHugYPQn1wnMod8GFRGWeQgLoDIgrC7Y/exec";
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
 var allMembers = [];
 var curFilter = "all";
 
@@ -139,44 +134,24 @@ function sb(msg, ok) {
 
 function loadData() {
   sb("Loading " + currentDbType + "...", null);
-  if (currentDbType === "members") {
-    // Use GET to avoid CORS
-    fetch(SHEET_URL + "?action=get_members")
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if(d.status !== "success") throw new Error(d.message || "Failed");
-      allMembers = d.members || [];
-      allMembers.forEach(function(m) { if(!m.id) m.id = m.memberId; });
-      sb("Loaded " + allMembers.length + " record(s)", true);
-      updateStats();
-      renderTable();
-      var p = allMembers.filter(function(m) { return m.status === "pending"; }).length;
-      document.getElementById("pc").textContent = p || "";
-    })
-    .catch(function(e) {
-      sb("Error: " + e.message, false);
-      document.getElementById("tbody").innerHTML = "<tr><td colspan='7' class='empty'>Load failed: " + e.message + "</td></tr>";
-    });
-  } else {
-    // Load from Firebase
-    db.collection("students").get().then(function(snap) {
-      allMembers = [];
-      snap.forEach(function(doc) {
-        var data = doc.data();
-        data.id = doc.id;
-        if (!data.memberId) data.memberId = doc.id;
-        allMembers.push(data);
-      });
-      sb("Loaded " + allMembers.length + " student(s)", true);
-      updateStats();
-      renderTable();
-      var p = allMembers.filter(function(m) { return m.status === "pending"; }).length;
-      document.getElementById("pc").textContent = p || "";
-    }).catch(function(e) {
-      sb("Error: " + e.message, false);
-      document.getElementById("tbody").innerHTML = "<tr><td colspan='7' class='empty'>Load failed: " + e.message + "</td></tr>";
-    });
-  }
+  var action = currentDbType === "members" ? "get_members" : "get_students";
+  
+  fetch(SHEET_URL + "?action=" + action)
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if(d.status !== "success") throw new Error(d.message || "Failed");
+    allMembers = d.data || [];
+    allMembers.forEach(function(m) { if(!m.id) m.id = m.memberId; });
+    sb("Loaded " + allMembers.length + " record(s)", true);
+    updateStats();
+    renderTable();
+    var p = allMembers.filter(function(m) { return m.status === "pending"; }).length;
+    document.getElementById("pc").textContent = p || "";
+  })
+  .catch(function(e) {
+    sb("Error: " + e.message, false);
+    document.getElementById("tbody").innerHTML = "<tr><td colspan='7' class='empty'>Load failed: " + e.message + "</td></tr>";
+  });
 }
 
 function updateStats() {
@@ -317,21 +292,13 @@ function viewMember(id) {
         if (newVal !== null) {
           var updateObj = {};
           updateObj[field] = newVal;
-          db.collection("students").doc(m.id).update(updateObj).then(function() {
-            alert("Updated successfully!");
-            loadData();
-            closeModal();
-          });
+          alert("Editing is disabled. Please edit directly in Google Sheets.");
         }
       }
     });
     document.getElementById("modalDeleteBtn").addEventListener("click", function() {
       if(confirm("Are you sure you want to delete this student record completely?")) {
-        db.collection("students").doc(m.id).delete().then(function() {
-          alert("Deleted successfully!");
-          loadData();
-          closeModal();
-        });
+        alert("Deleting is disabled. Please delete directly in Google Sheets.");
       }
     });
   }
@@ -344,34 +311,20 @@ function closeModal() {
 }
 
 function patchStatus(id, status, reason) {
-  if (currentDbType === "members") {
-    var url = SHEET_URL + "?action=update_status&memberId=" + encodeURIComponent(id) + "&status=" + encodeURIComponent(status) + "&reason=" + encodeURIComponent(reason||"");
-    fetch(url)
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if(d.status === "success") {
-        alert(status === "approved" ? "Approved!" : "Rejected.");
-        loadData();
-      } else {
-        alert("Error: " + (d.message||"Unknown"));
-      }
-    })
-    .catch(function(e) { alert("Error: " + e.message); });
-  } else {
-    var updateObj = {
-      status: status,
-      reason: reason || ""
-    };
-    if (status === "approved" || status === "rejected") {
-      updateObj.paymentScreenshot = firebase.firestore.FieldValue.delete();
-    }
-    db.collection("students").doc(id).update(updateObj).then(function() {
+  var action = currentDbType === "members" ? "update_status" : "update_student_status";
+  var url = SHEET_URL + "?action=" + action + "&memberId=" + encodeURIComponent(id) + "&newStatus=" + encodeURIComponent(status);
+  
+  fetch(url)
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if(d.status === "success") {
       alert(status === "approved" ? "Approved!" : "Rejected.");
       loadData();
-    }).catch(function(e) {
-      alert("Error: " + e.message);
-    });
-  }
+    } else {
+      alert("Error: " + (d.message||"Unknown"));
+    }
+  })
+  .catch(function(e) { alert("Error: " + e.message); });
 }
 
 function doApprove(id) {

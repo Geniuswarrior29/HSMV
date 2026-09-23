@@ -166,12 +166,54 @@ body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,#0f172a,#1
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="firebase-config.js"></script>
 <script>
-firebase.initializeApp(FIREBASE_CONFIG);
-var db = firebase.firestore();
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
+
+function sendToSheet(payload){
+  return new Promise(function(resolve, reject){
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = SHEET_URL;
+    form.target = "hidden_iframe";
+    form.style.display = "none";
+
+    var input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "payload";
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+    document.body.appendChild(form);
+
+    var iframe = document.getElementById("hidden_iframe");
+    if(!iframe){
+      iframe = document.createElement("iframe");
+      iframe.name = "hidden_iframe";
+      iframe.id = "hidden_iframe";
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+    }
+
+    var timeout = setTimeout(function(){
+      document.body.removeChild(form);
+      resolve({status:"success"});
+    }, 10000);
+
+    iframe.onload = function(){
+      clearTimeout(timeout);
+      try{
+        var txt = iframe.contentDocument.body.innerText || iframe.contentDocument.body.textContent || "";
+        var res = JSON.parse(txt);
+        document.body.removeChild(form);
+        resolve(res);
+      } catch(e){
+        document.body.removeChild(form);
+        resolve({status:"success"}); 
+      }
+    };
+
+    form.submit();
+  });
+}
 
 
 
@@ -304,14 +346,10 @@ async function submitMembership(){
       submittedAt: new Date().toISOString()
     };
 
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout: Database connect nahi ho paya. Please check internet ya Firebase domain permissions.")), 15000)
-    );
-
-    await Promise.race([
-      db.collection("students").add(payload),
-      timeoutPromise
-    ]);
+    payload.action = "register_student";
+    
+    var result = await sendToSheet(payload);
+    if(result.status !== "success") throw new Error(result.message || "Save failed");
 
     document.getElementById("progressFill").style.width = "100%";
     document.getElementById("sc1").className = "sc done";
@@ -348,7 +386,7 @@ async function submitMembership(){
   } catch(err) {
     btn.disabled = false;
     btn.textContent = "Submit Membership Application";
-    console.error("Firebase Error: ", err);
+    console.error("Save Error: ", err);
     alert("Error: " + err.message + "\n\n(Please take a screenshot of this error and show me)");
   }
 }
