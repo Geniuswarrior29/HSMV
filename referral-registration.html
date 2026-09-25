@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Referral Worker Registration | HSMV Foundation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b,#334155);background-size:200% 200%;animation:gradientBG 10s ease infinite;color:#f8fafc;min-height:100vh;}
+@keyframes gradientBG{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.topbar{background:rgba(15,23,42,0.7);backdrop-filter:blur(10px);padding:12px 5%;display:flex;align-items:center;gap:15px;border-bottom:1px solid rgba(255,255,255,0.1);position:sticky;top:0;z-index:100;}
+.topbar img{width:45px;height:45px;border-radius:50%;border:2px solid #E8A020;box-shadow:0 0 10px rgba(232,160,32,0.5);}
+.topbar-title{color:#fff;font-size:0.95rem;font-weight:700;line-height:1.2;}
+.topbar-title span{display:block;font-size:0.65rem;color:#E8A020;letter-spacing:2px;text-transform:uppercase;}
+.topbar a{margin-left:auto;color:#fff;text-decoration:none;font-size:0.8rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:6px 14px;border-radius:6px;transition:0.3s;}
+.topbar a:hover{background:#E8A020;border-color:#E8A020;color:#1a1209;}
+.hero{text-align:center;padding:40px 5% 30px;animation:fadeInUp 0.8s ease-out;}
+.hero h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;}
+.hero h1 span{color:#E8A020;text-shadow:0 0 20px rgba(232,160,32,0.5);}
+.hero p{color:#94a3b8;font-size:0.9rem;}
+.container{max-width:700px;margin:0 auto;padding:0 15px 60px;}
+.card{background:rgba(255,255,255,0.03);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:25px 20px;box-shadow:0 10px 30px rgba(0,0,0,0.2);margin-bottom:20px;animation:fadeInUp 1s ease-out;}
+.card h2{font-size:1.1rem;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:12px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.fg{margin-bottom:15px;}
+.fg label{display:block;font-size:0.75rem;font-weight:600;color:#cbd5e1;margin-bottom:6px;}
+.fg label .req{color:#ef4444;}
+.fg input,.fg textarea,.fg select{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-family:inherit;font-size:0.9rem;color:#fff;background:rgba(0,0,0,0.2);outline:none;transition:0.3s;}
+.fg input:focus,.fg textarea:focus{border-color:#E8A020;background:rgba(0,0,0,0.3);box-shadow:0 0 0 3px rgba(232,160,32,0.2);}
+.err{color:#ef4444;font-size:0.75rem;margin-top:5px;display:none;animation:fadeInUp 0.2s;}
+.fe input,.fe textarea{border-color:#ef4444!important;background:rgba(239,68,68,0.05)!important;}
+.btn-main{width:100%;padding:15px;background:linear-gradient(135deg,#E8A020,#d18a15);color:#1a1209;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(232,160,32,0.4);text-transform:uppercase;letter-spacing:1px;}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(232,160,32,0.5);}
+.btn-main:disabled{background:rgba(255,255,255,0.1);color:#64748b;cursor:not-allowed;box-shadow:none;transform:none;}
+.ref-code-box{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:15px;text-align:center;margin-top:20px;display:none;}
+.ref-code-box h3{color:#10b981;font-size:1.2rem;letter-spacing:2px;margin-bottom:5px;}
+.ref-code-box p{color:#94a3b8;font-size:0.8rem;}
+@media(max-width:600px){.frow{grid-template-columns:1fr;gap:0;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <img src="icon.jpg" alt="HSMV"/>
+  <div class="topbar-title">HSMV Foundation<span>Referral Registration</span></div>
+  <a href="index.html">&#8592; Back</a>
+</div>
+<div class="hero">
+  <h1>Become a <span>Referral Partner</span></h1>
+  <p>Register to generate your unique referral code</p>
+</div>
+<div class="container">
+  <div class="card">
+    <h2>&#128100; Personal Information</h2>
+    <div class="frow">
+      <div class="fg" id="fg_fullname">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="f_fullname" placeholder="John Doe"/>
+        <div class="err" id="e_fullname">Required</div>
+      </div>
+      <div class="fg" id="fg_firstname">
+        <label>First Name <span class="req">*</span></label>
+        <input type="text" id="f_firstname" placeholder="John"/>
+        <div class="err" id="e_firstname">Required</div>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fg" id="fg_mobile">
+        <label>Mobile Number <span class="req">*</span></label>
+        <input type="tel" id="f_mobile" placeholder="10-digit number"/>
+        <div class="err" id="e_mobile">Valid 10-digit number required</div>
+      </div>
+      <div class="fg" id="fg_whatsapp">
+        <label>WhatsApp Number <span class="req">*</span></label>
+        <input type="tel" id="f_whatsapp" placeholder="10-digit number"/>
+        <div class="err" id="e_whatsapp">Valid 10-digit number required</div>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fg" id="fg_email">
+        <label>Email ID <span class="req">*</span></label>
+        <input type="email" id="f_email" placeholder="email@example.com"/>
+        <div class="err" id="e_email">Valid email required</div>
+      </div>
+      <div class="fg" id="fg_dob">
+        <label>Date of Birth <span class="req">*</span></label>
+        <input type="date" id="f_dob"/>
+        <div class="err" id="e_dob">Required</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>&#127968; Address Details</h2>
+    <div class="fg" id="fg_address">
+      <label>Full Address <span class="req">*</span></label>
+      <input type="text" id="f_address" placeholder="Street, Locality..."/>
+      <div class="err" id="e_address">Required</div>
+    </div>
+    <div class="frow">
+      <div class="fg" id="fg_city">
+        <label>City <span class="req">*</span></label>
+        <input type="text" id="f_city" placeholder="City"/>
+        <div class="err" id="e_city">Required</div>
+      </div>
+      <div class="fg" id="fg_district">
+        <label>District <span class="req">*</span></label>
+        <input type="text" id="f_district" placeholder="District"/>
+        <div class="err" id="e_district">Required</div>
+      </div>
+    </div>
+    <div class="fg" id="fg_state">
+      <label>State <span class="req">*</span></label>
+      <input type="text" id="f_state" placeholder="State"/>
+      <div class="err" id="e_state">Required</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>&#128274; Security</h2>
+    <div class="frow">
+      <div class="fg" id="fg_pass">
+        <label>Password <span class="req">*</span></label>
+        <input type="password" id="f_pass" placeholder="Min 6 chars"/>
+        <div class="err" id="e_pass">Min 6 chars required</div>
+      </div>
+      <div class="fg" id="fg_cpass">
+        <label>Confirm Password <span class="req">*</span></label>
+        <input type="password" id="f_cpass" placeholder="Re-type password"/>
+        <div class="err" id="e_cpass">Passwords do not match</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-main" id="submitBtn" onclick="submitReferral()">&#10145; Register & Generate Code</button>
+
+  <div class="ref-code-box" id="refResult">
+    <p style="color:#fff; margin-bottom:5px;">Registration Successful!</p>
+    <p>Your Referral Code is:</p>
+    <h3 id="displayCode">HSMV...</h3>
+    <p style="margin-top:10px;"><a href="referral-dashboard.html" style="color:#E8A020; text-decoration:none; font-weight:600;">Go to Login Dashboard &rarr;</a></p>
+  </div>
+</div>
+
+<script>
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
+
+function showErr(id, show){ document.getElementById(id).style.display = show ? "block" : "none"; }
+function markErr(id, err){ var el = document.getElementById(id); if(el){ if(err) el.classList.add("fe"); else el.classList.remove("fe"); } }
+
+function submitReferral() {
+  var fullname = document.getElementById("f_fullname").value.trim();
+  var firstname = document.getElementById("f_firstname").value.trim();
+  var mobile = document.getElementById("f_mobile").value.trim();
+  var whatsapp = document.getElementById("f_whatsapp").value.trim();
+  var email = document.getElementById("f_email").value.trim();
+  var dob = document.getElementById("f_dob").value;
+  var address = document.getElementById("f_address").value.trim();
+  var city = document.getElementById("f_city").value.trim();
+  var district = document.getElementById("f_district").value.trim();
+  var state = document.getElementById("f_state").value.trim();
+  var pass = document.getElementById("f_pass").value;
+  var cpass = document.getElementById("f_cpass").value;
+
+  var valid = true;
+  if(!fullname){ showErr("e_fullname",true); markErr("fg_fullname",true); valid=false; } else { showErr("e_fullname",false); markErr("fg_fullname",false); }
+  if(!firstname){ showErr("e_firstname",true); markErr("fg_firstname",true); valid=false; } else { showErr("e_firstname",false); markErr("fg_firstname",false); }
+  if(!mobile || mobile.length < 10){ showErr("e_mobile",true); markErr("fg_mobile",true); valid=false; } else { showErr("e_mobile",false); markErr("fg_mobile",false); }
+  if(!whatsapp || whatsapp.length < 10){ showErr("e_whatsapp",true); markErr("fg_whatsapp",true); valid=false; } else { showErr("e_whatsapp",false); markErr("fg_whatsapp",false); }
+  if(!email || !email.includes("@")){ showErr("e_email",true); markErr("fg_email",true); valid=false; } else { showErr("e_email",false); markErr("fg_email",false); }
+  if(!dob){ showErr("e_dob",true); markErr("fg_dob",true); valid=false; } else { showErr("e_dob",false); markErr("fg_dob",false); }
+  if(!address){ showErr("e_address",true); markErr("fg_address",true); valid=false; } else { showErr("e_address",false); markErr("fg_address",false); }
+  if(!city){ showErr("e_city",true); markErr("fg_city",true); valid=false; } else { showErr("e_city",false); markErr("fg_city",false); }
+  if(!district){ showErr("e_district",true); markErr("fg_district",true); valid=false; } else { showErr("e_district",false); markErr("fg_district",false); }
+  if(!state){ showErr("e_state",true); markErr("fg_state",true); valid=false; } else { showErr("e_state",false); markErr("fg_state",false); }
+  if(!pass || pass.length < 6){ showErr("e_pass",true); markErr("fg_pass",true); valid=false; } else { showErr("e_pass",false); markErr("fg_pass",false); }
+  if(pass !== cpass || !cpass){ showErr("e_cpass",true); markErr("fg_cpass",true); valid=false; } else { showErr("e_cpass",false); markErr("fg_cpass",false); }
+
+  if(!valid) {
+    window.scrollTo({top:0, behavior:"smooth"});
+    return;
+  }
+
+  // Generate Referral Code: HSMV + First 3 of First Name + DDMM of DOB
+  var f3 = firstname.substring(0,3).toUpperCase();
+  var dobObj = new Date(dob);
+  var dd = String(dobObj.getDate()).padStart(2, '0');
+  var mm = String(dobObj.getMonth() + 1).padStart(2, '0');
+  var refCode = "HSMV" + f3 + dd + mm;
+  
+  var btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Registering...";
+
+  var payload = {
+    action: "register_referral",
+    fullname: fullname,
+    firstname: firstname,
+    mobile: mobile,
+    whatsapp: whatsapp,
+    email: email,
+    dob: dob,
+    address: address,
+    city: city,
+    district: district,
+    state: state,
+    referralCode: refCode,
+    password: btoa(unescape(encodeURIComponent(pass))),
+    registeredAt: new Date().toISOString()
+  };
+
+  var form = document.createElement("form");
+  form.method = "POST";
+  form.action = SHEET_URL;
+  form.target = "hidden_iframe_ref";
+  form.style.display = "none";
+
+  var input = document.createElement("input");
+  input.type = "hidden";
+  input.name = "payload";
+  input.value = JSON.stringify(payload);
+  form.appendChild(input);
+  document.body.appendChild(form);
+
+  var iframe = document.getElementById("hidden_iframe_ref");
+  if(!iframe) {
+    iframe = document.createElement("iframe");
+    iframe.name = "hidden_iframe_ref";
+    iframe.id = "hidden_iframe_ref";
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+  }
+
+  var timeout = setTimeout(function() {
+    document.body.removeChild(form);
+    showSuccess(refCode);
+  }, 5000);
+
+  iframe.onload = function() {
+    clearTimeout(timeout);
+    document.body.removeChild(form);
+    showSuccess(refCode);
+  };
+
+  form.submit();
+}
+
+function showSuccess(refCode) {
+  document.getElementById("submitBtn").style.display = "none";
+  document.getElementById("displayCode").textContent = refCode;
+  document.getElementById("refResult").style.display = "block";
+  window.scrollTo({top: document.body.scrollHeight, behavior:"smooth"});
+}
+</script>
+</body>
+</html>

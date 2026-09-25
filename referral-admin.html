@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Referral Admin Portal | HSMV Foundation</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Segoe UI",sans-serif;background:#f0ece4;color:#2d2410;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#1a1209;border-right:2px solid #E8A020;display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:14px;border-bottom:1px solid rgba(232,160,32,0.3);display:flex;align-items:center;gap:8px;}
+.sb-logo img{width:36px;height:36px;border-radius:50%;border:2px solid #E8A020;}
+.sb-logo span{color:#fff;font-size:0.8rem;font-weight:600;line-height:1.3;}
+.sb-logo small{display:block;color:#E8A020;font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;}
+.nav-item{padding:12px 16px;color:rgba(255,255,255,0.6);font-size:0.82rem;cursor:pointer;border-left:3px solid transparent;transition:.2s;display:flex;align-items:center;gap:8px;}
+.nav-item:hover,.nav-item.active{color:#fff;background:rgba(232,160,32,0.08);border-left-color:#E8A020;}
+.main{margin-left:210px;padding:20px;min-height:100vh;}
+.topbar{background:#fff;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);flex-wrap:wrap;gap:8px;}
+.topbar h1{font-family:Georgia,serif;font-size:1.1rem;color:#1a1209;}
+.search-box{padding:7px 12px;border:1.5px solid #e0d0b0;border-radius:6px;font-size:0.8rem;outline:none;width:250px;}
+.search-box:focus{border-color:#E8A020;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.sc{background:#fff;border-radius:10px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-top:3px solid #E8A020;}
+.sc-num{font-family:Georgia,serif;font-size:1.8rem;font-weight:900;color:#1a1209;}
+.sc-lbl{font-size:0.62rem;color:#8a7455;text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+
+.tcard{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+.tc-head{padding:14px 18px;border-bottom:1px solid #f0e8d8;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.tc-head h2{font-family:Georgia,serif;font-size:0.95rem;color:#1a1209;}
+.filters{display:flex;gap:10px;flex-wrap:wrap;}
+.filters select,.filters input{padding:6px 10px;border:1px solid #e0d0b0;border-radius:4px;font-size:0.75rem;outline:none;}
+
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:800px;}
+th{background:#faf6ee;padding:9px 12px;font-size:0.63rem;font-weight:700;text-transform:uppercase;color:#8a7455;text-align:left;border-bottom:2px solid #f0e8d8;}
+td{padding:10px 12px;font-size:0.78rem;border-bottom:1px solid #f8f0e4;vertical-align:middle;}
+tr:hover td{background:#fffdf7;}
+
+.btn-sm{padding:4px 9px;background:#E8A020;color:#1a1209;border:none;border-radius:4px;font-size:0.7rem;font-weight:600;cursor:pointer;}
+.btn-sm.g{background:#3a7d44;color:#fff;}
+.badge{padding:3px 8px;border-radius:10px;font-size:0.65rem;font-weight:700;text-transform:uppercase;}
+.b-app{background:#d1e7dd;color:#0f5132;}
+.b-pen{background:#fff3cd;color:#856404;}
+.b-rej{background:#f8d7da;color:#842029;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center;padding:16px;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;}
+.mh{padding:16px 18px;border-bottom:1px solid #f0e8d8;display:flex;justify-content:space-between;align-items:center;}
+.mh h3{font-family:Georgia,serif;font-size:1rem;color:#1a1209;}
+.mc{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#8a7455;}
+.mb{padding:18px;overflow-y:auto;flex:1;}
+.ref-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+.rs-card{background:#faf6ee;padding:10px;border-radius:8px;border:1px solid #e0d0b0;text-align:center;}
+.rs-card span{display:block;font-size:0.65rem;color:#8a7455;text-transform:uppercase;margin-bottom:4px;}
+.rs-card strong{font-size:1.1rem;color:#1a1209;}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:.3s;}.sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}.stats{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <img src="icon.jpg" alt="HSMV"/>
+    <span>Referral Admin<small>PORTAL</small></span>
+  </div>
+  <div class="nav-item active" onclick="showView('partners')">&#128101; Referral Partners</div>
+  <div class="nav-item" onclick="showView('all_students')">&#128203; All Referred Students</div>
+  <div class="nav-item" style="margin-top:auto;"><a href="student-admin.html" style="color:inherit;text-decoration:none;">&larr; Back to Student Admin</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1 id="pageTitle">Referral Partners Management</h1>
+    <input type="text" class="search-box" id="mainSearch" placeholder="Search Partners..."/>
+  </div>
+
+  <div class="stats" id="mainStats">
+    <div class="sc"><div class="sc-num" id="st_partners">0</div><div class="sc-lbl">Total Partners</div></div>
+    <div class="sc"><div class="sc-num" id="st_students">0</div><div class="sc-lbl">Total Referred Students</div></div>
+    <div class="sc"><div class="sc-num" id="st_earnings">&#8377;0</div><div class="sc-lbl">Total Earnings</div></div>
+    <div class="sc"><div class="sc-num" id="st_pending">&#8377;0</div><div class="sc-lbl">Total Pending Payout</div></div>
+  </div>
+
+  <div class="tcard">
+    <div class="tc-head">
+      <h2 id="tTitle">Referral Partners List</h2>
+      <div class="filters" id="mainFilters" style="display:none;">
+        <input type="date" id="f_dateStart" title="Start Date"/>
+        <input type="date" id="f_dateEnd" title="End Date"/>
+        <select id="f_refPerson"><option value="">All Partners</option></select>
+        <select id="f_status">
+          <option value="">All Approval Status</option>
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="f_payStatus">
+          <option value="">All Payment Status</option>
+          <option value="Verified">Verified</option>
+          <option value="Pending Verification">Pending</option>
+        </select>
+      </div>
+    </div>
+    <div class="tw">
+      <table id="mainTable">
+        <thead id="thead">
+          <!-- Populated via JS -->
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="8" style="text-align:center;padding:30px;">Loading data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="mh">
+      <h3>Partner Details & Students</h3>
+      <button class="mc" onclick="document.getElementById('modal').classList.remove('show')">&#10005;</button>
+    </div>
+    <div class="mb">
+      <div style="margin-bottom:15px;">
+        <strong id="m_partnerName" style="font-size:1.2rem; color:#1a1209;">Partner Name</strong>
+        <span style="margin-left:10px; background:#fff3cd; color:#856404; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;" id="m_partnerCode">CODE</span>
+      </div>
+      <div class="ref-summary">
+        <div class="rs-card"><span>Total Students</span><strong id="m_totSt">0</strong></div>
+        <div class="rs-card"><span>Approved</span><strong id="m_appSt" style="color:#0f5132;">0</strong></div>
+        <div class="rs-card"><span>Pending</span><strong id="m_penSt" style="color:#856404;">0</strong></div>
+        <div class="rs-card"><span>Total Earnings</span><strong id="m_totEr">&#8377;0</strong></div>
+        <div class="rs-card"><span>Paid Amount</span><strong id="m_pdAmt" style="color:#0f5132;">&#8377;0</strong></div>
+        <div class="rs-card"><span>Pending Payout</span><strong id="m_penAmt" style="color:#842029;">&#8377;0</strong></div>
+      </div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h4 style="font-family:Georgia,serif; font-size:1rem;">Referred Students</h4>
+        <div>
+          <button class="btn-sm g" onclick="markPaid()">Mark Pending as Paid</button>
+        </div>
+      </div>
+      <div class="tw" style="border:1px solid #f0e8d8; border-radius:8px;">
+        <table>
+          <thead>
+            <tr><th>Student Name</th><th>Student ID</th><th>Reg Date</th><th>Approval</th><th>Payment</th><th>Earning</th></tr>
+          </thead>
+          <tbody id="m_tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
+var partners = [];
+var allStudents = [];
+var currentView = 'partners';
+
+function loadData() {
+  fetch(SHEET_URL + "?action=get_referral_admin_data")
+  .then(r => r.json())
+  .then(d => {
+    if(d.status === "success") {
+      partners = d.partners || [];
+      allStudents = d.students || [];
+    } else {
+      partners = [];
+      allStudents = [];
+    }
+    updateStats();
+    renderView();
+  })
+  .catch(e => {
+    partners = [];
+    allStudents = [];
+    updateStats();
+    renderView();
+  });
+}
+
+function updateStats() {
+  document.getElementById("st_partners").textContent = partners.length;
+  document.getElementById("st_students").textContent = allStudents.length;
+  var te = partners.reduce((sum, p) => sum + (p.totEarning||0), 0);
+  var tp = partners.reduce((sum, p) => sum + (p.paidAmt||0), 0);
+  document.getElementById("st_earnings").textContent = "₹" + te;
+  document.getElementById("st_pending").textContent = "₹" + (te - tp);
+}
+
+function showView(v) {
+  currentView = v;
+  document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+  event.currentTarget.classList.add("active");
+  
+  if(v === 'partners') {
+    document.getElementById("pageTitle").textContent = "Referral Partners Management";
+    document.getElementById("tTitle").textContent = "Referral Partners List";
+    document.getElementById("mainFilters").style.display = "none";
+    document.getElementById("mainStats").style.display = "grid";
+  } else {
+    document.getElementById("pageTitle").textContent = "All Referred Students";
+    document.getElementById("tTitle").textContent = "Filter & Search Students";
+    document.getElementById("mainFilters").style.display = "flex";
+    document.getElementById("mainStats").style.display = "none";
+  }
+  renderView();
+}
+
+function renderView() {
+  var q = document.getElementById("mainSearch").value.toLowerCase();
+  var th = document.getElementById("thead");
+  var tb = document.getElementById("tbody");
+  var html = "";
+  
+  if(currentView === 'partners') {
+    th.innerHTML = "<tr><th>ID</th><th>Partner Name</th><th>Code</th><th>Mobile</th><th>Reg Date</th><th>Students (T/A/P)</th><th>Pending Payout</th><th>Actions</th></tr>";
+    var list = partners.filter(p => !q || (p.name||"").toLowerCase().includes(q) || (p.code||"").toLowerCase().includes(q));
+    
+    if(!list.length) { tb.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No partners found</td></tr>"; return; }
+    
+    list.forEach(p => {
+      var penPay = (p.totEarning||0) - (p.paidAmt||0);
+      html += `<tr>
+        <td><strong>${p.id}</strong></td>
+        <td>${p.name}</td>
+        <td><span class="badge" style="background:#f0e8d8;color:#8a7455;">${p.code}</span></td>
+        <td>${p.mobile}</td>
+        <td>${p.regDate}</td>
+        <td>${p.totStudents} / ${p.appStudents} / ${p.penStudents}</td>
+        <td style="font-weight:bold;color:${penPay>0 ? '#842029' : '#0f5132'}">₹${penPay}</td>
+        <td><button class="btn-sm" onclick="viewPartner('${p.code}')">View Students</button></td>
+      </tr>`;
+    });
+  } else {
+    th.innerHTML = "<tr><th>Student Name</th><th>Student ID</th><th>Partner Code</th><th>Reg Date</th><th>Status</th><th>Payment</th><th>Earning</th></tr>";
+    
+    var fDStart = document.getElementById("f_dateStart").value;
+    var fDEnd = document.getElementById("f_dateEnd").value;
+    var fRef = document.getElementById("f_refPerson").value;
+    var fStat = document.getElementById("f_status").value;
+    var fPay = document.getElementById("f_payStatus").value;
+    
+    var list = allStudents.filter(s => {
+      if(q && !((s.name||"").toLowerCase().includes(q) || (s.id||"").toLowerCase().includes(q))) return false;
+      if(fRef && s.refCode !== fRef) return false;
+      if(fStat && s.status !== fStat) return false;
+      if(fPay && s.paymentStatus !== fPay) return false;
+      if(fDStart && new Date(s.date) < new Date(fDStart)) return false;
+      if(fDEnd && new Date(s.date) > new Date(fDEnd)) return false;
+      return true;
+    });
+    
+    if(!list.length) { tb.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No students found</td></tr>"; return; }
+    
+    list.forEach(s => {
+      var sc = s.status === 'approved' ? 'b-app' : s.status === 'rejected' ? 'b-rej' : 'b-pen';
+      var psc = s.paymentStatus === 'Verified' ? 'b-app' : s.paymentStatus === 'Rejected' ? 'b-rej' : 'b-pen';
+      html += `<tr>
+        <td><strong>${s.name}</strong></td>
+        <td>${s.id}</td>
+        <td><span style="font-size:0.7rem;color:#8a7455;">${s.refCode}</span><br><small>${s.refName}</small></td>
+        <td>${s.date}</td>
+        <td><span class="badge ${sc}">${s.status}</span></td>
+        <td><span class="badge ${psc}">${s.paymentStatus}</span></td>
+        <td><strong>₹${s.earning||0}</strong></td>
+      </tr>`;
+    });
+  }
+  tb.innerHTML = html;
+}
+
+var curPartnerCode = null;
+
+function viewPartner(code) {
+  curPartnerCode = code;
+  var p = partners.find(x => x.code === code);
+  if(!p) return;
+  
+  document.getElementById("m_partnerName").textContent = p.name;
+  document.getElementById("m_partnerCode").textContent = p.code;
+  document.getElementById("m_totSt").textContent = p.totStudents;
+  document.getElementById("m_appSt").textContent = p.appStudents;
+  document.getElementById("m_penSt").textContent = p.penStudents;
+  document.getElementById("m_totEr").textContent = "₹" + (p.totEarning||0);
+  document.getElementById("m_pdAmt").textContent = "₹" + (p.paidAmt||0);
+  document.getElementById("m_penAmt").textContent = "₹" + ((p.totEarning||0) - (p.paidAmt||0));
+  
+  var sts = allStudents.filter(s => s.refCode === code);
+  var html = "";
+  if(!sts.length) html = "<tr><td colspan='6' style='text-align:center;'>No students found</td></tr>";
+  else {
+    sts.forEach(s => {
+      var sc = s.status === 'approved' ? 'b-app' : s.status === 'rejected' ? 'b-rej' : 'b-pen';
+      var psc = s.paymentStatus === 'Verified' ? 'b-app' : s.paymentStatus === 'Rejected' ? 'b-rej' : 'b-pen';
+      html += `<tr>
+        <td><strong>${s.name}</strong></td>
+        <td>${s.id}</td>
+        <td>${s.date}</td>
+        <td><span class="badge ${sc}">${s.status}</span></td>
+        <td><span class="badge ${psc}">${s.paymentStatus}</span></td>
+        <td><strong>₹${s.earning||0}</strong></td>
+      </tr>`;
+    });
+  }
+  document.getElementById("m_tbody").innerHTML = html;
+  document.getElementById("modal").classList.add("show");
+}
+
+function markPaid() {
+  if(!curPartnerCode) return;
+  if(confirm("Are you sure you want to mark all pending payout for this partner as PAID?")) {
+    document.getElementById("modal").classList.remove("show");
+    fetch(SHEET_URL + "?action=mark_referral_paid&code=" + encodeURIComponent(curPartnerCode))
+    .then(r => r.json())
+    .then(d => {
+      if(d.status === "success") {
+        alert("Amount marked as PAID successfully!");
+        loadData(); // Refresh the list
+      } else {
+        alert("Error marking as paid.");
+      }
+    })
+    .catch(e => {
+      alert("Error: " + e.message);
+    });
+  }
+}
+
+document.getElementById("mainSearch").addEventListener("input", renderView);
+document.querySelectorAll(".filters select, .filters input").forEach(el => el.addEventListener("change", renderView));
+
+loadData();
+</script>
+</body>
+</html>

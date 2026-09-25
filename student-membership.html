@@ -130,6 +130,10 @@ body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,#0f172a,#1
           <input type="text" id="f_pan" placeholder="ABCDE1234F" maxlength="10"/>
         </div>
       </div>
+      <div class="fg" id="fg_referral">
+        <label>Referral Code <span class="opt">(Optional)</span></label>
+        <input type="text" id="f_referral" placeholder="If you have a referral code, enter it here" style="text-transform: uppercase;"/>
+      </div>
 
       <div class="fg" id="fg_pass">
         <label>Password (for member login) <span class="req">*</span></label>
@@ -280,6 +284,7 @@ async function submitMembership(){
   var address = document.getElementById("f_address").value.trim();
   var aadhar  = document.getElementById("f_aadhar").value.trim();
   var pan     = document.getElementById("f_pan").value.trim();
+  var referral= document.getElementById("f_referral").value.trim().toUpperCase();
   var pass    = document.getElementById("f_pass").value;
   var ssFile    = document.getElementById("f_ss").files[0];
 
@@ -340,9 +345,11 @@ async function submitMembership(){
       address: address,
       aadhar: aadhar,
       pan: pan,
+      referralCode: referral,
       password: btoa(unescape(encodeURIComponent(pass))),
       paymentScreenshot: ssB64,
       status: "pending",
+      paymentStatus: "Pending Verification",
       submittedAt: new Date().toISOString()
     };
 

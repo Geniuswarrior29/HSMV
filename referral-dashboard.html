@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Referral Dashboard | HSMV Foundation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Inter",sans-serif;background:#0f172a;color:#f8fafc;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(15,23,42,0.9);backdrop-filter:blur(10px);padding:12px 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.1);position:sticky;top:0;z-index:100;}
+.tb-left{display:flex;align-items:center;gap:15px;}
+.topbar img{width:40px;height:40px;border-radius:50%;border:2px solid #E8A020;}
+.topbar-title{color:#fff;font-size:0.95rem;font-weight:700;}
+.topbar-title span{display:block;font-size:0.65rem;color:#E8A020;letter-spacing:2px;text-transform:uppercase;}
+.tb-right{display:flex;align-items:center;gap:15px;}
+.logout-btn{color:#fff;text-decoration:none;font-size:0.8rem;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);padding:6px 14px;border-radius:6px;transition:0.3s;cursor:pointer;}
+.logout-btn:hover{background:#ef4444;}
+.container{padding:20px 5%;max-width:1200px;margin:0 auto;width:100%;flex:1;}
+.welcome{margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.welcome h1{font-size:1.5rem;font-weight:700;}
+.welcome h1 span{color:#E8A020;}
+.welcome .ref-tag{background:rgba(232,160,32,0.15);border:1px solid #E8A020;color:#E8A020;padding:5px 12px;border-radius:20px;font-size:0.85rem;font-weight:600;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:30px;}
+.stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform 0.3s;}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.2);}
+.sc-title{font-size:0.75rem;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.sc-value{font-size:1.8rem;font-weight:800;color:#fff;}
+.sc-value.earn{color:#10b981;}
+.sc-value.pend{color:#f59e0b;}
+
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;}
+.section-head h2{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.search-box{display:flex;gap:10px;flex-wrap:wrap;}
+.search-box input,.search-box select{padding:8px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;background:rgba(0,0,0,0.2);color:#fff;outline:none;font-size:0.85rem;}
+.search-box input:focus,.search-box select:focus{border-color:#E8A020;}
+
+.table-wrapper{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:700px;}
+th{background:rgba(255,255,255,0.02);padding:12px 15px;text-align:left;font-size:0.75rem;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.08);}
+td{padding:12px 15px;font-size:0.85rem;border-bottom:1px solid rgba(255,255,255,0.03);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{padding:4px 8px;border-radius:6px;font-size:0.7rem;font-weight:600;text-transform:uppercase;}
+.b-app{background:rgba(16,185,129,0.15);color:#10b981;}
+.b-pen{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.b-rej{background:rgba(239,68,68,0.15);color:#ef4444;}
+
+/* Login Overlay */
+.login-overlay{position:fixed;inset:0;background:#0f172a;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);padding:30px;border-radius:16px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:center;}
+.login-box h2{font-size:1.4rem;margin-bottom:20px;color:#fff;}
+.login-box input{width:100%;padding:12px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.2);color:#fff;border-radius:8px;outline:none;}
+.login-box input:focus{border-color:#E8A020;}
+.login-box button{width:100%;padding:12px;background:#E8A020;color:#1a1209;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;}
+.login-box p.err{color:#ef4444;font-size:0.8rem;margin-top:10px;display:none;}
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <img src="icon.jpg" alt="Logo" style="width:60px;height:60px;border-radius:50%;border:2px solid #E8A020;margin-bottom:15px;"/>
+    <h2>Referral Login</h2>
+    <input type="text" id="l_refCode" placeholder="Enter Referral Code (e.g. HSMV...)" style="text-transform:uppercase;"/>
+    <input type="password" id="l_pass" placeholder="Password"/>
+    <button onclick="doLogin()" id="loginBtn">Login to Dashboard</button>
+    <p class="err" id="l_err">Invalid credentials</p>
+    <p style="margin-top:15px; font-size:0.8rem; color:#94a3b8;">Don't have an account? <a href="referral-registration.html" style="color:#E8A020;">Register here</a></p>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="tb-left">
+    <img src="icon.jpg" alt="HSMV"/>
+    <div class="topbar-title">HSMV Foundation<span>Referral Partner</span></div>
+  </div>
+  <div class="tb-right">
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="welcome">
+    <h1>Welcome back, <span id="w_name">Partner</span>!</h1>
+    <div class="ref-tag">Your Code: <span id="w_code">----</span></div>
+  </div>
+
+  <h2 style="font-size:1.1rem;margin-bottom:15px;color:#cbd5e1;">Overview Summary</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="sc-title">Total Referrals</div>
+      <div class="sc-value" id="s_total">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-title">Approved Students</div>
+      <div class="sc-value" id="s_approved">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-title">Pending Approval</div>
+      <div class="sc-value pend" id="s_pending">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-title">Total Earnings</div>
+      <div class="sc-value earn" id="s_earn">&#8377;0</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-title">Paid Amount</div>
+      <div class="sc-value earn" id="s_paid">&#8377;0</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-title">Pending Amount</div>
+      <div class="sc-value pend" id="s_pendAmt">&#8377;0</div>
+    </div>
+  </div>
+
+  <div style="background:rgba(232,160,32,0.08); border:1px solid rgba(232,160,32,0.3); border-radius:12px; padding:20px; margin-bottom:30px;">
+    <h3 style="color:#E8A020; font-size:1.1rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+      <span style="font-size:1.4rem;">🎁</span> Daily Bonus & Earning System
+    </h3>
+    <p style="color:#cbd5e1; font-size:0.85rem; margin-bottom:15px; line-height:1.5;">
+      Your earnings are calculated based on the number of students who register and get <strong>approved on the same day</strong>. The cycle resets every day.
+    </p>
+    <ul style="list-style-type:none; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; color:#f8fafc; font-size:0.85rem;">
+      <li style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"><strong>1st Student:</strong> &#8377;20</li>
+      <li style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"><strong>2nd Student:</strong> &#8377;20</li>
+      <li style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border-left:3px solid #10b981;"><strong>3rd Student:</strong> &#8377;20 + <span style="color:#10b981; font-weight:bold;">&#8377;40 Bonus</span></li>
+      <li style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"><strong>4th to 6th Student:</strong> &#8377;30 each</li>
+      <li style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border-left:3px solid #10b981;"><strong>7th Student:</strong> &#8377;30 + <span style="color:#10b981; font-weight:bold;">&#8377;120 Bonus</span></li>
+      <li style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"><strong>8th onwards:</strong> &#8377;30 each</li>
+    </ul>
+    <p style="margin-top:15px; font-size:0.75rem; color:#f59e0b;">
+      <em>Note: For example, if you get 2 approved students today, you earn &#8377;40. To get the &#8377;40 bonus (Total &#8377;100), you need 3 approved students in a single day.</em>
+    </p>
+  </div>
+
+  <div class="section-head">
+    <h2>&#128101; My Students</h2>
+    <div class="search-box">
+      <input type="text" id="s_search" placeholder="Search name, ID, mobile..."/>
+      <select id="s_status">
+        <option value="all">All Statuses</option>
+        <option value="approved">Approved</option>
+        <option value="pending">Pending</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Student ID</th>
+          <th>Mobile</th>
+          <th>Reg Date</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Earning</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="7" style="text-align:center;color:#94a3b8;">Loading data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
+var myStudents = [];
+var curRefCode = localStorage.getItem("refCode") || "";
+
+if(curRefCode) {
+  document.getElementById("loginOverlay").style.display = "none";
+  loadDashboard(curRefCode);
+}
+
+function doLogin() {
+  var c = document.getElementById("l_refCode").value.trim().toUpperCase();
+  var p = document.getElementById("l_pass").value;
+  var btn = document.getElementById("loginBtn");
+  if(!c || !p) return;
+  
+  btn.textContent = "Verifying...";
+  document.getElementById("l_err").style.display = "none";
+
+  fetch(SHEET_URL + "?action=verify_referral_login&code=" + encodeURIComponent(c) + "&pass=" + encodeURIComponent(btoa(unescape(encodeURIComponent(p)))))
+  .then(r => r.json())
+  .then(d => {
+    if(d.status === "success" && d.valid) {
+      localStorage.setItem("refCode", c);
+      localStorage.setItem("refName", d.name);
+      curRefCode = c;
+      document.getElementById("loginOverlay").style.display = "none";
+      loadDashboard(c);
+    } else {
+      throw new Error("Invalid credentials");
+    }
+  })
+  .catch(e => {
+    btn.textContent = "Login to Dashboard";
+    document.getElementById("l_err").style.display = "block";
+  });
+}
+
+function doLogout() {
+  localStorage.removeItem("refCode");
+  localStorage.removeItem("refName");
+  location.reload();
+}
+
+function loadDashboard(code) {
+  document.getElementById("w_name").textContent = localStorage.getItem("refName") || "Partner";
+  document.getElementById("w_code").textContent = code;
+
+  fetch(SHEET_URL + "?action=get_referral_dashboard&code=" + encodeURIComponent(code))
+  .then(r => r.json())
+  .then(d => {
+    if(d.status === "success") {
+      myStudents = d.students || [];
+      updateStats(d.summary || {});
+      renderTable();
+    } else {
+      clearData();
+    }
+  })
+  .catch(e => {
+    clearData();
+  });
+}
+
+function clearData() {
+  myStudents = [];
+  updateStats({});
+  renderTable();
+}
+
+function updateStats(sum) {
+  document.getElementById("s_total").textContent = sum.total || myStudents.length;
+  document.getElementById("s_approved").textContent = sum.approved || myStudents.filter(s=>s.status==='approved').length;
+  document.getElementById("s_pending").textContent = sum.pending || myStudents.filter(s=>s.status==='pending').length;
+  document.getElementById("s_earn").innerHTML = "&#8377;" + (sum.totalEarning || 0);
+  document.getElementById("s_paid").innerHTML = "&#8377;" + (sum.paidAmount || 0);
+  document.getElementById("s_pendAmt").innerHTML = "&#8377;" + ((sum.totalEarning || 0) - (sum.paidAmount || 0));
+}
+
+function renderTable() {
+  var q = document.getElementById("s_search").value.toLowerCase();
+  var st = document.getElementById("s_status").value;
+  var tb = document.getElementById("tbody");
+
+  var list = myStudents.filter(s => {
+    if(st !== "all" && (s.status||"").toLowerCase() !== st) return false;
+    if(q && !((s.name||"").toLowerCase().includes(q) || (s.id||"").toLowerCase().includes(q) || (s.mobile||"").includes(q))) return false;
+    return true;
+  });
+
+  if(list.length === 0) {
+    tb.innerHTML = "<tr><td colspan='7' style='text-align:center;color:#94a3b8;padding:20px;'>No students found</td></tr>";
+    return;
+  }
+
+  var html = "";
+  list.forEach(s => {
+    var sc = s.status === 'approved' ? 'b-app' : s.status === 'rejected' ? 'b-rej' : 'b-pen';
+    var psc = s.paymentStatus === 'Verified' ? 'b-app' : s.paymentStatus === 'Rejected' ? 'b-rej' : 'b-pen';
+    
+    html += `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td style="color:#94a3b8;">${s.id || 'N/A'}</td>
+      <td>${s.mobile || 'N/A'}</td>
+      <td style="color:#94a3b8;">${s.date || 'N/A'}</td>
+      <td><span class="badge ${sc}">${s.status || 'pending'}</span></td>
+      <td><span class="badge ${psc}">${s.paymentStatus || 'Pending'}</span></td>
+      <td style="font-weight:600;color:#10b981;">&#8377;${s.earning || 0}</td>
+    </tr>`;
+  });
+  tb.innerHTML = html;
+}
+
+document.getElementById("s_search").addEventListener("input", renderTable);
+document.getElementById("s_status").addEventListener("change", renderTable);
+</script>
+</body>
+</html>
