@@ -173,6 +173,21 @@ body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,#0f172a,#1
 <script>
 var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
 
+document.addEventListener("DOMContentLoaded", function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var refCode = urlParams.get('ref');
+  if(refCode) {
+    var refInput = document.getElementById('f_referral');
+    if(refInput) {
+      refInput.value = refCode.toUpperCase();
+      refInput.readOnly = true;
+      refInput.style.background = "rgba(255,255,255,0.05)";
+      refInput.style.color = "#94a3b8";
+      refInput.style.cursor = "not-allowed";
+    }
+  }
+});
+
 function sendToSheet(payload){
   return new Promise(function(resolve, reject){
     var form = document.createElement("form");

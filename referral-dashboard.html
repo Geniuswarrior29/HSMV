@@ -21,6 +21,8 @@ body{font-family:"Inter",sans-serif;background:#0f172a;color:#f8fafc;min-height:
 .welcome h1{font-size:1.5rem;font-weight:700;}
 .welcome h1 span{color:#E8A020;}
 .welcome .ref-tag{background:rgba(232,160,32,0.15);border:1px solid #E8A020;color:#E8A020;padding:5px 12px;border-radius:20px;font-size:0.85rem;font-weight:600;}
+.btn-share{background:#E8A020;color:#1a1209;border:none;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:700;cursor:pointer;transition:0.3s;display:inline-flex;align-items:center;gap:5px;}
+.btn-share:hover{background:#fcd34d;}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:30px;}
 .stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform 0.3s;}
@@ -82,8 +84,13 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 
 <div class="container">
   <div class="welcome">
-    <h1>Welcome back, <span id="w_name">Partner</span>!</h1>
-    <div class="ref-tag">Your Code: <span id="w_code">----</span></div>
+    <div>
+      <h1>Welcome back, <span id="w_name">Partner</span>!</h1>
+      <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div class="ref-tag">Your Code: <span id="w_code">----</span></div>
+        <button onclick="copyShareLink()" class="btn-share" id="shareBtn">Copy Referral Link 🔗</button>
+      </div>
+    </div>
   </div>
 
   <h2 style="font-size:1.1rem;margin-bottom:15px;color:#cbd5e1;">Overview Summary</h2>
@@ -138,6 +145,13 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <h2>&#128101; My Students</h2>
     <div class="search-box">
       <input type="text" id="s_search" placeholder="Search name, ID, mobile..."/>
+      <select id="s_time">
+        <option value="lifetime">Lifetime</option>
+        <option value="today">Today</option>
+        <option value="yesterday">Yesterday</option>
+        <option value="last_week">Last 7 Days</option>
+        <option value="last_month">Last 30 Days</option>
+      </select>
       <select id="s_status">
         <option value="all">All Statuses</option>
         <option value="approved">Approved</option>
@@ -170,6 +184,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 <script>
 var SHEET_URL = "https://script.google.com/macros/s/AKfycbzurey_hSvAbmeKAp7F9zFG9oLyE0yupu7-X4fJtGfz5Nr7sDnOjs-iyk85zBD9_FmGjA/exec";
 var myStudents = [];
+var originalSummary = {};
 var curRefCode = localStorage.getItem("refCode") || "";
 
 if(curRefCode) {
@@ -220,8 +235,8 @@ function loadDashboard(code) {
   .then(d => {
     if(d.status === "success") {
       myStudents = d.students || [];
-      updateStats(d.summary || {});
-      renderTable();
+      originalSummary = d.summary || {};
+      applyFilters();
     } else {
       clearData();
     }
@@ -233,40 +248,71 @@ function loadDashboard(code) {
 
 function clearData() {
   myStudents = [];
-  updateStats({});
-  renderTable();
+  originalSummary = {};
+  applyFilters();
 }
 
-function updateStats(sum) {
-  document.getElementById("s_total").textContent = sum.total || myStudents.length;
-  document.getElementById("s_approved").textContent = sum.approved || myStudents.filter(s=>s.status==='approved').length;
-  document.getElementById("s_pending").textContent = sum.pending || myStudents.filter(s=>s.status==='pending').length;
-  document.getElementById("s_earn").innerHTML = "&#8377;" + (sum.totalEarning || 0);
-  document.getElementById("s_paid").innerHTML = "&#8377;" + (sum.paidAmount || 0);
-  document.getElementById("s_pendAmt").innerHTML = "&#8377;" + ((sum.totalEarning || 0) - (sum.paidAmount || 0));
-}
-
-function renderTable() {
+function applyFilters() {
   var q = document.getElementById("s_search").value.toLowerCase();
   var st = document.getElementById("s_status").value;
-  var tb = document.getElementById("tbody");
-
-  var list = myStudents.filter(s => {
+  var tm = document.getElementById("s_time").value;
+  
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  var filteredStudents = myStudents.filter(s => {
     if(st !== "all" && (s.status||"").toLowerCase() !== st) return false;
     if(q && !((s.name||"").toLowerCase().includes(q) || (s.id||"").toLowerCase().includes(q) || (s.mobile||"").includes(q))) return false;
+    
+    if(tm !== "lifetime" && s.date && s.date !== "N/A") {
+      var d = new Date(s.date);
+      if(isNaN(d.getTime())) {
+         var parts = s.date.split(/[-/]/);
+         if(parts.length === 3) d = new Date(parts[2], parts[1]-1, parts[0]);
+      }
+      if(!isNaN(d.getTime())) {
+        var sDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        var diff = Math.floor((today - sDate) / (1000 * 60 * 60 * 24));
+        
+        if(tm === "today" && diff !== 0) return false;
+        if(tm === "yesterday" && diff !== 1) return false;
+        if(tm === "last_week" && (diff < 0 || diff > 7)) return false;
+        if(tm === "last_month" && (diff < 0 || diff > 30)) return false;
+      }
+    }
     return true;
   });
 
-  if(list.length === 0) {
+  var tTot = filteredStudents.length;
+  var tApp = filteredStudents.filter(s=>s.status==='approved').length;
+  var tPen = filteredStudents.filter(s=>s.status==='pending').length;
+  var tEarn = filteredStudents.reduce((sum, s) => sum + (parseFloat(s.earning) || 0), 0);
+  
+  document.getElementById("s_total").textContent = tTot;
+  document.getElementById("s_approved").textContent = tApp;
+  document.getElementById("s_pending").textContent = tPen;
+  document.getElementById("s_earn").innerHTML = "&#8377;" + tEarn;
+  
+  if(tm === "lifetime") {
+    var pAmt = originalSummary.paidAmount || 0;
+    var tEarnLife = originalSummary.totalEarning || tEarn;
+    document.getElementById("s_paid").innerHTML = "&#8377;" + pAmt;
+    document.getElementById("s_pendAmt").innerHTML = "&#8377;" + (tEarnLife - pAmt);
+  } else {
+    document.getElementById("s_paid").innerHTML = "-";
+    document.getElementById("s_pendAmt").innerHTML = "-";
+  }
+
+  var tb = document.getElementById("tbody");
+  if(filteredStudents.length === 0) {
     tb.innerHTML = "<tr><td colspan='7' style='text-align:center;color:#94a3b8;padding:20px;'>No students found</td></tr>";
     return;
   }
-
+  
   var html = "";
-  list.forEach(s => {
+  filteredStudents.forEach(s => {
     var sc = s.status === 'approved' ? 'b-app' : s.status === 'rejected' ? 'b-rej' : 'b-pen';
     var psc = s.paymentStatus === 'Verified' ? 'b-app' : s.paymentStatus === 'Rejected' ? 'b-rej' : 'b-pen';
-    
     html += `<tr>
       <td><strong>${s.name}</strong></td>
       <td style="color:#94a3b8;">${s.id || 'N/A'}</td>
@@ -280,8 +326,26 @@ function renderTable() {
   tb.innerHTML = html;
 }
 
-document.getElementById("s_search").addEventListener("input", renderTable);
-document.getElementById("s_status").addEventListener("change", renderTable);
+document.getElementById("s_search").addEventListener("input", applyFilters);
+document.getElementById("s_status").addEventListener("change", applyFilters);
+document.getElementById("s_time").addEventListener("change", applyFilters);
+
+function copyShareLink() {
+  if(!curRefCode) return;
+  var baseUrl = window.location.href.split('/').slice(0, -1).join('/');
+  var shareUrl = baseUrl + '/student-membership.html?ref=' + curRefCode;
+  
+  navigator.clipboard.writeText(shareUrl).then(function() {
+    var btn = document.getElementById("shareBtn");
+    var origText = btn.innerHTML;
+    btn.innerHTML = "Copied! ✅";
+    setTimeout(function() {
+      btn.innerHTML = origText;
+    }, 2000);
+  }).catch(function(err) {
+    alert("Failed to copy link: " + err);
+  });
+}
 </script>
 </body>
 </html>
