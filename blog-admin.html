@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Blog Admin Dashboard | HSMV Foundation</title>
+<style>
+/* Modern Glassmorphic and Animated Admin UI */
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f4f1ea 0%, #e0d0b0 100%); color: #333; margin: 0; padding: 0; min-height: 100vh; }
+.header { background: rgba(26,18,9,0.9); padding: 15px 30px; color: #fff; border-bottom: 3px solid #E8A020; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+.header h1 { margin: 0; font-family: Georgia, serif; font-size: 1.5rem; color: #E8A020; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+.header a { color: #fff; text-decoration: none; font-size: 0.9rem; background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 20px; transition: all 0.3s; font-weight: 600; }
+.header a:hover { background: var(--primary, #E8A020); color: #1a1209; transform: translateY(-2px); }
+
+.container { max-width: 1000px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 30px; }
+
+.card { background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); backdrop-filter: blur(5px); animation: slideUp 0.6s ease forwards; opacity: 0; transform: translateY(20px); border-top: 4px solid #E8A020; position: relative; }
+.card:nth-child(2) { animation-delay: 0.2s; border-top-color: #3a7d44; }
+
+@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+h2 { font-family: Georgia, serif; font-size: 1.6rem; color: #1a1209; margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid #ddd; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+.form-group { margin-bottom: 20px; }
+label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type="text"], textarea, select { width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; outline: none; transition: all 0.3s; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+input[type="text"]:focus, textarea:focus, select:focus { border-color: #E8A020; box-shadow: 0 0 0 3px rgba(232,160,32,0.15); }
+textarea { resize: vertical; min-height: 200px; font-family: 'Segoe UI', sans-serif; line-height: 1.6; }
+
+.btn-primary { background: linear-gradient(135deg, #E8A020, #d68e10); color: #1a1209; border: none; padding: 14px 20px; font-size: 1rem; font-weight: 700; border-radius: 6px; cursor: pointer; transition: all 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(232,160,32,0.3); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(232,160,32,0.4); }
+.btn-primary:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+
+.message { margin-top: 15px; padding: 12px; border-radius: 6px; display: none; font-weight: 600; text-align: center; font-size: 0.95rem; animation: fadeIn 0.3s; }
+.success { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; display: block; }
+.error { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Post List */
+.post-list { display: flex; flex-direction: column; gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 10px; }
+.post-list::-webkit-scrollbar { width: 6px; }
+.post-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+.post-item { background: #fff; border: 1px solid #eee; padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s, box-shadow 0.2s; }
+.post-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #E8A020; }
+.post-info { flex: 1; }
+.post-section { font-size: 0.75rem; color: #3a7d44; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
+.post-title { font-size: 1.05rem; font-weight: 600; color: #1a1209; margin: 0 0 5px 0; }
+.post-date { font-size: 0.75rem; color: #888; }
+.btn-delete { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-delete:hover { background: #d32f2f; color: #fff; }
+
+.empty-state { text-align: center; padding: 30px; color: #888; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Blog Admin Dashboard</h1>
+  <a href="admin.html">&larr; Back to Dashboard</a>
+</div>
+
+<div class="container">
+  
+  <!-- Add Post Card -->
+  <div class="card">
+    <h2>📝 Add New Blog Post</h2>
+    <form id="blogForm">
+      <div class="form-group">
+        <label for="sectionSelect">Select Section</label>
+        <select id="sectionSelect" required>
+          <option value="" disabled selected>Loading sections...</option>
+        </select>
+      </div>
+      
+      <div class="form-group" id="newSectionGroup" style="display:none; animation: fadeIn 0.3s;">
+        <label for="newSectionTitle">New Section Name</label>
+        <input type="text" id="newSectionTitle" placeholder="e.g. Student Welfare Program">
+      </div>
+      
+      <div class="form-group">
+        <label for="sectionHeading">Blog Post Title (Heading)</label>
+        <input type="text" id="sectionHeading" required placeholder="e.g. Impact of Practical Workshops">
+      </div>
+      
+      <div class="form-group">
+        <label for="sectionText">Blog Content (500-600 words)</label>
+        <textarea id="sectionText" required placeholder="Write your detailed blog post here..."></textarea>
+      </div>
+      
+      <button type="submit" id="submitBtn" class="btn-primary">Publish to Firebase</button>
+      <div id="statusMessage" class="message"></div>
+    </form>
+  </div>
+
+  <!-- Manage Posts Card -->
+  <div class="card">
+    <h2>🗑️ Manage Existing Posts</h2>
+    <div class="post-list" id="postList">
+      <div class="empty-state">Loading posts from Firebase...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  if (!firebase.apps.length) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+  }
+  const db = firebase.firestore();
+
+  let existingSections = new Set();
+
+  async function loadAdminData() {
+    const listContainer = document.getElementById('postList');
+    const select = document.getElementById('sectionSelect');
+    
+    try {
+      const snapshot = await db.collection('blog_sections').orderBy('timestamp', 'desc').get();
+      listContainer.innerHTML = '';
+      existingSections.clear();
+
+      if (snapshot.empty) {
+        listContainer.innerHTML = '<div class="empty-state">No posts found. Add one above!</div>';
+      } else {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          existingSections.add(data.title || 'Uncategorized');
+          
+          let dateStr = 'Unknown';
+          if (data.timestamp) {
+              dateStr = data.timestamp.toDate().toLocaleDateString();
+          }
+
+          const item = document.createElement('div');
+          item.className = 'post-item';
+          item.innerHTML = `
+            <div class="post-info">
+              <div class="post-section">${data.title || 'Uncategorized'}</div>
+              <h3 class="post-title">${data.heading || 'Untitled'}</h3>
+              <div class="post-date">Published: ${dateStr}</div>
+            </div>
+            <button class="btn-delete" onclick="deletePost('${doc.id}', this)">Delete</button>
+          `;
+          listContainer.appendChild(item);
+        });
+      }
+
+      // Populate select
+      select.innerHTML = '<option value="" disabled selected>-- Choose a Section --</option>';
+      const sortedSections = Array.from(existingSections).sort();
+      sortedSections.forEach(sec => {
+        const opt = document.createElement('option');
+        opt.value = sec;
+        opt.textContent = sec;
+        select.appendChild(opt);
+      });
+      const newOpt = document.createElement('option');
+      newOpt.value = "_NEW_";
+      newOpt.textContent = "+ Create New Section";
+      newOpt.style.fontWeight = "bold";
+      newOpt.style.color = "#E8A020";
+      select.appendChild(newOpt);
+
+    } catch (err) {
+      console.error(err);
+      listContainer.innerHTML = '<div class="empty-state" style="color:red;">Error connecting to Firebase. Please ensure Firestore is enabled in your Firebase console.</div>';
+    }
+  }
+
+  document.getElementById('sectionSelect').addEventListener('change', function() {
+    const newSecGroup = document.getElementById('newSectionGroup');
+    const newSecInput = document.getElementById('newSectionTitle');
+    if (this.value === '_NEW_') {
+      newSecGroup.style.display = 'block';
+      newSecInput.required = true;
+      newSecInput.focus();
+    } else {
+      newSecGroup.style.display = 'none';
+      newSecInput.required = false;
+    }
+  });
+
+  async function deletePost(docId, btnElement) {
+    if(!confirm("Are you sure you want to delete this post from Firebase? This cannot be undone.")) return;
+    
+    btnElement.textContent = 'Deleting...';
+    btnElement.disabled = true;
+    
+    try {
+      await db.collection('blog_sections').doc(docId).delete();
+      btnElement.parentElement.style.opacity = '0';
+      setTimeout(() => {
+        btnElement.parentElement.remove();
+        loadAdminData();
+      }, 300);
+    } catch(err) {
+      console.error(err);
+      alert("Error deleting: " + err.message);
+      btnElement.textContent = 'Delete';
+      btnElement.disabled = false;
+    }
+  }
+
+  document.getElementById('blogForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('statusMessage');
+    const selectVal = document.getElementById('sectionSelect').value;
+    
+    let title = selectVal;
+    if (selectVal === '_NEW_') {
+      title = document.getElementById('newSectionTitle').value.trim();
+    }
+
+    const heading = document.getElementById('sectionHeading').value.trim();
+    const text = document.getElementById('sectionText').value.trim();
+    
+    btn.disabled = true;
+    btn.textContent = 'Publishing...';
+    msg.className = 'message';
+    msg.textContent = '';
+    
+    try {
+      await db.collection('blog_sections').add({
+        title: title,
+        heading: heading,
+        text: text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      msg.textContent = 'Successfully published to Firebase!';
+      msg.className = 'message success';
+      
+      document.getElementById('blogForm').reset();
+      document.getElementById('newSectionGroup').style.display = 'none';
+      
+      setTimeout(() => { msg.style.display = 'none'; }, 4000);
+      loadAdminData(); 
+    } catch (err) {
+      console.error(err);
+      msg.textContent = 'Error publishing: ' + err.message + '. Ensure Firestore is enabled.';
+      msg.className = 'message error';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Publish to Firebase';
+    }
+  });
+
+  window.onload = loadAdminData;
+</script>
+</body>
+</html>
