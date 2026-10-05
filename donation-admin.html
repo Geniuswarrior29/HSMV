@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Admin Portal | HSMV Foundation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #1e40af;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen p-6">
+    
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900"><i class="fas fa-shield-alt text-blue-600 mr-2"></i> Donation Admin Portal</h1>
+            <a href="index.html" class="text-blue-600 hover:underline"><i class="fas fa-home"></i> Back to Home</a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-700">Manage Donations Without Money</h2>
+                <button onclick="loadDonations()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh
+                </button>
+            </div>
+            
+            <div id="loader" class="flex justify-center items-center py-20">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table id="donationsTable" class="w-full text-left border-collapse hidden">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wider">
+                            <th class="p-4 font-semibold">Date</th>
+                            <th class="p-4 font-semibold">Donor Info</th>
+                            <th class="p-4 font-semibold">Address</th>
+                            <th class="p-4 font-semibold">Items</th>
+                            <th class="p-4 font-semibold">Status</th>
+                            <th class="p-4 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donationsBody" class="divide-y divide-gray-100">
+                        <!-- Rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50">
+        <i class="fas fa-info-circle text-blue-400"></i>
+        <span id="toastMsg">Action successful</span>
+    </div>
+
+    <script>
+        // Replace with actual deployed Google Apps Script URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSZcriXEYptVCWoDp6SKdwPDs-6ElkZPAULeE8_jG7EWi1cXHMQ-edy1Fr6-Pq_LF2/exec"; 
+
+        // Empty mock data since we use real data now
+        let mockData = [];
+
+        document.addEventListener('DOMContentLoaded', loadDonations);
+
+        async function loadDonations() {
+            const loader = document.getElementById('loader');
+            const table = document.getElementById('donationsTable');
+            const tbody = document.getElementById('donationsBody');
+            
+            loader.classList.remove('hidden');
+            table.classList.add('hidden');
+            tbody.innerHTML = '';
+
+            try {
+                // Real implementation:
+                const response = await fetch(`${SCRIPT_URL}?action=getAllDonations`);
+                const data = await response.json();
+                const donations = data.donations || [];
+
+                if (donations.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">No donations found.</td></tr>`;
+                } else {
+                    donations.reverse().forEach(donation => {
+                        const date = new Date(donation.timestamp).toLocaleDateString();
+                        let statusBadge = '';
+                        if(donation.status === 'Pending') statusBadge = '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">Pending</span>';
+                        else if(donation.status === 'Approve') statusBadge = '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Approved</span>';
+                        else if(donation.status === 'Highlight Approve') statusBadge = '<span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-medium"><i class="fas fa-star mr-1"></i> Highlighted</span>';
+
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-gray-50 transition-colors";
+                        tr.innerHTML = `
+                            <td class="p-4 text-sm text-gray-500 whitespace-nowrap">${date}</td>
+                            <td class="p-4">
+                                <div class="font-semibold text-gray-800">${donation.name}</div>
+                                <div class="text-sm text-gray-500"><i class="fas fa-phone-alt text-xs mr-1"></i> ${donation.mobile}</div>
+                                ${donation.email ? `<div class="text-sm text-gray-500"><i class="fas fa-envelope text-xs mr-1"></i> ${donation.email}</div>` : ''}
+                            </td>
+                            <td class="p-4 text-sm text-gray-700 max-w-xs truncate" title="${donation.address}">${donation.address}</td>
+                            <td class="p-4 text-sm text-gray-700 max-w-xs truncate" title="${donation.items}">${donation.items}</td>
+                            <td class="p-4">${statusBadge}</td>
+                            <td class="p-4 text-right space-x-2 whitespace-nowrap">
+                                <button onclick="updateStatus('${donation.id}', 'Approve')" class="text-green-600 hover:bg-green-50 p-2 rounded-lg transition-colors" title="Approve">
+                                    <i class="fas fa-check-circle text-lg"></i>
+                                </button>
+                                <button onclick="updateStatus('${donation.id}', 'Highlight Approve')" class="text-purple-600 hover:bg-purple-50 p-2 rounded-lg transition-colors" title="Highlight Approve">
+                                    <i class="fas fa-star text-lg"></i>
+                                </button>
+                                <button onclick="updateStatus('${donation.id}', 'Delete')" class="text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors" title="Delete">
+                                    <i class="fas fa-trash-alt text-lg"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+                
+                loader.classList.add('hidden');
+                table.classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">Failed to load data. Check console.</td></tr>`;
+                loader.classList.add('hidden');
+                table.classList.remove('hidden');
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            if(newStatus === 'Delete' && !confirm('Are you sure you want to delete this record?')) return;
+
+            showToast(`Updating status to ${newStatus}...`);
+
+            try {
+                // Real implementation:
+                const params = new URLSearchParams({
+                    action: 'updateStatus',
+                    id: id,
+                    status: newStatus
+                });
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: params
+                });
+                
+                const result = await response.json();
+                if(result.result !== "success") throw new Error(result.error || "Failed");
+
+                showToast(`Status updated successfully!`);
+                loadDonations(); // Reload table
+
+            } catch (error) {
+                console.error(error);
+                showToast(`Failed to update status.`);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

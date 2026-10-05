@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Donors | HSMV Foundation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBlue: '#0b1d3a',
+                        royalBlue: '#1e40af',
+                        gold: '#E8A020',
+                        cleanBg: '#fdfdfd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .donor-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .donor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .highlight-card {
+            background: linear-gradient(135deg, #fffcf5 0%, #fff8ea 100%);
+            border: 2px solid #E8A020;
+            box-shadow: 0 10px 25px rgba(232, 160, 32, 0.15);
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(232, 160, 32, 0.2);
+            border-left-color: #E8A020;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-cleanBg text-gray-700 font-sans antialiased min-h-screen flex flex-col">
+    
+    <!-- Hero Section -->
+    <div class="bg-darkBlue py-16 px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        <div class="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
+            <a href="index.html" class="mb-4 text-blue-200 hover:text-white transition-colors text-sm font-semibold tracking-wide uppercase"><i class="fas fa-arrow-left mr-2"></i> Back to Home</a>
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Our Generous Donors</h1>
+            <p class="text-blue-100 text-lg max-w-2xl mx-auto font-light leading-relaxed">
+                Celebrating the kind souls who have donated items to support our cause. We thank you from the bottom of our hearts!
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-12 flex-grow w-full relative -mt-6 z-20">
+        
+        <div id="loader" class="flex flex-col justify-center items-center py-20 gap-4">
+            <div class="loading-spinner"></div>
+            <p class="text-gray-500 font-medium">Loading our wonderful donors...</p>
+        </div>
+
+        <div id="highlightContainer" class="hidden flex flex-wrap justify-center gap-4 mb-12">
+            <!-- Highlighted Donor Cards injected here -->
+        </div>
+
+        <div id="listContainer" class="hidden max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 class="text-xl font-bold text-darkBlue mb-4 border-b border-gray-100 pb-3"><i class="fas fa-list text-royalBlue mr-2"></i> All Donors</h2>
+            <ul id="regularDonorsList" class="divide-y divide-gray-100">
+                <!-- Regular Donors injected here -->
+            </ul>
+        </div>
+
+        <div id="noDonors" class="hidden text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div class="text-6xl text-gray-200 mb-4"><i class="fas fa-box-open"></i></div>
+            <h3 class="text-2xl font-bold text-gray-700 mb-2">No Donors Yet</h3>
+            <p class="text-gray-500 mb-6">Be the first to make an in-kind donation and inspire others!</p>
+            <a href="donation-without-money.html" class="inline-block bg-gold hover:bg-yellow-500 text-darkBlue font-bold py-3 px-8 rounded-xl shadow-md transition-all">
+                Donate Now
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-8 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <script>document.write(new Date().getFullYear())</script> HSMV Foundation. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSZcriXEYptVCWoDp6SKdwPDs-6ElkZPAULeE8_jG7EWi1cXHMQ-edy1Fr6-Pq_LF2/exec"; 
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loader = document.getElementById('loader');
+            const highlightContainer = document.getElementById('highlightContainer');
+            const listContainer = document.getElementById('listContainer');
+            const regularDonorsList = document.getElementById('regularDonorsList');
+            const noDonors = document.getElementById('noDonors');
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getDonors`);
+                const data = await response.json();
+                let donors = data.donors || [];
+
+                if (donors.length === 0) {
+                    loader.classList.add('hidden');
+                    noDonors.classList.remove('hidden');
+                    return;
+                }
+
+                // Sort: Highlight Approve first, then Approve
+                donors.sort((a, b) => {
+                    if (a.status === 'Highlight Approve' && b.status !== 'Highlight Approve') return -1;
+                    if (a.status !== 'Highlight Approve' && b.status === 'Highlight Approve') return 1;
+                    return 0;
+                });
+                
+                let hasHighlight = false;
+                let hasRegular = false;
+
+                // Render Cards
+                donors.forEach((donor, index) => {
+                    let cleanItems = donor.items
+                        .replace(/\d+\s*(kg|g|ltr|ml|pcs|pieces)?\s*/gi, '')
+                        .trim();
+                    if(!cleanItems) cleanItems = donor.items;
+
+                    const isHighlight = donor.status === 'Highlight Approve';
+                    const delay = index * 0.05;
+
+                    if (isHighlight) {
+                        hasHighlight = true;
+                        const card = document.createElement('div');
+                        // Make width fit content, smaller padding
+                        card.className = `donor-card bg-white rounded-xl p-4 fade-in flex flex-col items-center text-center highlight-card relative w-auto inline-block`;
+                        card.style.animationDelay = `${delay}s`;
+                        
+                        const initial = donor.name.charAt(0).toUpperCase();
+
+                        card.innerHTML = `
+                            <div class="absolute -top-3 right-2 bg-gold text-darkBlue text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                                <i class="fas fa-star text-[8px]"></i> Featured
+                            </div>
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold mb-2 bg-gold text-darkBlue">
+                                ${initial}
+                            </div>
+                            <h3 class="text-base font-bold text-gray-800 mb-1 whitespace-nowrap">${donor.name}</h3>
+                            
+                            <div class="mt-2 pt-2 border-t border-gray-100/60 border-dashed">
+                                <div class="flex items-center gap-1 justify-center text-xs text-gray-600">
+                                    <i class="fas fa-gift text-gold"></i>
+                                    <span class="truncate max-w-[150px]" title="${cleanItems}">${cleanItems}</span>
+                                </div>
+                            </div>
+                        `;
+                        highlightContainer.appendChild(card);
+                    } else {
+                        hasRegular = true;
+                        const li = document.createElement('li');
+                        li.className = `py-4 fade-in flex flex-col sm:flex-row sm:items-center justify-between gap-2`;
+                        li.style.animationDelay = `${delay}s`;
+                        
+                        li.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-50 text-royalBlue flex items-center justify-center font-bold text-sm">
+                                    ${donor.name.charAt(0).toUpperCase()}
+                                </div>
+                                <h3 class="font-semibold text-gray-800">${donor.name}</h3>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-lg w-fit">
+                                <i class="fas fa-gift text-gray-400"></i>
+                                <span>${cleanItems}</span>
+                            </div>
+                        `;
+                        regularDonorsList.appendChild(li);
+                    }
+                });
+
+                loader.classList.add('hidden');
+                if (hasHighlight) highlightContainer.classList.remove('hidden');
+                if (hasRegular) listContainer.classList.remove('hidden');
+                if (hasHighlight && !hasRegular) {
+                    listContainer.classList.remove('hidden');
+                    regularDonorsList.innerHTML = '<li class="py-4 text-gray-500 text-center text-sm">No regular donors yet.</li>';
+                }
+
+            } catch (error) {
+                console.error(error);
+                loader.innerHTML = `<p class="text-red-500 font-medium">Failed to load donors. Please try again later.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

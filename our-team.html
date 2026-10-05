@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team | HSMV Foundation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #fdfaf6;
+            --text-main: #1a1209;
+            --text-muted: #5a4a35;
+            --primary: #3a7d44;
+            --primary-dark: #255c2e;
+            --gold: #E8A020;
+            --gold-light: #f0b95b;
+            --card-bg: #ffffff;
+            --nav-bg: rgba(253, 250, 246, 0.85);
+            --modal-bg: rgba(26, 18, 9, 0.4);
+            --transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Background Elements */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .shape-1 {
+            background: rgba(232, 160, 32, 0.2);
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            background: rgba(58, 125, 68, 0.15);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            bottom: -200px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+            100% { transform: translate(-30px, 80px) scale(0.9); }
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(232, 160, 32, 0.1);
+            z-index: 100;
+            transition: all var(--transition);
+        }
+
+        nav.scrolled {
+            padding: 10px 5%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+            transition: transform var(--transition);
+        }
+
+        .nav-left:hover .logo {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .donate-btn {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            color: #1a1209;
+            padding: 10px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(232, 160, 32, 0.3);
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 160, 32, 0.4);
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 2px;
+            background-color: var(--text-main);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger:hover span {
+            background-color: var(--gold);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 150px 5% 80px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        .hero h1 span {
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s 0.2s forwards;
+        }
+
+        .hero-divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 30px auto 0;
+            opacity: 0;
+            animation: expandWidth 0.8s 0.4s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes expandWidth {
+            to { opacity: 1; width: 120px; }
+        }
+
+        /* Team Section */
+        .team-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 5% 100px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .member-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+            opacity: 0;
+            transform: translateY(40px);
+            border: 1px solid rgba(232, 160, 32, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .member-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .member-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(58, 125, 68, 0.15);
+            border-color: rgba(232, 160, 32, 0.3);
+        }
+
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 110%;
+            overflow: hidden;
+        }
+
+        .member-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.7s ease;
+            filter: grayscale(20%);
+        }
+
+        .member-card:hover .member-img {
+            transform: scale(1.08);
+            filter: grayscale(0%);
+        }
+
+        .img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(26, 18, 9, 0.8) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .member-card:hover .img-overlay {
+            opacity: 1;
+        }
+
+        .member-info {
+            padding: 25px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--card-bg);
+            position: relative;
+            z-index: 2;
+        }
+
+        .member-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .member-role {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: gap var(--transition);
+        }
+
+        .member-card:hover .read-more {
+            gap: 12px;
+            color: var(--gold);
+        }
+
+        /* Modern Drawer Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--modal-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            background: var(--card-bg);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-overlay.active .drawer {
+            transform: translateX(0);
+        }
+
+        .drawer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .drawer-close:hover {
+            background: var(--gold);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .drawer-hero {
+            position: relative;
+            width: 100%;
+            height: 350px;
+        }
+
+        .drawer-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+        }
+
+        .drawer-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--card-bg) 0%, transparent 100%);
+        }
+
+        .drawer-content {
+            padding: 0 40px 40px;
+            margin-top: -40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .drawer-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        .drawer-role {
+            display: inline-block;
+            background: rgba(232, 160, 32, 0.15);
+            color: var(--gold);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .drawer-desc {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+            white-space: pre-line;
+        }
+
+        .drawer-desc p {
+            margin-bottom: 15px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-color);
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .mobile-menu.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-links {
+            list-style: none;
+            text-align: center;
+        }
+
+        .mobile-links li {
+            margin: 20px 0;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .mobile-menu.active .mobile-links li {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .mobile-menu.active .mobile-links li:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu.active .mobile-links li:nth-child(2) { transition-delay: 0.2s; }
+        .mobile-menu.active .mobile-links li:nth-child(3) { transition-delay: 0.3s; }
+
+        .mobile-links a {
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--primary-dark);
+            transition: color 0.3s ease;
+        }
+
+        .mobile-links a:hover {
+            color: var(--gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-left .brand-title, .nav-left .brand-subtitle {
+                display: none;
+            }
+            .donate-btn span {
+                display: none;
+            }
+            .donate-btn {
+                padding: 10px 15px;
+            }
+            .drawer-content {
+                padding: 0 25px 30px;
+            }
+            .drawer-name {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="index.html" class="nav-left">
+            <img src="icon.jpg" alt="HSMV Logo" class="logo" onerror="this.src='https://via.placeholder.com/50?text=Logo'">
+            <div class="brand-text">
+                <span class="brand-title">HSMV</span>
+                <span class="brand-subtitle">Foundation</span>
+            </div>
+        </a>
+        <div class="nav-right">
+            <a href="add-donor.html" class="donate-btn">
+                <i class="fas fa-heart"></i> <span>Donate Now</span>
+            </a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <ul class="mobile-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="our-team.html" style="color: var(--gold);">Our Team</a></li>
+            <li><a href="add-donor.html">Support Us</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>Meet Our <span>Visionaries</span></h1>
+        <p>The dedicated individuals working tirelessly behind the scenes to drive the mission of HSMV Foundation forward.</p>
+        <div class="hero-divider"></div>
+    </header>
+
+    <!-- Team Grid -->
+    <main class="team-container" id="team-grid">
+        <!-- Cards generated by JS -->
+    </main>
+
+    <!-- Drawer Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="drawer">
+            <button class="drawer-close" id="close-modal"><i class="fas fa-times"></i></button>
+            <div class="drawer-hero">
+                <img id="m-img" src="" alt="" class="drawer-img">
+            </div>
+            <div class="drawer-content">
+                <h3 class="drawer-name" id="m-name"></h3>
+                <div class="drawer-role" id="m-role"></div>
+                <div class="drawer-desc" id="m-desc"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const team = [
+            {
+                name: "Vikash Patel",
+                role: "President",
+                img: "https://i.ibb.co/1G2P7dTC/IMG-20261003-WA0008.jpg",
+                desc: `I wasn't born with privilege. I was born into a family where every day was a struggle, and where dreams were a luxury we couldn't afford. I did an ordinary graduation, with no big degree and no big connections. What I did have was a lot of problems, and a lot of lessons.
+
+There were days when I needed guidance and found none. There were doors I knocked on that never opened. And in those moments I made a promise to myself: "If I ever get the strength, no one will have to walk this road alone the way I did."
+
+That promise became HSMV Foundation.
+
+HSMV isn't just a name or an organisation to me. It's the answer to my own struggle. Every person we help, every smile we bring, heals a little part of the child I once was.
+
+I believe:
+🔹 Pain, if you let it, can become purpose
+🔹 You don't need to be rich to help someone, you need a big heart
+🔹 A person who has seen darkness knows best how valuable a small light is
+
+Today, I don't see myself as a founder or a president. I see myself as a bridge between those who are struggling and the opportunities they deserve.
+
+If you're going through a hard time right now, remember: your story isn't over, it's just the beginning. And you aren't alone, HSMV Foundation is with you. 🙏
+
+— Vikas Babu Patel
+B.A | President, HSMV Foundation`
+            },
+            {
+                name: "Manoj Kumar Verma",
+                role: "Advisor",
+                img: "https://i.ibb.co/PGYKGFwL/IMG-20261003-WA0007.jpg",
+                desc: `I wasn't born with privilege. I was born into a family where every day was a struggle, and where dreams were a luxury we couldn't afford. I did an ordinary graduation, with no big degree and no big connections. What I did have was a lot of problems, and a lot of lessons.
+
+There were days when I needed guidance and found none. There were doors I knocked on that never opened. And in those moments I made a promise to myself: "If I ever get the strength, no one will have to walk this road alone the way I did."
+
+That promise became HSMV Foundation.
+
+HSMV isn't just a name or an organisation to me. It's the answer to my own struggle. Every person we help, every smile we bring, heals a little part of the child I once was.
+
+I believe:
+🔹 Pain, if you let it, can become purpose
+🔹 You don't need to be rich to help someone, you need a big heart
+🔹 A person who has seen darkness knows best how valuable a small light is
+
+Today, I don't see myself as a founder or a president. I see myself as a bridge between those who are struggl`
+            },
+            {
+                name: "Harsh Vardhan Dwivedi",
+                role: "Program Associate",
+                img: "https://i.ibb.co/0yWtbjpY/file-00000000cff882078184ddc0e00f482b.png",
+                desc: `Harsh Vardhan Dwivedi: A Journey of Education, Experience, and Social Commitment
+
+Every journey has its own story, and some are shaped not only by education but also by the experiences and opportunities that come along the way. The journey of Harsh Vardhan Dwivedi is one of continuous learning, personal growth, and a growing commitment to social work.
+
+From Raebareli to Banaras Hindu University
+Harsh Vardhan Dwivedi completed his Class 12 education in Raebareli, Uttar Pradesh. With a desire to continue his education and explore new opportunities, he moved forward on his academic journey and pursued a Bachelor of Arts (BA) degree at Banaras Hindu University (BHU), one of India's well-known educational institutions.
+
+His time at BHU was not limited to classroom learning. Alongside his studies, he also explored opportunities to gain practical experience and understand the world beyond academics.
+
+Learning Beyond the Classroom
+For Harsh, education has always been about more than textbooks and examinations. During his academic journey, he actively worked with NGOs, where he gained valuable exposure to social initiatives, teamwork, and community engagement.
+
+Working with non-governmental organizations gave him an opportunity to understand the challenges faced by communities and the importance of collective efforts in addressing social issues.
+
+These experiences also helped him develop practical skills, improve his ability to work with people, and gain a better understanding of how social organizations function.
+
+A New Chapter with HSMV Foundation
+In 2026, after completing his BA from Banaras Hindu University, Harsh Vardhan Dwivedi began a new chapter in his professional journey by joining Helping Society Mission & Vision Foundation (HSMV Foundation) as a Program Associate.
+
+His role reflects his growing interest in social development and his experience working with NGOs. As a Program Associate, he is part of an organization focused on community welfare, student development, and social initiatives.
+
+Looking Ahead
+Harsh Vardhan Dwivedi's journey highlights an important lesson for young people: meaningful learning does not stop when the classroom ends. Practical experience, volunteering, and active participation in social initiatives can play an equally important role in shaping a person's professional journey.`
+            },
+            {
+                name: "Dev Srivastava",
+                role: "Web Tech Developer",
+                img: "https://i.ibb.co/jvKyr1dj/file-00000000578c8208930e778d4c405ef2.png",
+                desc: `Dev Srivastava: Combining Technology, Creativity, and Practical Experience
+
+In today's digital world, technology has become an essential part of almost every industry. For young professionals, learning new skills and gaining practical experience can open doors to exciting opportunities. Dev Srivastava is one such young professional who has built his journey around technology, continuous learning, and hands-on experience.
+
+Educational Background
+Dev Srivastava completed his Class 12 education in Raebareli, Uttar Pradesh. With an interest in learning and exploring new fields, he pursued a Bachelor of Science (BSc) degree with Physics, Chemistry, and Mathematics (PCM), graduating in 2026.
+
+During his graduation, Dev developed an interest in the world of computers and digital technology. Rather than limiting himself to his academic curriculum, he dedicated time to learning technical skills that could help him build a career in the growing digital industry.
+
+Exploring the World of Technology
+Dev's learning journey extended well beyond traditional classroom education. During his graduation, he explored several areas of technology, including programming languages, web design, web development, database management, and Advanced Excel.
+
+His interest in website development gradually turned into practical work. He began taking freelance projects, creating websites for different purposes and gaining valuable experience by working on real-world requirements. Over time, Dev successfully completed more than 10 freelance website development projects.
+
+Professional Experience with HSMV Foundation
+Currently, Dev Srivastava is working with Helping Society Mission & Vision Foundation (HSMV Foundation) as a WebTech Developer.
+
+In this role, he brings his technical knowledge and website development experience to support the foundation's digital initiatives. His work contributes to building and maintaining the organization's online presence and supporting its technology-related requirements.
+
+A Journey of Continuous Learning
+Dev's journey demonstrates how combining formal education with self-learning and practical experience can help young individuals explore professional opportunities. For Dev, every project is more than just a website. It is an opportunity to learn something new, solve a problem, and turn an idea into reality.`
+            }
+        ];
+
+        // Render Cards
+        const grid = document.getElementById("team-grid");
+        
+        team.forEach((member, index) => {
+            const card = document.createElement("article");
+            card.className = "member-card";
+            card.style.transitionDelay = `${index * 0.15}s`;
+            
+            card.innerHTML = `
+                <div class="img-wrapper">
+                    <img src="${member.img}" alt="${member.name}" class="member-img" loading="lazy">
+                    <div class="img-overlay"></div>
+                </div>
+                <div class="member-info">
+                    <h2 class="member-name">${member.name}</h2>
+                    <div class="member-role">${member.role}</div>
+                    <div class="read-more">Read Story <i class="fas fa-arrow-right"></i></div>
+                </div>
+            `;
+            
+            card.addEventListener("click", () => openModal(member));
+            grid.appendChild(card);
+        });
+
+        // Scroll Animation Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+        document.querySelectorAll('.member-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let menuOpen = false;
+
+        hamburger.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = menuOpen ? 'hidden' : '';
+        });
+
+        // Modal Logic
+        const modal = document.getElementById("modal");
+        const closeBtn = document.getElementById("close-modal");
+        const mImg = document.getElementById("m-img");
+        const mName = document.getElementById("m-name");
+        const mRole = document.getElementById("m-role");
+        const mDesc = document.getElementById("m-desc");
+
+        function openModal(member) {
+            mImg.src = member.img;
+            mImg.alt = member.name;
+            mName.textContent = member.name;
+            mRole.textContent = member.role;
+            
+            // Format description with paragraphs
+            mDesc.innerHTML = member.desc.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+            
+            modal.classList.add("active");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            modal.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+
+        closeBtn.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal();
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modal.classList.contains("active")) closeModal();
+        });
+    </script>
+</body>
+</html>

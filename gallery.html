@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | HSMV Foundation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBlue: '#0b1d3a',
+                        royalBlue: '#1e40af',
+                        gold: '#E8A020',
+                        cleanBg: '#fdfdfd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gallery-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .gallery-card img {
+            transition: transform 0.5s ease;
+        }
+        .gallery-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(232, 160, 32, 0.2);
+            border-left-color: #E8A020;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-cleanBg text-gray-700 font-sans antialiased min-h-screen flex flex-col">
+    
+    <!-- Hero Section -->
+    <div class="bg-darkBlue py-16 px-4 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        <div class="max-w-6xl mx-auto text-center relative z-10 flex flex-col items-center">
+            <a href="index.html" class="mb-4 text-blue-200 hover:text-white transition-colors text-sm font-semibold tracking-wide uppercase"><i class="fas fa-arrow-left mr-2"></i> Back to Home</a>
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">Our Gallery</h1>
+            <p class="text-blue-100 text-lg max-w-2xl mx-auto font-light leading-relaxed">
+                A glimpse into our initiatives and events. Witness the smiles and the impact we create together.
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full relative -mt-6 z-20">
+        
+        <!-- Search Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100 mb-8 max-w-md mx-auto flex items-center gap-3">
+            <i class="fas fa-search text-gray-400"></i>
+            <div class="flex-grow flex items-center gap-2">
+                <span class="text-sm font-semibold text-gray-600 whitespace-nowrap">Filter by Date:</span>
+                <input type="date" id="dateSearch" class="w-full text-sm border-none focus:outline-none focus:ring-0 text-gray-700 font-medium bg-transparent">
+            </div>
+            <button id="clearSearch" class="text-gray-400 hover:text-red-500 hidden transition-colors" title="Clear Search"><i class="fas fa-times-circle"></i></button>
+        </div>
+        
+        <div id="loader" class="flex flex-col justify-center items-center py-20 gap-4">
+            <div class="loading-spinner"></div>
+            <p class="text-gray-500 font-medium">Loading photos...</p>
+        </div>
+
+        <div id="galleryContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Photos injected here -->
+        </div>
+
+        <div id="noPhotos" class="hidden text-center py-20">
+            <div class="text-5xl text-gray-200 mb-4"><i class="fas fa-image"></i></div>
+            <h3 class="text-xl font-bold text-gray-700 mb-2">No photos found</h3>
+            <p class="text-gray-500">Check back later for new updates.</p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="photoModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <button id="closeModal" class="absolute top-6 right-6 text-white/70 hover:text-white text-3xl transition-colors focus:outline-none"><i class="fas fa-times"></i></button>
+        
+        <div class="max-w-4xl w-full flex flex-col items-center gap-6 mt-8">
+            <img id="modalImage" src="" alt="Gallery Image" class="max-h-[60vh] max-w-full object-contain rounded shadow-2xl shadow-black">
+            
+            <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20 text-white w-full max-w-2xl text-center">
+                <p id="modalDate" class="text-gold text-sm font-bold uppercase tracking-wider mb-2"><i class="far fa-calendar-alt mr-1"></i> <span></span></p>
+                <p id="modalDesc" class="text-lg font-light leading-relaxed mb-6"></p>
+                
+                <a id="modalDownload" href="#" target="_blank" class="inline-flex items-center gap-2 bg-white text-darkBlue hover:bg-gray-100 font-bold py-2.5 px-6 rounded-full shadow-lg transition-all transform hover:scale-105">
+                    <i class="fas fa-download"></i> Download Photo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-8 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <script>document.write(new Date().getFullYear())</script> HSMV Foundation. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // REPLACE WITH YOUR GALLERY SCRIPT URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDp4xb_x_qIwn3f7wLj_tVjbWtP2myD83OPPQC8T5ySIx5HgtYvS4gyIpFNbCQUhlpIA/exec"; 
+
+        let allPhotos = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (SCRIPT_URL.includes("REPLACE")) {
+                document.getElementById('loader').innerHTML = '<p class="text-red-500">Please replace SCRIPT_URL with your deployed Google Apps Script URL.</p>';
+                return;
+            }
+
+            const loader = document.getElementById('loader');
+            
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getPhotos`);
+                const data = await response.json();
+                allPhotos = data.photos || [];
+                
+                allPhotos.reverse(); // Newest first
+                
+                renderGallery(allPhotos);
+                loader.classList.add('hidden');
+                
+            } catch (error) {
+                console.error(error);
+                loader.innerHTML = `<p class="text-red-500 font-medium">Failed to load gallery. Please try again later.</p>`;
+            }
+        });
+
+        function renderGallery(photos) {
+            const container = document.getElementById('galleryContainer');
+            const noPhotos = document.getElementById('noPhotos');
+            
+            container.innerHTML = '';
+            
+            if (photos.length === 0) {
+                container.classList.add('hidden');
+                noPhotos.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            noPhotos.classList.add('hidden');
+
+            photos.forEach((photo, index) => {
+                let dateStr = photo.date;
+                try {
+                    const d = new Date(photo.date);
+                    if(!isNaN(d)) dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                } catch(e) {}
+
+                const delay = (index % 10) * 0.1;
+                
+                // Fix for Google Drive image embedding
+                let displayUrl = photo.imageUrl;
+                if(displayUrl.includes('drive.google.com') && displayUrl.includes('id=')) {
+                    const fileId = displayUrl.split('id=')[1].split('&')[0];
+                    displayUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+                }
+
+                const card = document.createElement('div');
+                card.className = `gallery-card bg-white rounded-xl overflow-hidden fade-in flex flex-col shadow-sm border border-gray-100`;
+                card.style.animationDelay = `${delay}s`;
+                
+                // Store data for modal
+                card.dataset.imageUrl = displayUrl;
+                card.dataset.downloadUrl = photo.downloadUrl;
+                card.dataset.date = dateStr;
+                card.dataset.desc = photo.description;
+
+                card.onclick = () => openModal(card);
+
+                card.innerHTML = `
+                    <div class="h-56 w-full bg-gray-100 overflow-hidden relative group">
+                        <img src="${displayUrl}" alt="Gallery" class="w-full h-full object-contain">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                            <i class="fas fa-search-plus text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-gray-50 flex items-center justify-between">
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider"><i class="far fa-calendar-alt mr-1"></i> ${dateStr}</p>
+                        <button class="text-gold hover:text-yellow-600 transition-colors" title="View Details"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // Search Logic
+        const dateInput = document.getElementById('dateSearch');
+        const clearBtn = document.getElementById('clearSearch');
+
+        dateInput.addEventListener('change', () => {
+            const searchVal = dateInput.value;
+            if(!searchVal) {
+                clearBtn.classList.add('hidden');
+                renderGallery(allPhotos);
+                return;
+            }
+            
+            clearBtn.classList.remove('hidden');
+            
+            // Filter photos where date matches exactly
+            const filtered = allPhotos.filter(p => {
+                // p.date is usually YYYY-MM-DD from the admin form
+                // Handle possible timezone mismatches by strictly comparing the string prefix
+                const pDate = p.date.substring(0, 10);
+                return pDate === searchVal;
+            });
+            
+            renderGallery(filtered);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            dateInput.value = '';
+            clearBtn.classList.add('hidden');
+            renderGallery(allPhotos);
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('photoModal');
+        const modalImg = document.getElementById('modalImage');
+        const modalDate = document.getElementById('modalDate').querySelector('span');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalDownload = document.getElementById('modalDownload');
+        const closeModal = document.getElementById('closeModal');
+
+        function openModal(card) {
+            modalImg.src = card.dataset.imageUrl;
+            modalDate.textContent = card.dataset.date;
+            modalDesc.textContent = card.dataset.desc;
+            modalDownload.href = card.dataset.downloadUrl;
+            
+            modal.classList.remove('hidden');
+            // Small delay for fade in animation
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function close() {
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modalImg.src = '';
+            }, 300); // match transition duration
+        }
+
+        closeModal.addEventListener('click', close);
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) close();
+        });
+    </script>
+</body>
+</html>
